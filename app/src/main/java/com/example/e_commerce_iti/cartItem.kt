@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -26,10 +30,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +47,7 @@ import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 
 @Composable
 fun MyGreeting(name: String) {
+    var state by rememberSaveable { mutableIntStateOf(0) }
     Card() {
         Row(
             modifier = Modifier.fillMaxWidth().wrapContentHeight()
@@ -51,15 +62,31 @@ fun MyGreeting(name: String) {
                 Text(text = "Hello $name!")
             }
             Spacer(Modifier.width(10.dp))
-            Column(modifier = Modifier.fillMaxHeight()) {
-                Row() {
-                    IconButton(onClick = { /*TODO*/ }
+            Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { state++ }
 
                     ) {
-
+                        Icon(imageVector = Icons.Filled.Add, contentDescription =null)
+                    }
+                    Text(text = "$state")
+                    IconButton(onClick = {
+                        if (state > 0) {
+                        state--
+                    }
+                    }
+                    ) {
+                        Icon(modifier = Modifier.padding(bottom = 10.dp),painter = painterResource(id =R.drawable.baseline_minimize_24) ,contentDescription =null)
                     }
                 }
             }
         }
+    }
+}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun GreetingPreview() {
+    ECommerceITITheme {
+        MyGreeting("Android")
     }
 }
