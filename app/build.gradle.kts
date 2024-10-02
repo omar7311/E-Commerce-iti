@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.e_commerce_iti"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.e_commerce_iti"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation("com.github.skydoves:landscapist-glide:1.3.7")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
