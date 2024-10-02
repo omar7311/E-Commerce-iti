@@ -17,3 +17,14 @@ data class CollectionImage(
     val height: Int,
     val src: String
 )
+
+/**
+ *          actual data we need from brands
+ */
+data class BrandData(
+    val id: Long,
+    val title: String,
+    val imageSrc: String?,
+    val imageWidth: Int?,
+    val imageHeight: Int?
+)
