@@ -4,7 +4,6 @@ import com.example.e_commerce_iti.model.apis.RetrofitHelper
 import com.example.e_commerce_iti.model.pojos.BrandData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 
 class RemoteDataSourceImp : IRemoteDataSource {
     override suspend fun getBrands(): Flow<List<BrandData>> = flow{
@@ -18,7 +17,6 @@ class RemoteDataSourceImp : IRemoteDataSource {
                 imageWidth = it.image?.width,
                 imageHeight = it.image?.height
             )
-
 
         }
         emit(brands)
