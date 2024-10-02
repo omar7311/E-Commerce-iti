@@ -1,9 +1,7 @@
 package com.example.e_commerce_iti.ui.theme.viewmodels
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.e_commerce_iti.model.apistates.BrandsApiState
-import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,7 +12,7 @@ import kotlinx.coroutines.launch
 /**
  *      intially create a view Model to fetch brands
  */
-class HomeViewModel(val repo:IReposiatory) :ViewModel() {
+class HomeViewModel(val repo:IReposiatory) : ViewModel() {
 
     // fist brand stateFlow
     private val _brandsStateFlow = MutableStateFlow<BrandsApiState>(BrandsApiState.Loading())

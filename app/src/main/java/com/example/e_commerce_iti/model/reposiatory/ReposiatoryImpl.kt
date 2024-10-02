@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.flow
  */
 class ReposiatoryImpl(val remote:IRemoteDataSource) :IReposiatory {
 
-    override suspend fun getBrands(): Flow<List<BrandData>>  = flow{
-        remote.getBrands()
-    }
+    override suspend fun getBrands(): Flow<List<BrandData>>  = remote.getBrands()
+
 }

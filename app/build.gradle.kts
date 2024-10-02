@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.example.e_commerce_iti"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.e_commerce_iti"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -42,8 +42,8 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+    composeOptions { // take care of this part
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
     packaging {
         resources {
@@ -110,7 +110,9 @@ dependencies {
 
     //ViewModel
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+    // jetback viewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
 
+    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
 
 }
