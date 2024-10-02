@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
+    implementation("com.github.skydoves:landscapist-glide:1.3.7")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
