@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti.ui.theme.viewmodels
+package com.example.e_commerce_iti.ui.theme.viewmodels.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

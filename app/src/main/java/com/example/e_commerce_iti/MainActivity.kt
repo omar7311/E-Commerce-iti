@@ -12,12 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.example.e_commerce_iti.ui.theme.home.FetchingBrandData
+import com.example.e_commerce_iti.ui.theme.home.HomeScreen
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FetchingBrandData()
+            HomeScreen()
         }
     }
 }
