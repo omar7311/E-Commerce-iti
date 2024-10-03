@@ -10,4 +10,6 @@ interface EcommerceApi {
 
     @GET("smart_collections.json")
     suspend fun getSmartCollections(): SmartCollectionResponse
+    @GET("price_rules.json")
+    suspend fun getPrice_rules()
 }

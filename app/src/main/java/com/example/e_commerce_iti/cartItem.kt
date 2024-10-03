@@ -53,11 +53,11 @@ import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun Carts(name: String,price:Double,quantity:Int,total: MutableState<Int>) {
+fun CartItem(e:(price:Double)->Unit,name: String="",price:Double=0.0,quantity:Int=0,total: MutableState<Double>) {
     val showDialog = rememberSaveable { mutableStateOf(false) }
-    var state by rememberSaveable { mutableIntStateOf(0) }
+    var numberOfItemChoosed by rememberSaveable { mutableIntStateOf(0) }
     if (showDialog.value){
-        MyAlertDialog(showDialog)
+        MyAlertDialog(showDialog,e,(price* numberOfItemChoosed))
     }
     Card() {
         Row(
@@ -76,21 +76,21 @@ fun Carts(name: String,price:Double,quantity:Int,total: MutableState<Int>) {
             Column(modifier = Modifier.fillMaxHeight().weight(1f), verticalArrangement = Arrangement.Bottom) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     IconButton(modifier = Modifier.weight(1f),onClick = {
-                        if (state < quantity) {
+                        if (numberOfItemChoosed < quantity) {
                             total.value+=price.toInt()
-                            state++
+                            numberOfItemChoosed++
                         }
                     }
 
                     ) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription =null)
                     }
-                    Text(textAlign = TextAlign.Center,text = "$state", modifier  = Modifier.weight(1f))
+                    Text(textAlign = TextAlign.Center,text = "$numberOfItemChoosed", modifier  = Modifier.weight(1f))
                     IconButton(modifier = Modifier.weight(1f),onClick = {
-                        if (state > 0) {
+                        if (numberOfItemChoosed > 0) {
                             total.value-=price.toInt()
 
-                            state--
+                            numberOfItemChoosed--
                     }
                     }
                     ) {
@@ -109,7 +109,7 @@ fun Carts(name: String,price:Double,quantity:Int,total: MutableState<Int>) {
     }
 }
 @Composable
-fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>) {
+fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>,e:(price:Double)->Unit,price: Double) {
     if (shouldShowDialog.value) { // 2
         AlertDialog( // 3
             onDismissRequest = { // 4
@@ -121,6 +121,7 @@ fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>) {
             confirmButton = { // 6
                 Button(
                     onClick = {
+                        e(price)
                         shouldShowDialog.value = false
                     }
                 ) {
@@ -133,10 +134,10 @@ fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>) {
         )
     }
 }
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun GreetingPreview() {
-//    ECommerceITITheme {
-//        MyGreeting("Android")
-//    }
-//}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun GreetingPreview() {
+    ECommerceITITheme {
+       // CartItem("Android")
+    }
+}
