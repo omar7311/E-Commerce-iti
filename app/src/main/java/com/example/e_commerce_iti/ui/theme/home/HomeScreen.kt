@@ -22,7 +22,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.Navigator
 import coil.compose.rememberAsyncImagePainter
+import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.BrandsApiState
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
@@ -68,6 +71,7 @@ val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp())
 val factory: HomeViewModelFactory = HomeViewModelFactory(repository)
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
 
@@ -75,11 +79,27 @@ fun HomeScreen() {
 
         topBar = { CustomTopBar("Home") },
         bottomBar = { CustomButtonBar() },
+    ) { innerPadding ->
+        HomeContent(modifier = Modifier.padding(innerPadding))
+    }
 
-
-        ) {}
 }
 
+
+@Composable
+fun HomeContent(modifier: Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(5.dp)
+
+    ) {
+        /**
+         *  here we put all content of home Screen
+         */
+        FetchingBrandData()
+    }
+}
 
 @Composable
 fun FetchingBrandData() {
@@ -118,7 +138,7 @@ fun FetchingBrandData() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewFunctions() {
-    CustomTopBar("Home")
+    CustomButtonBar()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,7 +149,7 @@ fun CustomTopBar(customTitle: String) {
             .clip(RoundedCornerShape(20.dp))
             .fillMaxWidth()
             .background(Color.LightGray),
-        title = { Text(customTitle) },
+        title = { Text(customTitle, modifier = Modifier.wrapContentWidth()) },
         navigationIcon = {
             IconButton(onClick = {}, modifier = Modifier.padding(5.dp)) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
@@ -138,7 +158,11 @@ fun CustomTopBar(customTitle: String) {
         actions = {
             // Favorite icon on the right
             IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Favorite")
+                Icon(
+                    modifier = Modifier.padding(5.dp),
+                    imageVector = Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite"
+                )
             }
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -160,8 +184,30 @@ fun CustomButtonBar(
             onClick = { selectedItem = 0 }
         )
 
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.category),
+                    contentDescription = "Category",
+                    modifier = Modifier.size(24.dp)
+                )
+            },
+            selected = selectedItem == 1,
+            onClick = { selectedItem = 1 },
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Cart") },
+            label = { Text("Cart") },
+            selected = selectedItem == 2,
+            onClick = { selectedItem = 2 }
+        )
 
-
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+            label = { Text("Profile") },
+            selected = selectedItem == 3,
+            onClick = { selectedItem = 3 }
+        )
     }
 }
 
