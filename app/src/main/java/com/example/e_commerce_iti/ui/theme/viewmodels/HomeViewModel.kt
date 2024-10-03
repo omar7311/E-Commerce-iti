@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(val repo:IReposiatory) : ViewModel() {
 
     // fist brand stateFlow
-    private val _brandsStateFlow = MutableStateFlow<BrandsApiState>(BrandsApiState.Loading())
+    private val _brandsStateFlow = MutableStateFlow<BrandsApiState>(BrandsApiState.Loading)
     val brandStateFlow = _brandsStateFlow.asStateFlow()
 
     fun getBrands(){

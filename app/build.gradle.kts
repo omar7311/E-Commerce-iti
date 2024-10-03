@@ -92,9 +92,8 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.0.0")
 
 
-    // glide
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    kapt("com.github.bumptech.glide:compiler:4.15.1")
+    // glide  not Supported from getBack so we use coil
+    implementation("io.coil-kt:coil-compose:2.0.0")
 
     // retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
@@ -112,7 +111,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     // jetback viewModel
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-
     implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
+
+    // matirial 3
+    implementation ("androidx.compose.material3:material3:<latest_version>")
 
 }
