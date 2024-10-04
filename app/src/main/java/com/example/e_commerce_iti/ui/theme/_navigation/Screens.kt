@@ -16,6 +16,8 @@ import com.example.e_commerce_iti.ui.theme.home.HomeScreen
 import com.example.e_commerce_iti.ui.theme.products.ProductScreen
 import com.example.e_commerce_iti.ui.theme.profile.ProfileScreen
 import com.example.e_commerce_iti.ui.theme.search.SearchScreen
+import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponsViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 
@@ -26,7 +28,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 
 val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp())
 val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
-
+val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
 sealed class Screens(val route: String) {
     object Home : Screens(route = "home")
     object Category : Screens(route = "category")
@@ -49,7 +51,9 @@ fun Navigation() {
         composable(route = Screens.Home.route) {
             // Create ViewModel using the factory
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
-            HomeScreen(homeViewModel, navController)
+            val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
+
+            HomeScreen(CopuonsViewModel,homeViewModel, navController)
         }
 
         composable(route = Screens.Category.route) {

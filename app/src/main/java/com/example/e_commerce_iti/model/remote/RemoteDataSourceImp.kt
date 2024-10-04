@@ -4,9 +4,10 @@ import android.util.Log
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
-import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
+import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
+import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -47,6 +48,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
 
+
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
         val response = RetrofitHelper.service.getCustomCollections()
@@ -62,6 +64,16 @@ class RemoteDataSourceImp : IRemoteDataSource {
         return flow {
             emit(respone.products)
         }
+    }
+    override suspend fun getPriceRules(): Flow<PriceRules> {
+        return flow {emit(RetrofitHelper.service.getPriceRules())}
+    }
+
+    override suspend fun getCopuons(priceId: Long): Flow<DiscountCode> {
+        Log.d("TAG", "getCopuons: $priceId")
+        val data= RetrofitHelper.service.getCopuons(priceId)
+        Log.d("TAG", "getCopuons: $data")
+        return flow {emit(data)}
     }
 }
 
