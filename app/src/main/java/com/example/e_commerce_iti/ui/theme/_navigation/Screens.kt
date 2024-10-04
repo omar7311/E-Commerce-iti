@@ -12,6 +12,7 @@ import com.example.e_commerce_iti.ui.theme.cart.CartScreen
 import com.example.e_commerce_iti.ui.theme.category.CategoryScreen
 import com.example.e_commerce_iti.ui.theme.favorite.FavoriteScreen
 import com.example.e_commerce_iti.ui.theme.home.HomeScreen
+import com.example.e_commerce_iti.ui.theme.products.ProductScreen
 import com.example.e_commerce_iti.ui.theme.profile.ProfileScreen
 import com.example.e_commerce_iti.ui.theme.search.SearchScreen
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
@@ -32,6 +33,9 @@ sealed class Screens(val route: String) {
     object Profile : Screens(route = "profile")
     object Favorite : Screens(route = "favorite")
     object Search : Screens(route = "search")
+    object Product : Screens(route = "product/{brandId}"){
+        fun createRoute(brandId: Int) = "product/$brandId"
+    }
 
 }
 
@@ -50,6 +54,11 @@ fun Navigation() {
         composable(route = Screens.Profile.route) { ProfileScreen(navController) }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController) }
+
+        // here im modifying the product route to Extract the product ID from the route
+        composable(route = Screens.Product.route) {
+            val productId = it.arguments?.getString("brandId")?.toIntOrNull()
+            ProductScreen(navController, productId) }  // then pass it to the ProductScreen
 
     }
 }

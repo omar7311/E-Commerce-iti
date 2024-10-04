@@ -50,7 +50,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,13 +68,9 @@ import coil.compose.rememberImagePainter
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.BrandsApiState
 import com.example.e_commerce_iti.model.pojos.BrandData
-import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
-import com.example.e_commerce_iti.model.reposiatory.IReposiatory
-import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
-import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 
 /**
  *      don't forget navigation
@@ -90,14 +85,14 @@ fun HomeScreen(homeViewModel: HomeViewModel,controller : NavController = remembe
         topBar = { CustomTopBar("Home",controller) },
         bottomBar = { CustomButtonBar(controller) }, // give it the controller to navigate with it
     ) { innerPadding ->
-        HomeContent(homeViewModel , Modifier.padding(innerPadding))
+        HomeContent(homeViewModel ,controller, Modifier.padding(innerPadding))
     }
 
 }
 
 
 @Composable
-fun HomeContent(homeViewModel: HomeViewModel ,modifier: Modifier) {
+fun HomeContent(homeViewModel: HomeViewModel,controller: NavController ,modifier: Modifier) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()) // Make the column scrollable
@@ -111,7 +106,7 @@ fun HomeContent(homeViewModel: HomeViewModel ,modifier: Modifier) {
         CustomText("Coupons",Color.White,padding = PaddingValues(15.dp))
         CouponCarousel()
         CustomText("Brands",Color.White, padding = PaddingValues(15.dp))
-        FetchingBrandData(homeViewModel)
+        FetchingBrandData(homeViewModel,controller)
     }
 }
 
@@ -152,7 +147,7 @@ fun CouponCarousel(viewModel: CouponViewModel = viewModel()) {
 
 
 @Composable
-fun FetchingBrandData(homeViewModel: HomeViewModel) {
+fun FetchingBrandData(homeViewModel: HomeViewModel,controller: NavController) {
 
     LaunchedEffect(Unit) {
         homeViewModel.getBrands()
@@ -168,7 +163,7 @@ fun FetchingBrandData(homeViewModel: HomeViewModel) {
             Log.i("Brands", "Successfully loaded brands data.")
             val brands = (brandsState as BrandsApiState.Success).brands
             Log.i("Brands", "Brands: $brands")
-            BrandListItems(brands, PaddingValues(16.dp))
+            BrandListItems(brands,controller, PaddingValues(16.dp))
         }
 
         is BrandsApiState.Failure -> {
@@ -273,6 +268,7 @@ fun CustomButtonBar(controller: NavController) {
 @Composable
 fun BrandListItems(
     brands: List<BrandData>,
+    controller: NavController ,
     paddingValues: PaddingValues = PaddingValues(16.dp)
 ) {
     Card(
@@ -298,7 +294,7 @@ fun BrandListItems(
             contentPadding = PaddingValues(16.dp)
         ) {
             itemsIndexed(brands) { _, brand ->
-                BrandItem(brand)
+                BrandItem(brand,controller)
             }
         }
     }
@@ -306,12 +302,13 @@ fun BrandListItems(
 
 
 @Composable
-fun BrandItem(brand: BrandData) {
+fun BrandItem(brand: BrandData,controller: NavController) {
 
 
     Column(
         modifier = Modifier
-            .clickable { }
+            .clickable {        // here navigate to product screen with brand id
+                controller.navigate(Screens.Product.createRoute(brand.id.toInt()))}
             .padding(8.dp)
             .fillMaxWidth()
             .wrapContentHeight()
