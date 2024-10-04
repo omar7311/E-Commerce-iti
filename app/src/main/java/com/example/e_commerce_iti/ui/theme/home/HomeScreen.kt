@@ -308,7 +308,7 @@ fun BrandItem(brand: BrandData,controller: NavController) {
     Column(
         modifier = Modifier
             .clickable {        // here navigate to product screen with brand id
-                controller.navigate(Screens.Product.createRoute(brand.id.toInt()))}
+                controller.navigate(Screens.ProductSc.createRoute(brand.title))}
             .padding(8.dp)
             .fillMaxWidth()
             .wrapContentHeight()
@@ -319,7 +319,7 @@ fun BrandItem(brand: BrandData,controller: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         brand.imageSrc?.let {
-            BrandImage(it)
+            CustomImage(it)
         }
         Spacer(modifier = Modifier.height(10.dp))
         // Text section
@@ -329,8 +329,8 @@ fun BrandItem(brand: BrandData,controller: NavController) {
 }
 
 @Composable
-fun BrandImage(url: String) {
-    val painter = rememberAsyncImagePainter(
+fun CustomImage(url: String) {
+    val painter = rememberAsyncImagePainter(  // this function to load image instead of glide
         model = url,
         contentScale = ContentScale.Crop
     )

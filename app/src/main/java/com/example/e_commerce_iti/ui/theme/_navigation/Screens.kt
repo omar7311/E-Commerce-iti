@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.e_commerce_iti.VENDOR_NAME
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
@@ -33,8 +34,8 @@ sealed class Screens(val route: String) {
     object Profile : Screens(route = "profile")
     object Favorite : Screens(route = "favorite")
     object Search : Screens(route = "search")
-    object Product : Screens(route = "product/{brandId}"){
-        fun createRoute(brandId: Int) = "product/$brandId"
+    object ProductSc : Screens(route = "product/{$VENDOR_NAME}"){
+        fun createRoute(vendorName: String) = "product/$vendorName"
     }
 
 }
@@ -56,9 +57,14 @@ fun Navigation() {
         composable(route = Screens.Search.route) { SearchScreen(navController) }
 
         // here im modifying the product route to Extract the product ID from the route
-        composable(route = Screens.Product.route) {
-            val productId = it.arguments?.getString("brandId")?.toIntOrNull()
-            ProductScreen(navController, productId) }  // then pass it to the ProductScreen
+        composable(route = Screens.ProductSc.route) {
+            // Create ViewModel using the factory
+            val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
+            val vendorName = it.arguments?.getString(VENDOR_NAME)
+            if (vendorName != null) {
+                ProductScreen(homeViewModel,navController, vendorName)
+            }
+        }
 
     }
 }
