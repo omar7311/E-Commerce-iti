@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.model.pojos
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class SmartCollectionResponse(
     @SerializedName("smart_collections") val collections: List<SmartCollection>
@@ -27,4 +28,4 @@ data class BrandData(
     val imageSrc: String?,
     val imageWidth: Int?,
     val imageHeight: Int?
-)
+): Serializable

@@ -50,7 +50,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,42 +60,39 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.BrandsApiState
 import com.example.e_commerce_iti.model.pojos.BrandData
-import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
-import com.example.e_commerce_iti.model.reposiatory.IReposiatory
-import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
-import com.example.e_commerce_iti.ui.theme.viewmodels.home.HomeViewModel
-import com.example.e_commerce_iti.ui.theme.viewmodels.home.HomeViewModelFactory
+import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 
 /**
  *      don't forget navigation
  */
-val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp())
-val factory: HomeViewModelFactory = HomeViewModelFactory(repository)
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(homeViewModel: HomeViewModel,controller : NavController = rememberNavController()) {
 
     Scaffold(
-
-        topBar = { CustomTopBar("Home") },
-        bottomBar = { CustomButtonBar() },
+        topBar = { CustomTopBar("Home",controller) },
+        bottomBar = { CustomButtonBar(controller) }, // give it the controller to navigate with it
     ) { innerPadding ->
-        HomeContent(modifier = Modifier.padding(innerPadding))
+        HomeContent(homeViewModel ,controller, Modifier.padding(innerPadding))
     }
 
 }
 
 
 @Composable
-fun HomeContent(modifier: Modifier) {
+fun HomeContent(homeViewModel: HomeViewModel,controller: NavController ,modifier: Modifier) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()) // Make the column scrollable
@@ -110,7 +106,7 @@ fun HomeContent(modifier: Modifier) {
         CustomText("Coupons",Color.White,padding = PaddingValues(15.dp))
         CouponCarousel()
         CustomText("Brands",Color.White, padding = PaddingValues(15.dp))
-        FetchingBrandData()
+        FetchingBrandData(homeViewModel,controller)
     }
 }
 
@@ -151,9 +147,8 @@ fun CouponCarousel(viewModel: CouponViewModel = viewModel()) {
 
 
 @Composable
-fun FetchingBrandData() {
-    // Create ViewModel using the factory
-    val homeViewModel: HomeViewModel = viewModel(factory = factory)
+fun FetchingBrandData(homeViewModel: HomeViewModel,controller: NavController) {
+
     LaunchedEffect(Unit) {
         homeViewModel.getBrands()
     }
@@ -168,7 +163,7 @@ fun FetchingBrandData() {
             Log.i("Brands", "Successfully loaded brands data.")
             val brands = (brandsState as BrandsApiState.Success).brands
             Log.i("Brands", "Brands: $brands")
-            BrandListItems(brands, PaddingValues(16.dp))
+            BrandListItems(brands,controller, PaddingValues(16.dp))
         }
 
         is BrandsApiState.Failure -> {
@@ -186,7 +181,7 @@ fun FetchingBrandData() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopBar(customTitle: String) {
+fun CustomTopBar(customTitle: String,controller: NavController) {
     TopAppBar(
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
@@ -194,13 +189,14 @@ fun CustomTopBar(customTitle: String) {
             .background(Color.LightGray),
         title = { Text(customTitle, modifier = Modifier.wrapContentWidth()) },
         navigationIcon = {
-            IconButton(onClick = {}, modifier = Modifier.padding(5.dp)) {
+            // Search icon on the left
+            IconButton(onClick = {controller.navigate(Screens.Search.route)}, modifier = Modifier.padding(5.dp)) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
             }
         },
         actions = {
             // Favorite icon on the right
-            IconButton(onClick = {}) {
+            IconButton(onClick = {controller.navigate(Screens.Favorite.route)}) {
                 Icon(
                     modifier = Modifier.padding(5.dp),
                     imageVector = Icons.Default.FavoriteBorder,
@@ -215,16 +211,23 @@ fun CustomTopBar(customTitle: String) {
 }
 
 @Composable
-fun CustomButtonBar(
-) {
-    var selectedItem by remember { mutableStateOf(0) }
+fun CustomButtonBar(controller: NavController) {
+    val currentRoute = remember { mutableStateOf(Screens.Home.route) } // Initial route
+    val navBackStackEntry by controller.currentBackStackEntryAsState()
+
+    // Update the current route whenever the back stack entry changes
+    LaunchedEffect(navBackStackEntry) {
+        currentRoute.value = navBackStackEntry?.destination?.route ?: Screens.Home.route
+    }
 
     NavigationBar {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home") },
-            selected = selectedItem == 0,
-            onClick = { selectedItem = 0 }
+            selected = currentRoute.value == Screens.Home.route,
+            onClick = {
+                controller.navigate(Screens.Home.route)
+            }
         )
 
         NavigationBarItem(
@@ -235,21 +238,29 @@ fun CustomButtonBar(
                     modifier = Modifier.size(24.dp)
                 )
             },
-            selected = selectedItem == 1,
-            onClick = { selectedItem = 1 },
+            label = { Text("Category") },
+            selected = currentRoute.value == Screens.Category.route,
+            onClick = {
+                controller.navigate(Screens.Category.route)
+            }
         )
+
         NavigationBarItem(
             icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Cart") },
             label = { Text("Cart") },
-            selected = selectedItem == 2,
-            onClick = { selectedItem = 2 }
+            selected = currentRoute.value == Screens.Cart.route,
+            onClick = {
+                controller.navigate(Screens.Cart.route)
+            }
         )
 
         NavigationBarItem(
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
             label = { Text("Profile") },
-            selected = selectedItem == 3,
-            onClick = { selectedItem = 3 }
+            selected = currentRoute.value == Screens.Profile.route,
+            onClick = {
+                controller.navigate(Screens.Profile.route)
+            }
         )
     }
 }
@@ -257,6 +268,7 @@ fun CustomButtonBar(
 @Composable
 fun BrandListItems(
     brands: List<BrandData>,
+    controller: NavController ,
     paddingValues: PaddingValues = PaddingValues(16.dp)
 ) {
     Card(
@@ -282,7 +294,7 @@ fun BrandListItems(
             contentPadding = PaddingValues(16.dp)
         ) {
             itemsIndexed(brands) { _, brand ->
-                BrandItem(brand)
+                BrandItem(brand,controller)
             }
         }
     }
@@ -290,12 +302,13 @@ fun BrandListItems(
 
 
 @Composable
-fun BrandItem(brand: BrandData) {
+fun BrandItem(brand: BrandData,controller: NavController) {
 
 
     Column(
         modifier = Modifier
-            .clickable { }
+            .clickable {        // here navigate to product screen with brand id
+                controller.navigate(Screens.ProductSc.createRoute(brand.title))}
             .padding(8.dp)
             .fillMaxWidth()
             .wrapContentHeight()
@@ -306,7 +319,7 @@ fun BrandItem(brand: BrandData) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         brand.imageSrc?.let {
-            BrandImage(it)
+            CustomImage(it)
         }
         Spacer(modifier = Modifier.height(10.dp))
         // Text section
@@ -316,8 +329,8 @@ fun BrandItem(brand: BrandData) {
 }
 
 @Composable
-fun BrandImage(url: String) {
-    val painter = rememberAsyncImagePainter(
+fun CustomImage(url: String) {
+    val painter = rememberAsyncImagePainter(  // this function to load image instead of glide
         model = url,
         contentScale = ContentScale.Crop
     )
@@ -346,5 +359,21 @@ fun CustomText(brandTitle: String,backGroundColor:Color,padding:PaddingValues =P
             .clip(RoundedCornerShape(2.dp))
             .fillMaxWidth()
             .padding(padding)
+    )
+}
+
+@Composable
+fun SimpleText(simpleText:String){
+
+    Text(
+        text = simpleText,
+        color = Color.Black,
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold, // Make it bold
+        modifier = Modifier
+            .background(Color.LightGray)
+            .clip(RoundedCornerShape(2.dp))
+            .fillMaxWidth()
+            .padding(10.dp)
     )
 }
