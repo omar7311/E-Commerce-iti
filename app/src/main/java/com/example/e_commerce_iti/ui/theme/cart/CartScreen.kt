@@ -18,9 +18,7 @@ fun CartScreen(controller: NavController) {
         topBar = { CustomTopBar("Cart", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
-        Box(modifier = Modifier.padding(innerPadding)) {
-            SimpleText("Cart Screen Content")
-        }
+        Carts(Modifier.padding(innerPadding))
     }
 }
 

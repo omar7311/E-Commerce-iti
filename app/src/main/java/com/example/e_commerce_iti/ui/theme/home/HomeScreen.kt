@@ -79,20 +79,20 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel,controller : NavController = rememberNavController()) {
+fun HomeScreen(couponViewModel: CouponViewModel,homeViewModel: HomeViewModel,controller : NavController = rememberNavController()) {
 
     Scaffold(
         topBar = { CustomTopBar("Home",controller) },
         bottomBar = { CustomButtonBar(controller) }, // give it the controller to navigate with it
     ) { innerPadding ->
-        HomeContent(homeViewModel ,controller, Modifier.padding(innerPadding))
+        HomeContent(couponViewModel,homeViewModel ,controller, Modifier.padding(innerPadding))
     }
 
 }
 
 
 @Composable
-fun HomeContent(homeViewModel: HomeViewModel,controller: NavController ,modifier: Modifier) {
+fun HomeContent(couponViewModel: CouponViewModel,homeViewModel: HomeViewModel,controller: NavController ,modifier: Modifier) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()) // Make the column scrollable
@@ -104,7 +104,7 @@ fun HomeContent(homeViewModel: HomeViewModel,controller: NavController ,modifier
          *  here we put all content of home Screen
          */
         CustomText("Coupons",Color.White,padding = PaddingValues(15.dp))
-        CouponCarousel()
+        CouponCarousel(couponViewModel)
         CustomText("Brands",Color.White, padding = PaddingValues(15.dp))
         FetchingBrandData(homeViewModel,controller)
     }
@@ -114,7 +114,7 @@ fun HomeContent(homeViewModel: HomeViewModel,controller: NavController ,modifier
  *  this function to show coupons randomly
  */
 @Composable
-fun CouponCarousel(viewModel: CouponViewModel = viewModel()) {
+fun CouponCarousel(viewModel: CouponViewModel ) {
     val couponImages by viewModel.couponImages.observeAsState(emptyList())
 
     // Display the images in a carousel-like format
