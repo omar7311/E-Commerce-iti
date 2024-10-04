@@ -47,6 +47,7 @@ sealed class Screens(val route: String) {
 fun Navigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screens.Home.route) {
+
         composable(route = Screens.Home.route) {
             // Create ViewModel using the factory
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
@@ -54,7 +55,11 @@ fun Navigation() {
 
             HomeScreen(CopuonsViewModel,homeViewModel, navController)
         }
-        composable(route = Screens.Category.route) { CategoryScreen(navController) }
+
+        composable(route = Screens.Category.route) {
+            val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
+            CategoryScreen(homeViewModel,navController)
+        }
         composable(route = Screens.Cart.route) { CartScreen(navController) }
         composable(route = Screens.Profile.route) { ProfileScreen(navController) }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
