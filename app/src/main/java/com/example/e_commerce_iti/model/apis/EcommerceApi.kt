@@ -2,9 +2,14 @@ package com.example.e_commerce_iti.model.apis
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 
 import com.example.e_commerce_iti.model.pojos.SmartCollectionResponse
+import com.example.e_commerce_iti.model.pojos.customer.Customer
+import com.example.e_commerce_iti.model.pojos.customer.MetafieldsResponse
+import com.example.e_commerce_iti.model.pojos.customer.SearchedReslutCustomer
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 import retrofit2.http.Path
 
@@ -23,5 +28,12 @@ interface EcommerceApi {
     suspend fun getCopuons(@Path("priceId") priceId: Long) : DiscountCode
     @GET("products.json")
     suspend fun getProductsByVendorID(@Query("vendor") vendorName: String): ProductResponse
-
+    @POST("customers.json")
+    suspend fun createCustomer(@Body customer: Customer): Customer
+    @GET("customers/search.json")
+    suspend fun searchCustomerByEmail(@Query("query") query: String): SearchedReslutCustomer
+    @GET("customers/{customer_id}/metafields.json")
+    suspend fun getCustomerMetafields(
+        @Path("customer_id") customerId: Long
+    ): MetafieldsResponse
 }
