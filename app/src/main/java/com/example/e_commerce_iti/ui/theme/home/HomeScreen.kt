@@ -1,9 +1,15 @@
 package com.example.e_commerce_iti.ui.theme.home
 
+import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,8 +60,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,6 +81,7 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.UiState
 
 /**
  *      don't forget navigation
@@ -79,20 +90,20 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel,controller : NavController = rememberNavController()) {
+fun HomeScreen(couponViewModel: CouponViewModel,homeViewModel: HomeViewModel,controller : NavController = rememberNavController()) {
 
     Scaffold(
         topBar = { CustomTopBar("Home",controller) },
         bottomBar = { CustomButtonBar(controller) }, // give it the controller to navigate with it
     ) { innerPadding ->
-        HomeContent(homeViewModel ,controller, Modifier.padding(innerPadding))
+        HomeContent(couponViewModel,homeViewModel ,controller, Modifier.padding(innerPadding))
     }
 
 }
 
 
 @Composable
-fun HomeContent(homeViewModel: HomeViewModel,controller: NavController ,modifier: Modifier) {
+fun HomeContent(couponViewModel: CouponViewModel,homeViewModel: HomeViewModel,controller: NavController ,modifier: Modifier) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()) // Make the column scrollable
@@ -104,7 +115,7 @@ fun HomeContent(homeViewModel: HomeViewModel,controller: NavController ,modifier
          *  here we put all content of home Screen
          */
         CustomText("Coupons",Color.White,padding = PaddingValues(15.dp))
-        CouponCarousel()
+        CouponCarousel(couponViewModel)
         CustomText("Brands",Color.White, padding = PaddingValues(15.dp))
         FetchingBrandData(homeViewModel,controller)
     }
@@ -114,18 +125,30 @@ fun HomeContent(homeViewModel: HomeViewModel,controller: NavController ,modifier
  *  this function to show coupons randomly
  */
 @Composable
-fun CouponCarousel(viewModel: CouponViewModel = viewModel()) {
-    val couponImages by viewModel.couponImages.observeAsState(emptyList())
+fun CouponCarousel(viewModel: CouponViewModel ) {
+    val context = LocalContext.current
 
+    val couponImages by viewModel.couponImages.observeAsState(emptyList())
+    val couponsState by viewModel.couponsStateflow.collectAsState()
+    viewModel.getCoupons()
     // Display the images in a carousel-like format
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        itemsIndexed(couponImages) { _,coupon ->
+        itemsIndexed(couponImages) { index,coupon ->
+        if (couponsState is UiState.Success){
+            val cc = (couponsState as UiState.Success).data
             Box(
                 modifier = Modifier
-                    .clickable {  }
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = {
+                                copyToClipboard(context,cc[index].discount_codes[0].code)
+                            },
+                            onTap = {}
+                        )
+                    }
                     .height(200.dp)
                     .width(400.dp)
                     .clip(RoundedCornerShape(16.dp))
@@ -141,11 +164,15 @@ fun CouponCarousel(viewModel: CouponViewModel = viewModel()) {
 
                 )
             }
-        }
+        }}
     }
 }
-
-
+fun copyToClipboard(context: Context, text: String) {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("Copied Text", text)
+    clipboard.setPrimaryClip(clip)
+    Toast.makeText(context, "$text copied to clipboard", Toast.LENGTH_LONG).show()
+}
 @Composable
 fun FetchingBrandData(homeViewModel: HomeViewModel,controller: NavController) {
 

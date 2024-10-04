@@ -15,11 +15,11 @@ import com.example.e_commerce_iti.ui.theme.home.SimpleText
 @Composable
 fun ProfileScreen(controller: NavController) {
     Scaffold(
-        topBar = { CustomTopBar("Search", controller) },  // Update title to "Cart"
+        topBar = { CustomTopBar("Profile", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
         Box(modifier = Modifier.padding(innerPadding)) {
-            SimpleText("Search Screen Content")
+            SimpleText("Profile Screen Content")
         }
     }
 }
