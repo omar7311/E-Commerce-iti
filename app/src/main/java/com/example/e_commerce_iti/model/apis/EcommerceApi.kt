@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.model.apis
 
+import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 import com.example.e_commerce_iti.model.pojos.SmartCollectionResponse
 import retrofit2.http.GET
@@ -16,5 +17,6 @@ interface EcommerceApi {
 
     @GET("products.json")
     suspend fun getProductsByVendorID(@Query("vendor") vendorName: String): ProductResponse
-
+    @GET("custom_collections")
+    suspend fun getCustomCollections(): CustomCollectionsResponse
 }

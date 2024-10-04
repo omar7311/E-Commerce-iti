@@ -3,6 +3,8 @@ package com.example.e_commerce_iti.model.remote
 import android.util.Log
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
 import com.example.e_commerce_iti.model.pojos.BrandData
+import com.example.e_commerce_iti.model.pojos.CustomCollection
+import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 import kotlinx.coroutines.flow.Flow
@@ -41,6 +43,15 @@ class RemoteDataSourceImp : IRemoteDataSource {
                 Log.e("API_ERROR", "Error fetching products by collection: ${e.message()}")
                 emit(emptyList())
             }
+        }
+    }
+
+
+    // to get the custom collections
+    override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
+       val response = RetrofitHelper.service.getCustomCollections()
+        return flow {
+            emit(response.custom_collections)
         }
     }
 }
