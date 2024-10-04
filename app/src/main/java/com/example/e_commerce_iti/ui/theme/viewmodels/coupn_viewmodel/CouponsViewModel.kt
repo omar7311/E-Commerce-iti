@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class CouponViewModel(val remoteDataSource: IReposiatory) : ViewModel() {
@@ -25,10 +26,10 @@ class CouponViewModel(val remoteDataSource: IReposiatory) : ViewModel() {
         // Load images from a repository or generate them
         loadCouponImages()
     }
-    private val _couponsStateflow= MutableStateFlow<UiState<DiscountCode>>(UiState.Loading)
-     val couponsStateflow: StateFlow<UiState<DiscountCode>> =_couponsStateflow
+    private val _couponsStateflow= MutableStateFlow<UiState<List<DiscountCode>>>(UiState.Loading)
+     val couponsStateflow: StateFlow<UiState<List<DiscountCode>>> =_couponsStateflow
     private val _priceRulesStateflow= MutableStateFlow<UiState<PriceRules>>(UiState.Loading)
-    val priceRulesStateflow: StateFlow<UiState<PriceRules>> =_priceRulesStateflow
+
     private fun loadCouponImages() {
         // You can either fetch images from an API or locally
         val images = listOf(
@@ -40,17 +41,18 @@ class CouponViewModel(val remoteDataSource: IReposiatory) : ViewModel() {
     }
     var job: Job? = null
     private suspend fun getPriceRules() =remoteDataSource.getPriceRules()
-    fun getCoupons(priceId: Long) {
+    fun getCoupons() {
         job?.cancel()
         _couponsStateflow.value=UiState.Loading
        job=viewModelScope.launch(Dispatchers.IO) {
             getPriceRules().collect{
                 _priceRulesStateflow.value=UiState.Success(it)
+                val list = mutableListOf<DiscountCode>()
                 for (i in it.price_rules){
-                    remoteDataSource.getCopuons(i.id).collect{
-                        _couponsStateflow.value=UiState.Success(it)
-                    }
+                 val cop= remoteDataSource.getCopuons(i.id).first()
+                 list.add(cop)
                 }
+                _couponsStateflow.value=UiState.Success(list)
             }
         }
     }

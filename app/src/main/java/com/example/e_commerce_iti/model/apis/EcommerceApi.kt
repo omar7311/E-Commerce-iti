@@ -33,7 +33,5 @@ interface EcommerceApi {
     @GET("customers/search.json")
     suspend fun searchCustomerByEmail(@Query("query") query: String): SearchedReslutCustomer
     @GET("customers/{customer_id}/metafields.json")
-    suspend fun getCustomerMetafields(
-        @Path("customer_id") customerId: Long
-    ): MetafieldsResponse
+    suspend fun getCustomerMetafields(@Path("customer_id") customerId: Long): MetafieldsResponse
 }
