@@ -15,4 +15,5 @@ interface IRemoteDataSource {
     suspend fun getBrands() : Flow<List<BrandData>>
     suspend fun getProductsByVendor(vendorName: String) : Flow<List<Product>>
     suspend fun getCustomCollections(): Flow<List<CustomCollection>>
+    suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>>
 }

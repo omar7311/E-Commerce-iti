@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -133,7 +134,6 @@ fun FetchingProductsByVendor(
         is ProductsApiState.Loading -> {
             // Show loading indicator
             CircularProgressIndicator()
-
         }
 
         is ProductsApiState.Success -> {
@@ -167,7 +167,7 @@ fun FetchingProductsByVendor(
 fun ProductsList(products: List<Product>, controller: NavController) {
 
     LazyVerticalGrid(
-        columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2),
+        columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxSize()
     ) {

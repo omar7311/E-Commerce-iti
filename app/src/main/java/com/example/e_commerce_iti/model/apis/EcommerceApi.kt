@@ -17,6 +17,12 @@ interface EcommerceApi {
 
     @GET("products.json")
     suspend fun getProductsByVendorID(@Query("vendor") vendorName: String): ProductResponse
-    @GET("custom_collections")
+
+    // get the custom collections
+    @GET("custom_collections.json")
     suspend fun getCustomCollections(): CustomCollectionsResponse
+
+    // get the products by custom collection
+    @GET("products.json")
+    suspend fun getProductsByCustomCollection(@Query("collection_id") collectionId: Long): ProductResponse
 }

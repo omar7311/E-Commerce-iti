@@ -49,9 +49,18 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
-       val response = RetrofitHelper.service.getCustomCollections()
+        val response = RetrofitHelper.service.getCustomCollections()
         return flow {
             emit(response.custom_collections)
+        }
+    }
+
+    // get Products by custom collection id
+    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> {
+
+        val respone = RetrofitHelper.service.getProductsByCustomCollection(collectionId)
+        return flow {
+            emit(respone.products)
         }
     }
 }
