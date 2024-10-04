@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Coupons
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
@@ -52,17 +53,13 @@ class CouponViewModel(val remoteDataSource: IReposiatory) : ViewModel() {
                  val cop= remoteDataSource.getCopuons(i.id).first()
                  list.add(cop)
                 }
-                _couponsStateflow.value=UiState.Success(list)
+                _couponsStateflow.value= UiState.Success(list)
             }
         }
     }
 
 }
-sealed class UiState<out T> {
-    object Loading : UiState<Nothing>()
-    data class Success<out T>(val data: T) : UiState<T>()
-    data class Error(val message: String) : UiState<Nothing>()
-}
+
 class CouponsViewModelFactory(private val repo: IReposiatory) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

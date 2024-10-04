@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.model.remote
 
 import com.example.e_commerce_iti.model.pojos.BrandData
+import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
