@@ -13,4 +13,5 @@ interface IReposiatory {
     suspend fun getBrands(): Flow<List<BrandData>>
     suspend fun getPriceRules(): Flow<PriceRules>
     suspend fun getCopuons(priceId: Long): Flow<DiscountCode>
+
 }

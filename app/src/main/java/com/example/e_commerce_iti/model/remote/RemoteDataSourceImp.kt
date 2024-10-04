@@ -1,5 +1,7 @@
 package com.example.e_commerce_iti.model.remote
 
+import android.annotation.SuppressLint
+import android.net.http.HttpException
 import android.util.Log
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
 import com.example.e_commerce_iti.model.pojos.BrandData
@@ -36,8 +38,8 @@ class RemoteDataSourceImp : IRemoteDataSource {
             try {
                 val response = RetrofitHelper.service.getProductsByVendorID(vendorName)
                 emit(response.products)
-            } catch (e: HttpException) {
-                Log.e("API_ERROR", "Error fetching products by collection: ${e.message()}")
+            } catch (@SuppressLint("NewApi") e: HttpException) {
+                Log.e("API_ERROR", "Error fetching products by collection: ${e.message}")
                 emit(emptyList())
             }
         }

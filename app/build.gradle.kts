@@ -55,18 +55,50 @@ android {
 dependencies {
     implementation("com.github.skydoves:landscapist-glide:1.3.7")
 
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.9.0") // or latest version
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.activity:activity-compose:1.9.2")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3") // Use latest version directly
     implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
-    implementation("androidx.test.ext:junit-ktx:1.2.1")
+
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
+    implementation("androidx.navigation:navigation-compose:2.8.2") // navigation in compose
+
+    implementation("de.hdodenhof:circleimageview:3.1.0") // CircleImageView
+    implementation("com.airbnb.android:lottie:6.0.0") // Lottie animations
+
+    implementation("io.coil-kt:coil-compose:2.0.0") // Coil for image loading
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.11.0")
+
+    // Room
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0") // Use with caution as it's deprecated
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6") // Jetpack ViewModel
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
+
+    // Google Fonts
+    implementation("com.google.android.material:compose-theme-adapter:1.2.1")
+
+    // Pager used to show coupons randomly
+    implementation("com.google.accompanist:accompanist-pager:0.23.1")
+
+    // Testing dependencies
     testImplementation("junit:junit:4.13.2")
-    testImplementation("androidx.test:runner:1.6.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
@@ -74,56 +106,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-
-    // Navigation component (latest stable version)
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
-
-    implementation("androidx.core:core-ktx:1.6.0")// or latest version
-
-// CircleImageView (latest stable version)
-    implementation("de.hdodenhof:circleimageview:3.1.0")
-    implementation("com.airbnb.android:lottie:6.0.0")
-
-    // Navigation component (latest stable version)
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
-
-    implementation("androidx.core:core-ktx:1.6.0")// or latest version
-
-// CircleImageView (latest stable version)
-    implementation("de.hdodenhof:circleimageview:3.1.0")
-    implementation("com.airbnb.android:lottie:6.0.0")
-
-
-    // glide  not Supported from getBack so we use coil
-    implementation("io.coil-kt:coil-compose:2.0.0")
-
-    // retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-
-    // gson
-    implementation("com.google.code.gson:gson:2.11.0")
-
-    // room
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-
-    //ViewModel
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    // jetback viewModel
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
-
-    // matirial 3
-    implementation ("androidx.compose.material3:material3:<latest_version>")
-    // google fonts
-    implementation ("com.google.android.material:compose-theme-adapter:1.2.1")
-
-    // pagger used to show coupons randomly
-    implementation ("com.google.accompanist:accompanist-pager:0.23.1")
+    // Robolectric for unit tests
     testImplementation("org.robolectric:robolectric:4.13")
-
 }
