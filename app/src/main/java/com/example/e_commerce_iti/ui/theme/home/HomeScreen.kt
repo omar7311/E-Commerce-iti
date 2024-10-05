@@ -67,6 +67,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -373,14 +374,19 @@ fun CustomImage(url: String) {
 
     )
 }
-
 @Composable
-fun CustomText(brandTitle: String,backGroundColor:Color,padding:PaddingValues =PaddingValues()) {
+fun CustomText(
+    brandTitle: String,
+    backGroundColor: Color,
+    textColor: Color = Color.Black,
+    fontSize: TextUnit = 24.sp,
+    padding: PaddingValues = PaddingValues()
+) {
     Text(
         text = brandTitle,
-        color = Color.Black,
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold, // Make it bold
+        color = textColor,
+        fontSize = fontSize,
+        fontWeight = FontWeight.Bold,
         modifier = Modifier
             .background(backGroundColor)
             .clip(RoundedCornerShape(2.dp))
@@ -388,6 +394,7 @@ fun CustomText(brandTitle: String,backGroundColor:Color,padding:PaddingValues =P
             .padding(padding)
     )
 }
+
 
 @Composable
 fun SimpleText(simpleText:String){

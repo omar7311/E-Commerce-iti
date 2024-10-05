@@ -2,6 +2,7 @@ package com.example.e_commerce_iti.ui.theme.products
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -113,7 +115,6 @@ fun ProductsContent(
 }
 
 
-
 @Composable
 fun FetchingProductsByVendor(
     homeViewModel: HomeViewModel,
@@ -194,8 +195,14 @@ fun ProductItem(product: Product, controller: NavController) {
 
         CustomImage(product.images[0].src)
         Spacer(modifier = Modifier.size(10.dp))
-        CustomText(product.title, Color.LightGray)  // title
-        CustomText(product.variants[0].price, Color.White)  // price
+        CustomText(product.title, Color.White, textColor = Color.Black, fontSize = 16.sp)  // title
+        CustomText(
+            product.variants[0].price,
+            Color.Cyan,
+            textColor = Color.Black,
+            fontSize = 12.sp,
+            padding = PaddingValues(10.dp)
+        )  // title
     }
 }
 
@@ -211,20 +218,20 @@ fun PriceFilterSlider(
     onValueChange: (Float) -> Unit
 ) {
     var sliderPosition by remember { mutableFloatStateOf(minPrice) }  // One value for the slider position
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(10.dp)
     ) {
         Text(text = "Price: \$${sliderPosition.toInt()}")  // Display the current price selected
         Slider(
             value = sliderPosition,
             onValueChange = {
                 sliderPosition = it
-                onValueChange(sliderPosition)  // Update the selected price value
+                onValueChange(sliderPosition)
             },
-            valueRange = minPrice..maxPrice,  // Range between minimum and maximum price
+            valueRange = minPrice..maxPrice,
+            modifier = Modifier.height(20.dp),
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
@@ -242,13 +249,13 @@ fun PriceFilterSlider(
 fun FilterButtonWithSlider(minPrice: Float, maxPrice: Float, onPriceSelected: (Float) -> Unit) {
     var isSelected by remember { mutableStateOf(false) }
 
-    Column (
-        modifier = Modifier.padding(16.dp),
+    Row(
+        modifier = Modifier.padding(10.dp),
     ) {
         // Filter button with icon
         Box(
             modifier = Modifier
-                .size(60.dp)
+                .size(40.dp)
                 .background(
                     if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
                     CircleShape
@@ -261,7 +268,8 @@ fun FilterButtonWithSlider(minPrice: Float, maxPrice: Float, onPriceSelected: (F
             Icon(
                 painter = painterResource(id = if (isSelected) R.drawable.filterlist else R.drawable.filteralt),
                 contentDescription = "Filter",
-                tint = Color.White
+                tint = Color.White,
+                modifier = Modifier.size(24.dp) // Set a specific size for the icon
             )
         }
 
@@ -272,3 +280,4 @@ fun FilterButtonWithSlider(minPrice: Float, maxPrice: Float, onPriceSelected: (F
         }
     }
 }
+
