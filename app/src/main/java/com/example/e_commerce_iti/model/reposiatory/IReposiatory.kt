@@ -3,6 +3,7 @@ package com.example.e_commerce_iti.model.reposiatory
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import kotlinx.coroutines.flow.Flow
@@ -14,4 +15,5 @@ interface IReposiatory {
     suspend fun getCopuons(priceId: Long): Flow<DiscountCode>
     suspend fun getBrands(): Flow<List<BrandData>>
     suspend fun getProductsByVendor(vendorName: String) : Flow<List<Product>>
+    suspend fun getCustomer(email:String): Flow<Customer>
 }

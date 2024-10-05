@@ -16,6 +16,8 @@ import com.example.e_commerce_iti.ui.theme.home.HomeScreen
 import com.example.e_commerce_iti.ui.theme.products.ProductScreen
 import com.example.e_commerce_iti.ui.theme.profile.ProfileScreen
 import com.example.e_commerce_iti.ui.theme.search.SearchScreen
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponsViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
@@ -27,6 +29,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 
 
 val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp())
+val cartFactory: CartViewModelFac = CartViewModelFac(repository)
 val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
 val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
 sealed class Screens(val route: String) {
@@ -60,7 +63,9 @@ fun Navigation() {
             val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
             CategoryScreen(homeViewModel,navController)
         }
-        composable(route = Screens.Cart.route) { CartScreen(navController) }
+        composable(route = Screens.Cart.route) {
+            val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
+            CartScreen(cartViewModel,navController) }
         composable(route = Screens.Profile.route) { ProfileScreen(navController) }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController) }

@@ -6,7 +6,9 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
+import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
+import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -47,6 +49,20 @@ class RemoteDataSourceImp : IRemoteDataSource {
         }
     }
 
+    override suspend fun getCustomer(email: String): Flow<Customer> {
+       return flow { emit(RetrofitHelper.service.searchCustomerByEmail(email).customers!![0]) }
+    }
+
+    override suspend fun createCustomer(customer: Customer): Flow<Customer> {
+        val response = RetrofitHelper.service.createCustomer(customer)
+        println(" messsadsadsadas asdsadsa    ${response.message()}")
+        return flow { emit(response.body()!!) }
+    }
+
+
+    override suspend fun createCustomerMeta(customer: Customer,metafields: MetaData): Flow<MetaData> {
+        return flow { emit(RetrofitHelper.service.updateCustomerMetafields(customer.customer!!.id!!,metafields)) }
+    }
 
 
     // to get the custom collections
