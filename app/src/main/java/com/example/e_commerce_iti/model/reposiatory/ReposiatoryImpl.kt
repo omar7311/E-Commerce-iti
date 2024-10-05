@@ -4,7 +4,9 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.customer.Customer
+import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -19,9 +21,11 @@ class ReposiatoryImpl(val remote:IRemoteDataSource) :IReposiatory {
         return remote.getProductsByVendor(vendorName)
     }
 
-    override suspend fun getCustomer(email:String): Flow<Customer> {
+    override suspend fun getCustomer(email:String): Flow<CustomerX> {
         return remote.getCustomer(email)
     }
+
+    override suspend fun updateCustomer(id:Long,customer: UCustomer)=remote.updateCustomer(id,customer)
 
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
         return remote.getCustomCollections()

@@ -14,7 +14,7 @@ data class CustomerX(
     var last_order_name: Any? = null,
     var multipass_identifier: Any? = null,
     var note: Any? = null,
-    var orders_count: Int? = null,
+    var orders_count: Long? = null,
     var phone: String? = null,
     var sms_marketing_consent: SmsMarketingConsent? = null,
     var state: String? = null,

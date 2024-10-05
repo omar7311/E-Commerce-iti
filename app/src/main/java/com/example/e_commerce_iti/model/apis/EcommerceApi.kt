@@ -12,10 +12,14 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
+import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.metadata.Metafield
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import retrofit2.Response
+import retrofit2.http.PUT
 
 /**
  *      frist start to create a brand get function
@@ -38,8 +42,6 @@ interface EcommerceApi {
     suspend fun searchCustomerByEmail(@Query("query") query: String): SearchedReslutCustomer
     @GET("customers/{customer_id}/metafields.json")
     suspend fun getCustomerMetafields(@Path("customer_id") customerId: Long): MetaData
-
-
     // get the custom collections
     @GET("custom_collections.json")
     suspend fun getCustomCollections(): CustomCollectionsResponse
@@ -53,4 +55,6 @@ interface EcommerceApi {
     suspend fun createDraftOrder(@Body draftOrder: DraftOrder): DraftOrder
     @POST("customers/{customer_id}/metafields.json")
     suspend fun updateCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: MetaData): MetaData
+    @PUT("customers/{customer_id}.json")
+    suspend fun updateCustomer(@Path("customer_id") customerId: Long, @Body customer: UpdateCustomer): Customer
 }

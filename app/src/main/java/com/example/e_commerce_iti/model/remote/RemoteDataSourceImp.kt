@@ -7,11 +7,16 @@ import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 import com.example.e_commerce_iti.model.pojos.customer.Customer
+import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.json.JSONObject
 import retrofit2.HttpException
 
 class RemoteDataSourceImp : IRemoteDataSource {
@@ -49,8 +54,11 @@ class RemoteDataSourceImp : IRemoteDataSource {
         }
     }
 
-    override suspend fun getCustomer(email: String): Flow<Customer> {
-       return flow { emit(RetrofitHelper.service.searchCustomerByEmail(email).customers!![0]) }
+    override suspend fun getCustomer(email: String): Flow<CustomerX> {
+        Log.d("asdsadsadasdasd", "email:${email}")
+        val data=RetrofitHelper.service.searchCustomerByEmail("email:${email}")
+        Log.d("asdsadsadasdasd", "getCustomer: $data")
+       return flow { emit(data.customers!!.get(0)) }
     }
 
     override suspend fun createCustomer(customer: Customer): Flow<Customer> {
@@ -64,6 +72,13 @@ class RemoteDataSourceImp : IRemoteDataSource {
         return flow { emit(RetrofitHelper.service.updateCustomerMetafields(customer.customer!!.id!!,metafields)) }
     }
 
+    override suspend fun updateCustomer(id:Long,customer: UCustomer): Flow<Customer> {
+        val gson= Gson().toJson(UpdateCustomer(customer))
+        Log.d("1111111111111111111111", "$id  updateCustomer: $gson")
+        val req=RetrofitHelper.service.updateCustomer(id, UpdateCustomer(customer))
+
+       return flow { emit(Customer(req.customer)) }
+    }
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
