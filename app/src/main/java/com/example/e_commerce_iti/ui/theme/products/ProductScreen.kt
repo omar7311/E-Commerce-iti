@@ -1,8 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.products
 
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,12 +18,10 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,27 +39,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
-import com.example.e_commerce_iti.ui.theme.home.SimpleText
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
-import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +103,6 @@ fun ProductsContent(
 }
 
 
-
 @Composable
 fun FetchingProductsByVendor(
     homeViewModel: HomeViewModel,
@@ -133,7 +122,7 @@ fun FetchingProductsByVendor(
 
         is ProductsApiState.Loading -> {
             // Show loading indicator
-            CircularProgressIndicator()
+            ShimmerLoadingGrid()
         }
 
         is ProductsApiState.Success -> {
@@ -152,11 +141,6 @@ fun FetchingProductsByVendor(
         is ProductsApiState.Failure -> {
             // Show error message
             val eror = (productsState as ProductsApiState.Failure).msg
-
-        }
-
-        else -> {
-            // Handle other states if needed
 
         }
     }
@@ -179,23 +163,40 @@ fun ProductsList(products: List<Product>, controller: NavController) {
 
 @Composable
 fun ProductItem(product: Product, controller: NavController) {
-    Column(
+    Card(
         modifier = Modifier
-            .clickable { } // navigation to Product Details here
-            .padding(8.dp)
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(10.dp))
-            .background(Color.White)
-            .wrapContentHeight(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .clickable {
+                // Navigation to Product Details here
+                controller.navigate(Screens.ProductDetails.createDetailRoute(product.id))
+            }
+            .padding(8.dp), // Padding around the card
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Set elevation
+        shape = RoundedCornerShape(10.dp), // Rounded corners
     ) {
-
-        CustomImage(product.images[0].src)
-        Spacer(modifier = Modifier.size(10.dp))
-        CustomText(product.title, Color.LightGray)  // title
-        CustomText(product.variants[0].price, Color.White)  // price
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(Color.White), // Background color of the card
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CustomImage(product.images[0].src)
+            Spacer(modifier = Modifier.size(10.dp))
+            CustomText(
+                product.title,
+                Color.White,
+                textColor = Color.Black,
+                fontSize = 16.sp
+            ) // Title
+            CustomText(
+                product.variants[0].price,
+                Color.Cyan,
+                textColor = Color.Black,
+                fontSize = 12.sp,
+                padding = PaddingValues(10.dp)
+            ) // Price
+        }
     }
 }
 
@@ -211,20 +212,20 @@ fun PriceFilterSlider(
     onValueChange: (Float) -> Unit
 ) {
     var sliderPosition by remember { mutableFloatStateOf(minPrice) }  // One value for the slider position
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(10.dp)
     ) {
         Text(text = "Price: \$${sliderPosition.toInt()}")  // Display the current price selected
         Slider(
             value = sliderPosition,
             onValueChange = {
                 sliderPosition = it
-                onValueChange(sliderPosition)  // Update the selected price value
+                onValueChange(sliderPosition)
             },
-            valueRange = minPrice..maxPrice,  // Range between minimum and maximum price
+            valueRange = minPrice..maxPrice,
+            modifier = Modifier.height(20.dp),
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
@@ -242,13 +243,13 @@ fun PriceFilterSlider(
 fun FilterButtonWithSlider(minPrice: Float, maxPrice: Float, onPriceSelected: (Float) -> Unit) {
     var isSelected by remember { mutableStateOf(false) }
 
-    Column (
-        modifier = Modifier.padding(16.dp),
+    Row(
+        modifier = Modifier.padding(10.dp),
     ) {
         // Filter button with icon
         Box(
             modifier = Modifier
-                .size(60.dp)
+                .size(40.dp)
                 .background(
                     if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
                     CircleShape
@@ -261,7 +262,8 @@ fun FilterButtonWithSlider(minPrice: Float, maxPrice: Float, onPriceSelected: (F
             Icon(
                 painter = painterResource(id = if (isSelected) R.drawable.filterlist else R.drawable.filteralt),
                 contentDescription = "Filter",
-                tint = Color.White
+                tint = Color.White,
+                modifier = Modifier.size(24.dp) // Set a specific size for the icon
             )
         }
 
@@ -272,3 +274,4 @@ fun FilterButtonWithSlider(minPrice: Float, maxPrice: Float, onPriceSelected: (F
         }
     }
 }
+

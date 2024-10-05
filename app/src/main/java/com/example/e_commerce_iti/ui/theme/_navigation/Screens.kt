@@ -2,17 +2,23 @@ package com.example.e_commerce_iti.ui.theme._navigation
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.e_commerce_iti.PRODUCT_ID
 import com.example.e_commerce_iti.VENDOR_NAME
+import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
+import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme.cart.CartScreen
 import com.example.e_commerce_iti.ui.theme.category.CategoryScreen
 import com.example.e_commerce_iti.ui.theme.favorite.FavoriteScreen
 import com.example.e_commerce_iti.ui.theme.home.HomeScreen
+import com.example.e_commerce_iti.ui.theme.product_details.ProductDetails
 import com.example.e_commerce_iti.ui.theme.products.ProductScreen
 import com.example.e_commerce_iti.ui.theme.profile.ProfileScreen
 import com.example.e_commerce_iti.ui.theme.search.SearchScreen
@@ -39,12 +45,15 @@ sealed class Screens(val route: String) {
     object ProductSc : Screens(route = "product/{$VENDOR_NAME}"){
         fun createRoute(vendorName: String) = "product/$vendorName"
     }
+    object ProductDetails : Screens(route = "product_details/{$PRODUCT_ID}") {
+        fun createDetailRoute(productId: Long) = "product_details/$productId"
+    }
 
 }
 
 
 @Composable
-fun Navigation() {
+fun Navigation(networkObserver: NetworkObserver) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screens.Home.route) {
 
@@ -53,12 +62,12 @@ fun Navigation() {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
 
-            HomeScreen(CopuonsViewModel,homeViewModel, navController)
+            HomeScreen(CopuonsViewModel,homeViewModel, navController,networkObserver)
         }
 
         composable(route = Screens.Category.route) {
             val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
-            CategoryScreen(homeViewModel,navController)
+            CategoryScreen(homeViewModel,navController,networkObserver)
         }
         composable(route = Screens.Cart.route) { CartScreen(navController) }
         composable(route = Screens.Profile.route) { ProfileScreen(navController) }
@@ -74,6 +83,19 @@ fun Navigation() {
                 ProductScreen(homeViewModel,navController, vendorName)
             }
         }
+
+        composable(
+            route = Screens.ProductDetails.route,
+            arguments = listOf(navArgument(PRODUCT_ID) {
+                type = NavType.LongType // take care of this it to mention that long will sent
+            })
+        ) {
+            val productId = it.arguments?.getLong(PRODUCT_ID)
+            if (productId != null) {
+                ProductDetails(productId, navController)
+            }
+        }
+
 
     }
 }
