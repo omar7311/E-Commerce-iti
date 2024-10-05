@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -50,89 +52,114 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 @Composable
 fun CategoryScreen(homeViewModel: HomeViewModel, controller: NavController) {
     var collectionId by remember { mutableStateOf(0L) }
-    Scaffold(
-        topBar = { CustomTopBar("Category", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
-    ) { innerPadding ->                                // Use padding for the content
-        Box(modifier = Modifier.padding(innerPadding)) {
-          Row {
-              FetchCustomCollections (homeViewModel,controller) { selectedCollection ->
-                  collectionId = selectedCollection.id // Update collectionId when a collection is selected
-              }
-              if(collectionId != 0L){
-                  fetchProductsByCustomCollection(homeViewModel,controller,collectionId)
 
-              }
-          }
+    Scaffold(
+        topBar = { CustomTopBar("Category", controller) },
+        bottomBar = { CustomButtonBar(controller) },
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            Column  {
+                FetchCustomCollections(homeViewModel) { selectedCollection ->
+                    if (selectedCollection.id != collectionId) {
+                        collectionId = selectedCollection.id
+                        Log.i("CategoryScreen", "Selected collection ID: $collectionId")
+                    }
+                }
+                if (collectionId != 0L) {
+                    FetchProductsByCustomCollection(homeViewModel, controller, collectionId)
+                }
+            }
+        }
+    }
+    // Fetch products when collectionId changes
+    LaunchedEffect(collectionId) {
+        if (collectionId != 0L) {
+            homeViewModel.getProductsByCustomCollection(collectionId)
         }
     }
 }
 
 
-@Composable
-fun FetchCustomCollections(homeViewModel: HomeViewModel, contorller: NavController, onCategorySelected: (CustomCollection) -> Unit){
 
+@Composable
+fun FetchCustomCollections(
+    homeViewModel: HomeViewModel,
+    onCategorySelected: (CustomCollection) -> Unit
+) {
     // Observe the state of the brands  and use it to prevent calling api multiple times when ui is built
     LaunchedEffect(Unit) {
         homeViewModel.getCustomCollections()
     }
-   val customCollections by  homeViewModel.customCollectionStateFlow.collectAsState()
+    val customCollections by homeViewModel.customCollectionStateFlow.collectAsState()
 
-    when(customCollections){
-        is CustomCollectionStates.Loading ->{
+    when (customCollections) {
+        is CustomCollectionStates.Loading -> {
             CircularProgressIndicator()
         }
+
         is CustomCollectionStates.Success -> {  // test to see if the custom collections is come or not
-            val customCollections = (customCollections as CustomCollectionStates.Success).customCollections
-            Log.i("Custom Collections", "Custom Collections: $customCollections")
+            val customCollections =
+                (customCollections as CustomCollectionStates.Success).customCollections
             CustomCollectionColumn(customCollections) { selectedCollection ->
                 onCategorySelected(selectedCollection) // Pass the selected collection
             }
         }
+
         is CustomCollectionStates.Failure -> {
             val error = (customCollections as CustomCollectionStates.Failure).msg
         }
     }
 }
+
 @Composable
-fun fetchProductsByCustomCollection(homeViewModel: HomeViewModel,controller: NavController,collectionId: Long){
+fun FetchProductsByCustomCollection(
+    homeViewModel: HomeViewModel,
+    controller: NavController,
+    collectionId: Long
+) {
     LaunchedEffect(Unit) {
         homeViewModel.getProductsByCustomCollection(collectionId)
     }
-    val customProducts by homeViewModel._productsByCustomCollectionStateFlow.collectAsState()
-
-    when (customProducts){
-        is ProductsApiState.Loading ->{
+    val customProducts by homeViewModel.productsByCustomCollectionStateFlow.collectAsState()
+    when (customProducts) {
+        is ProductsApiState.Loading -> {
             CircularProgressIndicator()
         }
 
         is ProductsApiState.Success -> {
             val products = (customProducts as ProductsApiState.Success).products
-            Log.i("Products", "Products: $products")
-            ProductGrid(products,controller)  // pass the products here to use it in the grid
+            ProductGrid(products, controller)  // pass the products here to use it in the grid
         }
+
         is ProductsApiState.Failure -> {
             val error = (customProducts as ProductsApiState.Failure).msg
         }
     }
 }
+
 /**
  *      category columns in the left
  */
 @Composable
-fun CustomCollectionColumn(customCollection: List<CustomCollection>, onCategorySelected: (CustomCollection) -> Unit) {
-    LazyColumn(
+fun CustomCollectionColumn(
+    customCollection: List<CustomCollection>,
+    onCategorySelected: (CustomCollection) -> Unit
+) {
+    LazyRow (
         modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        itemsIndexed(customCollection) { _,customCollection ->
+        itemsIndexed(customCollection) { _, customCollection ->
             CustomCollectionItem(customCollection, onCategorySelected)
         }
     }
 }
 
 @Composable
-fun CustomCollectionItem(customCollection: CustomCollection, onCategorySelected: (CustomCollection) -> Unit) {
+fun CustomCollectionItem(
+    customCollection: CustomCollection,
+    onCategorySelected: (CustomCollection) -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -145,7 +172,8 @@ fun CustomCollectionItem(customCollection: CustomCollection, onCategorySelected:
             modifier = Modifier
                 .size(80.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surface),
+            contentScale = ContentScale.FillBounds
         )
         Text(text = customCollection.title, fontSize = 14.sp)
     }
@@ -153,22 +181,15 @@ fun CustomCollectionItem(customCollection: CustomCollection, onCategorySelected:
 
 // create a  lazy Grid to show the products in the right
 @Composable
-fun ProductGrid(products:List<Product> ,controller: NavController){
+fun ProductGrid(products: List<Product>, controller: NavController) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.padding(8.dp),
         contentPadding = PaddingValues(8.dp)
-    ){
-        items(products){
-            product ->
-            ProductItem(product,controller) // to navigate when press on it
+    ) {
+        items(products) { product ->
+            ProductItem(product, controller) // to navigate when press on it
         }
     }
 }
 
-
-/*
-fun passCollectionID(collection:CustomCollection):Long{
-    return collection.id
-
-}*/

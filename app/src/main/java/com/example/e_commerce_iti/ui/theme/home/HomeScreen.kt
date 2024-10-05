@@ -77,11 +77,11 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.BrandsApiState
+import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
-import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.UiState
 
 /**
  *      don't forget navigation
