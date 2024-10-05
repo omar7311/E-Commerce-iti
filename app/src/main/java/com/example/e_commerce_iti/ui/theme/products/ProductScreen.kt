@@ -48,11 +48,13 @@ import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
+import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductScreen(homeVieVModel: HomeViewModel, controller: NavController, vendorName: String) {
@@ -165,7 +167,7 @@ fun ProductItem(product: Product, controller: NavController) {
         modifier = Modifier
             .clickable {
                 // Navigation to Product Details here
-                controller.navigate("product/${product.id}") // Example navigation
+                controller.navigate(Screens.ProductDetails.createDetailRoute(product.id))
             }
             .padding(8.dp), // Padding around the card
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Set elevation
@@ -181,7 +183,12 @@ fun ProductItem(product: Product, controller: NavController) {
         ) {
             CustomImage(product.images[0].src)
             Spacer(modifier = Modifier.size(10.dp))
-            CustomText(product.title, Color.White, textColor = Color.Black, fontSize = 16.sp) // Title
+            CustomText(
+                product.title,
+                Color.White,
+                textColor = Color.Black,
+                fontSize = 16.sp
+            ) // Title
             CustomText(
                 product.variants[0].price,
                 Color.Cyan,
@@ -192,7 +199,6 @@ fun ProductItem(product: Product, controller: NavController) {
         }
     }
 }
-
 
 
 /**

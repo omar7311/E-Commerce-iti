@@ -13,7 +13,7 @@ import com.example.e_commerce_iti.ui.theme.home.SimpleText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductsDetails(controller: NavController) {
+fun ProductDetails(productId: Long, controller: NavController) {
     Scaffold(
         topBar = { CustomTopBar("Products Details", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
