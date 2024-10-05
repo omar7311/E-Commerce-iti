@@ -1,7 +1,7 @@
 package com.example.e_commerce_iti.ui.theme.category
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,7 +24,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -50,11 +51,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.e_commerce_iti.DEFAULT_CUSTOM_COLLECTION_ID
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.CustomCollectionStates
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.ui.theme.ShimmerLoadingCustomCollection
+import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.products.FilterButtonWithSlider
@@ -65,28 +69,32 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(homeViewModel: HomeViewModel, controller: NavController) {
-
-    var collectionId by remember { mutableStateOf(0L) }
+    var collectionId by remember { mutableStateOf(DEFAULT_CUSTOM_COLLECTION_ID) } // default collection id
     var selectedPrice by remember { mutableStateOf(10000f) }  // Single value for the selected price
     var selectedCategory by remember { mutableStateOf<String?>(null) } //state for selected category
 
     val minPrice = 0f  // Minimum price fixed
     val maxPrice = 5000f  // Maximum price fixed
+
     Scaffold(
         topBar = { CustomTopBar("Category", controller) },
         bottomBar = { CustomButtonBar(controller) },
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            Column {
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
 
+                .fillMaxSize() // Fill the entire screen
+        ) {
+            Column(
+                modifier = Modifier.padding(15.dp)
+            ) {
                 FetchCustomCollections(homeViewModel) { selectedCollection ->
                     if (selectedCollection.id != collectionId) {
                         collectionId = selectedCollection.id
-                        Log.i("CategoryScreen", "Selected collection ID: $collectionId")
                     }
                 }
 
-                // then the filter function and icon
                 FilterButtonWithSlider(minPrice, maxPrice) { price ->
                     selectedPrice = price
                 }
@@ -100,19 +108,23 @@ fun CategoryScreen(homeViewModel: HomeViewModel, controller: NavController) {
                         selectedCategory
                     )
                 }
-
             }
+
+            // FloatingActionButton (Extended or Expandable)
             ExpandableFab(
                 onFilterClothes = { selectedCategory = "T-SHIRTS" }, // Set selected category
                 onFilterShoes = { selectedCategory = "SHOES" },
                 onFilterAccessories = { selectedCategory = "ACCESSORIES" },
                 onFabClose = {
                     selectedCategory = null
-                } // Reset selected category when FAB is closed
-
+                }, // Reset selected category when FAB is closed
+                modifier = Modifier
+                    .align(Alignment.BottomEnd) // Align to bottom-right
+                    .padding(16.dp) // Add some padding from the edges
             )
         }
     }
+
     // Fetch products when collectionId changes
     LaunchedEffect(collectionId) {
         if (collectionId != 0L) {
@@ -135,7 +147,7 @@ fun FetchCustomCollections(
 
     when (customCollections) {
         is CustomCollectionStates.Loading -> {
-            CircularProgressIndicator()
+            ShimmerLoadingCustomCollection()
         }
 
         is CustomCollectionStates.Success -> {  // test to see if the custom collections is come or not
@@ -166,8 +178,7 @@ fun FetchProductsByCustomCollection(
     val customProducts by homeViewModel.productsByCustomCollectionStateFlow.collectAsState()
     when (customProducts) {
         is ProductsApiState.Loading -> {
-            CircularProgressIndicator()
-        }
+            ShimmerLoadingGrid()        }
 
         is ProductsApiState.Success -> {
             val products = (customProducts as ProductsApiState.Success).products
@@ -198,10 +209,11 @@ fun FetchProductsByCustomCollection(
 @Composable
 fun CustomCollectionColumn(
     customCollections: List<CustomCollection>,
-    onCategorySelected: (CustomCollection) -> Unit
+    onCustomCollectionSelected: (CustomCollection) -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
+    var selectedCollection by remember { mutableStateOf<CustomCollection?>(null) }
 
     LazyRow(
         modifier = Modifier
@@ -212,8 +224,13 @@ fun CustomCollectionColumn(
         items(customCollections) { customCollection ->
             CustomCollectionItem(
                 customCollection = customCollection,
-                onCategorySelected = onCategorySelected,
-                modifier = Modifier.width(screenWidth / 4) // Adjusts item width based on screen size
+                onCustomCollectionSelected = {
+                    onCustomCollectionSelected(customCollection)
+                    selectedCollection = customCollection
+                },
+                modifier = Modifier.width(screenWidth / 4),// Adjusts item width based on screen size
+                isSelected = selectedCollection == customCollection // Pass whether this item is selected
+
             )
         }
     }
@@ -222,13 +239,20 @@ fun CustomCollectionColumn(
 @Composable
 fun CustomCollectionItem(
     customCollection: CustomCollection,
-    onCategorySelected: (CustomCollection) -> Unit,
-    modifier: Modifier = Modifier // Add modifier parameter
-) {
+    onCustomCollectionSelected: (CustomCollection) -> Unit,
+    modifier: Modifier = Modifier,
+    isSelected: Boolean,
+
+    ) {
+    val scale by animateFloatAsState(if (isSelected) 1.1f else 1f) // Pop up slightly when selected
+    val offsetY by animateDpAsState(if (isSelected) (-10).dp else 0.dp) // Move up slightly when selected
     Column(
         modifier = modifier
-            .clickable { onCategorySelected(customCollection) }
+            .clickable { onCustomCollectionSelected(customCollection) }
+            .scale(scale) // Apply scale transformation
+            .offset(y = offsetY) // Apply translation in the Y direction for pop-up effect
             .padding(4.dp)
+
     ) {
         Image(
             painter = rememberAsyncImagePainter(customCollection.image.src),
@@ -256,7 +280,7 @@ fun CustomCollectionItem(
 fun ProductGrid(products: List<Product>, controller: NavController) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier.padding(1.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
         items(products) { product ->
@@ -271,7 +295,8 @@ fun ExpandableFab(
     onFilterClothes: () -> Unit,
     onFilterShoes: () -> Unit,
     onFilterAccessories: () -> Unit,
-    onFabClose: () -> Unit
+    onFabClose: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
     val rotationState = animateFloatAsState(if (expanded) 45f else 0f) // Rotate the FAB
@@ -280,9 +305,8 @@ fun ExpandableFab(
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier = modifier
+
     ) {
         // Expandable Buttons
         AnimatedVisibility(visible = expanded) {
@@ -339,5 +363,6 @@ fun ExpandableFab(
         }
     }
 }
+
 
 
