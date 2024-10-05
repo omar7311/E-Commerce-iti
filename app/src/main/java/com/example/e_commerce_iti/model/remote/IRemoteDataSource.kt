@@ -4,6 +4,7 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
+import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
@@ -25,5 +26,7 @@ interface IRemoteDataSource {
     suspend fun getCustomer(email: String) : Flow<CustomerX>
     suspend fun createCustomer(customer: Customer) : Flow<Customer>
     suspend fun createCustomerMeta(customer: Customer,metafields: MetaData) : Flow<MetaData>
-    suspend fun updateCustomer(id:Long,customer: UCustomer):Flow<Customer>
+    suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
+    suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
+
 }

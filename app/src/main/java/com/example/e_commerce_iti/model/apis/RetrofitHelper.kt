@@ -41,6 +41,8 @@ object RetrofitHelper {
 
     // Update the BASE_URL to exclude credentials
     private val BASE_URL = "https://android-sv24-r3team1.myshopify.com/admin/api/2024-07/"
+    private val CurrencyBase_URL = "https://v6.exchangerate-api.com/v6/929c89b06c65936e3bd9e55c/latest/"
+
 
     private val retrofitInstance: Retrofit by lazy {
         Retrofit.Builder()
@@ -49,9 +51,17 @@ object RetrofitHelper {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+    private val retrofitCurrencyInstance: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(CurrencyBase_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
-    // Lazily initialized service instance
     val service: EcommerceApi by lazy {
         retrofitInstance.create(EcommerceApi::class.java)
+    }
+    val currencyService: CurrencyApi by lazy {
+        retrofitCurrencyInstance.create(CurrencyApi::class.java)
     }
 }

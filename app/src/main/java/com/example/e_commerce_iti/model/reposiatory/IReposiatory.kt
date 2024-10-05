@@ -3,6 +3,7 @@ package com.example.e_commerce_iti.model.reposiatory
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
@@ -18,5 +19,8 @@ interface IReposiatory {
     suspend fun getBrands(): Flow<List<BrandData>>
     suspend fun getProductsByVendor(vendorName: String) : Flow<List<Product>>
     suspend fun getCustomer(email:String): Flow<CustomerX>
-    suspend fun updateCustomer(id:Long,customer: UCustomer):Flow<Customer>
+    suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
+    suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
+    suspend fun getCurrencyFromLocal(currency: String): Flow<CurrencyExc>
+    suspend fun insertCurrency(currency: CurrencyExc)
 }

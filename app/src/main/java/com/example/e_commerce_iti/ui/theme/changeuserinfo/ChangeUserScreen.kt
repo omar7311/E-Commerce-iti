@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.changeuserinfo
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.model.apistates.UiState
+import com.example.e_commerce_iti.model.local.LocalDataSourceImp
+import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currencies
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
@@ -121,8 +124,11 @@ fun ChangeUserDataScreenItem(label: String, state: MutableState<String>) {
 @Composable
 fun  ChangeUserData() {
     ECommerceITITheme {
-        val navController= NavController(LocalContext.current)
-        val viewModel= ChangeUserDataViewModel(repository = ReposiatoryImpl(RemoteDataSourceImp()))
+        val context= LocalContext.current
+        val navController= NavController(context)
+        val viewModel= ChangeUserDataViewModel(repository = ReposiatoryImpl(RemoteDataSourceImp(),
+            LocalDataSourceImp(context.getSharedPreferences(currencies, Context.MODE_PRIVATE))
+        ))
         ChangeUserDataScreen(viewModel,navController)
     }
 }

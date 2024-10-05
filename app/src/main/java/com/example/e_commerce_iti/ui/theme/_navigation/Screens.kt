@@ -1,11 +1,15 @@
 package com.example.e_commerce_iti.ui.theme._navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.e_commerce_iti.VENDOR_NAME
+import com.example.e_commerce_iti.model.local.LocalDataSourceImp
+import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
@@ -31,11 +35,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
  */
 
 
-val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp())
-val cartFactory: CartViewModelFac = CartViewModelFac(repository)
-val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
-val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
-val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
+
 sealed class Screens(val route: String) {
     object Home : Screens(route = "home")
     object Category : Screens(route = "category")
@@ -53,6 +53,12 @@ sealed class Screens(val route: String) {
 
 @Composable
 fun Navigation() {
+    val context = LocalContext.current
+    val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(currentCurrency, Context.MODE_PRIVATE)))
+    val cartFactory: CartViewModelFac = CartViewModelFac(repository)
+    val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
+    val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
+    val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screens.Home.route) {
 

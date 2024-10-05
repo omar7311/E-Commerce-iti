@@ -18,6 +18,7 @@ import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.metadata.Metafield
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
+import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.PUT
 
@@ -56,5 +57,5 @@ interface EcommerceApi {
     @POST("customers/{customer_id}/metafields.json")
     suspend fun updateCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: MetaData): MetaData
     @PUT("customers/{customer_id}.json")
-    suspend fun updateCustomer(@Path("customer_id") customerId: Long, @Body customer: UpdateCustomer): Customer
+    suspend fun updateCustomer(@Path("customer_id") customerId: Long, @Body customer: UpdateCustomer): Response<Customer>
 }

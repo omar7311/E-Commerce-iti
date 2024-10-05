@@ -6,6 +6,7 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
+import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
@@ -55,9 +56,8 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun getCustomer(email: String): Flow<CustomerX> {
-        Log.d("asdsadsadasdasd", "email:${email}")
+
         val data=RetrofitHelper.service.searchCustomerByEmail("email:${email}")
-        Log.d("asdsadsadasdasd", "getCustomer: $data")
        return flow { emit(data.customers!!.get(0)) }
     }
 
@@ -72,13 +72,14 @@ class RemoteDataSourceImp : IRemoteDataSource {
         return flow { emit(RetrofitHelper.service.updateCustomerMetafields(customer.customer!!.id!!,metafields)) }
     }
 
-    override suspend fun updateCustomer(id:Long,customer: UCustomer): Flow<Customer> {
-        val gson= Gson().toJson(UpdateCustomer(customer))
-        Log.d("1111111111111111111111", "$id  updateCustomer: $gson")
-        val req=RetrofitHelper.service.updateCustomer(id, UpdateCustomer(customer))
-
-       return flow { emit(Customer(req.customer)) }
+    override suspend fun updateCustomer(id:Long,customer: String): Flow<Customer> {
+        val ucustomer= Gson().fromJson(customer, UpdateCustomer::class.java)
+        val req=RetrofitHelper.service.updateCustomer(id, ucustomer)
+        Log.e("12312321312313213",  "${req.errorBody()?.string()}")
+       return flow { emit(Customer(req.body()?.customer)) }
     }
+
+    override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies(currency)) }
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
@@ -101,9 +102,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun getCopuons(priceId: Long): Flow<DiscountCode> {
-        Log.d("TAG", "getCopuons: $priceId")
         val data= RetrofitHelper.service.getCopuons(priceId)
-        Log.d("TAG", "getCopuons: $data")
         return flow {emit(data)}
     }
 }
