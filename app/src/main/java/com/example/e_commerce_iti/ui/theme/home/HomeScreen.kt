@@ -1,6 +1,4 @@
 package com.example.e_commerce_iti.ui.theme.home
-
-import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -74,17 +72,19 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.BrandsApiState
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.BrandData
+import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme.ShimmerHorizontalGrid
-import com.example.e_commerce_iti.ui.theme.ShimmerLoadingCustomCollection
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
-
+import com.airbnb.lottie.compose.LottieCompositionSpec
 /**
  *      don't forget navigation
  */
@@ -95,14 +95,20 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponView
 fun HomeScreen(
     couponViewModel: CouponViewModel,
     homeViewModel: HomeViewModel,
-    controller: NavController = rememberNavController()
+    controller: NavController = rememberNavController(),
+    networkObserver: NetworkObserver
 ) {
 
     Scaffold(
         topBar = { CustomTopBar("Home", controller) },
         bottomBar = { CustomButtonBar(controller) }, // give it the controller to navigate with it
     ) { innerPadding ->
-        HomeContent(couponViewModel, homeViewModel, controller, Modifier.padding(innerPadding))
+        val isConnected = networkObserver.isConnected.collectAsState()
+        if (isConnected.value) {
+            HomeContent(couponViewModel, homeViewModel, controller, Modifier.padding(innerPadding))
+        } else {
+            MyLottieAnimation()
+        }
     }
 
 }
@@ -454,4 +460,19 @@ fun SimpleText(simpleText: String) {
             .fillMaxWidth()
             .padding(10.dp)
     )
+}
+
+@Composable
+fun MyLottieAnimation() {
+    val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.network2))
+    val isAnimationPlaying = lottieComposition != null // Ensure the composition is loaded
+
+    if (isAnimationPlaying) {
+        LottieAnimation(
+            composition = lottieComposition,
+            iterations = 1 // Or set a valid positive number
+        )
+    } else {
+        // Optionally show a placeholder or an error message
+    }
 }

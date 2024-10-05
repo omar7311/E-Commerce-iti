@@ -50,21 +50,29 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
 
     // to get the custom collections
-    override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
-        val response = RetrofitHelper.service.getCustomCollections()
-        return flow {
+    override suspend fun getCustomCollections(): Flow<List<CustomCollection>> = flow {
+        try {
+            val response = RetrofitHelper.service.getCustomCollections()
             emit(response.custom_collections)
+        } catch (e: Exception) {
+            // Handle the exception (e.g., log it, show a message)
+            Log.e("API_ERROR", "Failed to fetch custom collections: ${e.message}")
+            emit(emptyList()) // Emit an empty list or you can also emit a specific error state
         }
     }
 
     // get Products by custom collection id
-    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> {
-
-        val respone = RetrofitHelper.service.getProductsByCustomCollection(collectionId)
-        return flow {
-            emit(respone.products)
+    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> = flow {
+        try {
+            val response = RetrofitHelper.service.getProductsByCustomCollection(collectionId)
+            emit(response.products)
+        } catch (e: Exception) {
+            // Handle the exception (e.g., log it, show a message)
+            Log.e("API_ERROR", "Failed to fetch products for collection ID $collectionId: ${e.message}")
+            emit(emptyList()) // Emit an empty list or handle error state accordingly
         }
     }
+
     override suspend fun getPriceRules(): Flow<PriceRules> {
         return flow {emit(RetrofitHelper.service.getPriceRules())}
     }

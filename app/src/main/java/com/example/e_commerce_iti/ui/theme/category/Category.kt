@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.category
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -57,10 +58,12 @@ import com.example.e_commerce_iti.model.apistates.CustomCollectionStates
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingCustomCollection
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
+import com.example.e_commerce_iti.ui.theme.home.MyLottieAnimation
 import com.example.e_commerce_iti.ui.theme.products.FilterButtonWithSlider
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
@@ -68,69 +71,88 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryScreen(homeViewModel: HomeViewModel, controller: NavController) {
+fun CategoryScreen(
+    homeViewModel: HomeViewModel,
+    controller: NavController,
+    networkObserver: NetworkObserver
+
+) {
     var collectionId by remember { mutableStateOf(DEFAULT_CUSTOM_COLLECTION_ID) } // default collection id
     var selectedPrice by remember { mutableStateOf(10000f) }  // Single value for the selected price
     var selectedCategory by remember { mutableStateOf<String?>(null) } //state for selected category
 
     val minPrice = 0f  // Minimum price fixed
     val maxPrice = 5000f  // Maximum price fixed
-
+    // Observe network state
+    val isNetworkAvailable by networkObserver.isConnected.collectAsState(initial = false)
     Scaffold(
         topBar = { CustomTopBar("Category", controller) },
         bottomBar = { CustomButtonBar(controller) },
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
 
-                .fillMaxSize() // Fill the entire screen
-        ) {
-            Column(
-                modifier = Modifier.padding(15.dp)
+        if(isNetworkAvailable){
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+
+                    .fillMaxSize() // Fill the entire screen
             ) {
-                FetchCustomCollections(homeViewModel) { selectedCollection ->
-                    if (selectedCollection.id != collectionId) {
-                        collectionId = selectedCollection.id
+                Column(
+                    modifier = Modifier.padding(15.dp)
+                ) {
+                    FetchCustomCollections(homeViewModel) { selectedCollection ->
+                        if (selectedCollection.id != collectionId) {
+                            collectionId = selectedCollection.id
+                            getUpdatedCollectionId(collectionId.toLong(), homeViewModel) // get the new collection id
+                        }
+                    }
+
+                    FilterButtonWithSlider(minPrice, maxPrice) { price ->
+                        selectedPrice = price
+                    }
+
+                    if (collectionId != 0L) {
+                        FetchProductsByCustomCollection(
+                            homeViewModel,
+                            controller,
+                            collectionId,
+                            selectedPrice,
+                            selectedCategory
+                        )
                     }
                 }
 
-                FilterButtonWithSlider(minPrice, maxPrice) { price ->
-                    selectedPrice = price
-                }
-
-                if (collectionId != 0L) {
-                    FetchProductsByCustomCollection(
-                        homeViewModel,
-                        controller,
-                        collectionId,
-                        selectedPrice,
-                        selectedCategory
-                    )
-                }
+                // FloatingActionButton (Extended or Expandable)
+                ExpandableFab(
+                    onFilterClothes = { selectedCategory = "T-SHIRTS" }, // Set selected category
+                    onFilterShoes = { selectedCategory = "SHOES" },
+                    onFilterAccessories = { selectedCategory = "ACCESSORIES" },
+                    onFabClose = {
+                        selectedCategory = null
+                    }, // Reset selected category when FAB is closed
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd) // Align to bottom-right
+                        .padding(16.dp) // Add some padding from the edges
+                )
             }
-
-            // FloatingActionButton (Extended or Expandable)
-            ExpandableFab(
-                onFilterClothes = { selectedCategory = "T-SHIRTS" }, // Set selected category
-                onFilterShoes = { selectedCategory = "SHOES" },
-                onFilterAccessories = { selectedCategory = "ACCESSORIES" },
-                onFabClose = {
-                    selectedCategory = null
-                }, // Reset selected category when FAB is closed
-                modifier = Modifier
-                    .align(Alignment.BottomEnd) // Align to bottom-right
-                    .padding(16.dp) // Add some padding from the edges
-            )
+        }else
+        {
+            MyLottieAnimation()  // play lotti when no network
         }
+
     }
 
     // Fetch products when collectionId changes
-    LaunchedEffect(collectionId) {
-        if (collectionId != 0L) {
+  /*  LaunchedEffect(collectionId) {
+        if (collectionId != 0L&&isNetworkAvailable)
+            Log.d("Tag", "CategoryScreen: $collectionId")
             homeViewModel.getProductsByCustomCollection(collectionId)
-        }
+        }*/
     }
+
+
+fun getUpdatedCollectionId(collectionId: Long,homeViewModel: HomeViewModel) {
+     homeViewModel.getProductsByCustomCollection(collectionId)
 }
 
 
@@ -160,6 +182,7 @@ fun FetchCustomCollections(
 
         is CustomCollectionStates.Failure -> {
             val error = (customCollections as CustomCollectionStates.Failure).msg
+            Log.e("Categories", "Failed to load custom collections: $error")
         }
     }
 }
@@ -199,6 +222,7 @@ fun FetchProductsByCustomCollection(
 
         is ProductsApiState.Failure -> {
             val error = (customProducts as ProductsApiState.Failure).msg
+            Log.e("Categories", "Failed to load custom collections: $error")
         }
     }
 }

@@ -13,6 +13,7 @@ import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
+import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme.cart.CartScreen
 import com.example.e_commerce_iti.ui.theme.category.CategoryScreen
 import com.example.e_commerce_iti.ui.theme.favorite.FavoriteScreen
@@ -52,7 +53,7 @@ sealed class Screens(val route: String) {
 
 
 @Composable
-fun Navigation() {
+fun Navigation(networkObserver: NetworkObserver) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screens.Home.route) {
 
@@ -61,12 +62,12 @@ fun Navigation() {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
 
-            HomeScreen(CopuonsViewModel,homeViewModel, navController)
+            HomeScreen(CopuonsViewModel,homeViewModel, navController,networkObserver)
         }
 
         composable(route = Screens.Category.route) {
             val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
-            CategoryScreen(homeViewModel,navController)
+            CategoryScreen(homeViewModel,navController,networkObserver)
         }
         composable(route = Screens.Cart.route) { CartScreen(navController) }
         composable(route = Screens.Profile.route) { ProfileScreen(navController) }

@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
-import com.example.e_commerce_iti.ui.theme.home.SimpleText
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(controller: NavController) {
