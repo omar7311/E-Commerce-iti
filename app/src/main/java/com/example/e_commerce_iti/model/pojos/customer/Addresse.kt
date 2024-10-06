@@ -1,21 +1,21 @@
 package com.example.e_commerce_iti.model.pojos.customer
 
 data class Addresse(
-    var address1: String?,
-    var address2: Any?,
-    var city: String?,
-    var company: Any?,
-    var country: String?,
-    var country_code: String?,
-    var country_name: String?,
-    var customer_id: Int?,
-    var default: Boolean?,
-    var first_name: String?,
-    var id: Int?,
-    var last_name: String?,
-    var name: String?,
-    var phone: String?,
-    var province: String?,
-    var province_code: String?,
-    var zip: String?
+    var address1: String?=null,
+    var address2: Any?=null,
+    var city: String?=null,
+    var company: Any?=null,
+    var country: String?=null,
+    var country_code: String?=null,
+    var country_name: String?=null,
+    var customer_id: Long?=null,
+    var default: Boolean?=null,
+    var first_name: String?=null,
+    var id: Long?=null,
+    var last_name: String?=null,
+    var name: String?=null,
+    var phone: String?=null,
+    var province: String?=null,
+    var province_code: String?=null,
+    var zip: String?=null
 )
