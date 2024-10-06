@@ -22,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -85,7 +86,7 @@ fun ItemsSettingScreen(text:String,e:(()->Unit)?=null){
 fun Currencies(viewModel: CurrencyViewModel) {
     val state = viewModel.currencyStateFlow.collectAsState()
     // Maintain the selected currency at the top level
-    var selectedCurrency by remember { mutableStateOf("USD") }  // Default to "USD" or load from the state
+     // Default to "USD" or load from the state
 
     Card(modifier = Modifier.height(50.dp)) {
         Row(
@@ -96,6 +97,7 @@ fun Currencies(viewModel: CurrencyViewModel) {
         ) {
             if (state.value is UiState.Success<Pair<String, Float>>) {
                 val cur = (state.value as UiState.Success<Pair<String, Float>>).data
+                var selectedCurrency by remember { mutableStateOf(cur.first) }
                 Log.e("555555555555555555555555555555555", cur.toString())
                 CurrencyChips("USD", selectedCurrency == "USD") {
                     selectedCurrency = "USD"
