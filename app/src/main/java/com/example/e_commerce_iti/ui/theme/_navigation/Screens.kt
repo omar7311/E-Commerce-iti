@@ -1,7 +1,7 @@
 package com.example.e_commerce_iti.ui.theme._navigation
 
 import android.content.Context
-import android.content.Context
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalContext
@@ -82,8 +82,6 @@ fun Navigation(networkObserver: NetworkObserver,context: Context) {
     val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
     val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
     val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
-    NavHost(navController = navController, startDestination = Screens.Home.route) {
-
         composable(route = Screens.Home.route) {
             // Create ViewModel using the factory
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
@@ -139,4 +137,5 @@ fun Navigation(networkObserver: NetworkObserver,context: Context) {
 
 
     }
+
 }
