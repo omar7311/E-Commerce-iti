@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "412473796472",
+    "project_id": "my-commerce-iti",
+    "storage_bucket": "my-commerce-iti.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412473796472:android:bdd3452069c40262924a8d",
+        "android_client_info": {
+          "package_name": "com.example.e_commerce_iti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412473796472-o74k3ipbdcvc8nshnc70vbarrpthknhu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.e_commerce_iti",
+            "certificate_hash": "fbfd6cba6d3661265dedad82e4e4f9eb7a8b3811"
+          }
+        },
+        {
+          "client_id": "412473796472-c36htg2vjkka5liuiical6q17ffeuvea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCy1k11Yw6OIvIXIPxNPVh5gw0zpnFSHfo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "412473796472-c36htg2vjkka5liuiical6q17ffeuvea.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

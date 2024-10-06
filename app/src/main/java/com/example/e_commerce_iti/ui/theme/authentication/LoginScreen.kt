@@ -1,6 +1,10 @@
 package com.example.e_commerce_iti
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,15 +29,20 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager
 
+import com.google.android.gms.auth.api.identity.SignInClient
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-   controller:NavController,
-   context:Context
-){
+    controller: NavController,
+    context: Activity,
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    // Initialize One Tap Sign-In client
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,7 +77,16 @@ fun LoginScreen(
 
         // Login button
         Button(
-            onClick = {controller.navigate(Screens.Home.route)},
+            onClick = {
+                FirebaseAuthManager.login(email, password) { success, error ->
+                    if (success) {
+                        controller.navigate(Screens.Home.route)
+                    } else {
+                        Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                    }
+
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
@@ -87,7 +105,14 @@ fun LoginScreen(
         // Anonymous Login Button
         Button(
             onClick = {
+                FirebaseAuthManager.loginAnonymously { success, error ->
+                    if (success) {
+                        controller.navigate(Screens.Home.route)
+                    } else {
+                        Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                    }
 
+                }
 
             },
             modifier = Modifier.fillMaxWidth()

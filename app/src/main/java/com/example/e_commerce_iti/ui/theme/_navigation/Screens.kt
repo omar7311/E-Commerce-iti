@@ -1,9 +1,11 @@
 package com.example.e_commerce_iti.ui.theme._navigation
 
+import android.app.Activity
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.internal.composableLambda
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -59,8 +61,8 @@ sealed class Screens(val route: String) {
 
 
 @Composable
-fun Navigation(networkObserver: NetworkObserver,context: Context) {
-    val navController = rememberNavController()
+fun Navigation(networkObserver: NetworkObserver,context: Activity) {
+    val navController= rememberNavController()
     NavHost(navController = navController, startDestination = Screens.Login.route) {
 
         composable(route = Screens.Home.route) {
@@ -79,7 +81,7 @@ fun Navigation(networkObserver: NetworkObserver,context: Context) {
         composable(route = Screens.Profile.route) { ProfileScreen(navController) }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController) }
-        composable(route =Screens.Signup.route) {SignupScreen(navController)}
+        composable(route =Screens.Signup.route) {SignupScreen(navController,context)}
         composable(route = Screens.Login.route){LoginScreen(navController,context)}
 
         // here im modifying the product route to Extract the product ID from the route
