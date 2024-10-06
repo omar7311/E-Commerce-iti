@@ -12,6 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
+import com.example.e_commerce_iti.model.pojos.OrderResponse
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
@@ -58,4 +59,12 @@ interface EcommerceApi {
     suspend fun updateCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: MetaData): MetaData
     @PUT("customers/{customer_id}.json")
     suspend fun updateCustomer(@Path("customer_id") customerId: Long, @Body customer: UpdateCustomer): Response<Customer>
+
+    /**
+     *      function to get the orders by customer id
+     */
+
+    @GET("orders.json")
+    suspend fun getOrdersByCustomerId(@Query("customer_id") customerId: Long): OrderResponse
+
 }
