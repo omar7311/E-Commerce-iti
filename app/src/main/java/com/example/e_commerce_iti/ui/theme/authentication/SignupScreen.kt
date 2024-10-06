@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -20,10 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.e_commerce_iti.ui.theme._navigation.Screens
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
-    signup:(String,String)->Unit
+    controller :NavController
 ){
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
@@ -87,7 +91,7 @@ fun SignupScreen(
         // Sign up button
         Button(
             onClick = {
-                signup(email,password)
+                controller.navigate(Screens.Login.route)
             },
             modifier = Modifier.fillMaxWidth()
         ) {

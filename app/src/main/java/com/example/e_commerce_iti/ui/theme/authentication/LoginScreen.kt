@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -21,13 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.e_commerce_iti.ui.theme._navigation.Screens
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    login:(String,String)->Unit,
-    loginAnonymously:()->Unit,
-    loginWithGoogle:()->Unit,
-    toSignUp:()->Unit
+   controller:NavController,
+   context:Context
 ){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -65,7 +68,7 @@ fun LoginScreen(
 
         // Login button
         Button(
-            onClick = {login(email,password)},
+            onClick = {controller.navigate(Screens.Home.route)},
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
@@ -74,7 +77,6 @@ fun LoginScreen(
         //sign in with google
         Button(
             onClick = {
-            loginWithGoogle()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -85,15 +87,8 @@ fun LoginScreen(
         // Anonymous Login Button
         Button(
             onClick = {
-             loginAnonymously()
-                FirebaseAuthManager.loginAnonymously{ success,message->
-                    if(success){
 
-                    }else{
 
-                    }
-
-                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -102,8 +97,9 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Sign up option
-        TextButton(onClick = { toSignUp() }) {
+        TextButton(onClick = { controller.navigate(Screens.Signup.route) }) {
             Text("Don't have an account? Sign Up")
         }
     }
 }
+
