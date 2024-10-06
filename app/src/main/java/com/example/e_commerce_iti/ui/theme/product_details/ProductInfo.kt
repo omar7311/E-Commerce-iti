@@ -1,0 +1,79 @@
+package com.example.e_commerce_iti.ui.theme.product_details
+
+import android.widget.RatingBar
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+@Composable
+fun ProductInfo(name:String, price:String, rating: Int){
+    var rating by remember { mutableStateOf(rating) }
+
+    Box(modifier = Modifier.fillMaxWidth().height(150.dp).padding(16.dp)) {
+        Text(text = name, fontSize = 24.sp, modifier = Modifier.align(Alignment.TopStart))
+        Text(text = price, fontSize =20.sp , modifier = Modifier.align(Alignment.BottomStart))
+        Text(text = "Review", fontSize = 16.sp, modifier = Modifier.clickable {
+            // view all review
+        }.align(Alignment.TopEnd))
+        RatingBar(rating = rating, modifier = Modifier.align(Alignment.BottomEnd)){
+                newRating -> rating = newRating
+        }
+    }
+}
+@Preview(showSystemUi = true)
+@Composable
+fun ProductInfoPreview(){
+    Column(modifier = Modifier.fillMaxSize(),Arrangement.Center) {
+        ProductInfo("T-shirt", "200", 3)
+    }
+}
+
+
+@Composable
+fun RatingBar(
+    rating: Int,
+    modifier: Modifier = Modifier,
+    starCount: Int = 5,
+    starSize: Int = 32,
+    filledStarColor: Color = Color.Yellow,
+    unfilledStarColor: Color = Color.Gray,
+    onRatingChanged: (Int) -> Unit
+) {
+    Row(modifier = modifier) {
+        for (i in 1..starCount) {
+            IconButton(onClick = { onRatingChanged(i) }) {
+                Icon(
+                    imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.Star,
+                    contentDescription = null,
+                    tint = if (i <= rating) filledStarColor else unfilledStarColor,
+                    modifier = Modifier.size(starSize.dp)
+                )
+            }
+        }
+    }
+}
