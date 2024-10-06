@@ -1,16 +1,20 @@
 package com.example.e_commerce_iti.ui.theme._navigation
 
 import android.content.Context
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.internal.composableLambda
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.e_commerce_iti.LoginScreen
 import com.example.e_commerce_iti.PRODUCT_ID
+import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -49,6 +53,8 @@ sealed class Screens(val route: String) {
     object Setting : Screens(route = "setting")
     object Home : Screens(route = "home")
     object Category : Screens(route = "category")
+    object Signup : Screens(route = "signUP")
+    object Login :Screens(route="Login")
     object Cart : Screens(route = "cart")
     object Profile : Screens(route = "profile")
     object Favorite : Screens(route = "favorite")
@@ -65,9 +71,9 @@ sealed class Screens(val route: String) {
 
 
 @Composable
-fun Navigation(networkObserver: NetworkObserver) {
+fun Navigation(networkObserver: NetworkObserver,context: Context) {
     val navController = rememberNavController()
-    val context = LocalContext.current
+    NavHost(navController = navController, startDestination = Screens.Login.route) {
     val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
         LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
@@ -102,6 +108,8 @@ fun Navigation(networkObserver: NetworkObserver) {
         }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController) }
+        composable(route =Screens.Signup.route) {SignupScreen(navController)}
+        composable(route = Screens.Login.route){LoginScreen(navController,context)}
 
         // here im modifying the product route to Extract the product ID from the route
         composable(route = Screens.ProductSc.route) {

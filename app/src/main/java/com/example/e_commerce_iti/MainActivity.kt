@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
             /**
              *      here is the start of home and all screens in the below function
              */
-            Navigation(networkObserver)
+            Navigation(networkObserver,this)
         }
     }
 
