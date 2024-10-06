@@ -55,9 +55,12 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.activity:activity-ktx:1.9.2") // Ensure this is added
+
     implementation("com.github.skydoves:landscapist-glide:1.3.7")
     implementation ("com.google.firebase:firebase-auth:23.0.0")
-
+    // Google Identity Services (One-Tap sign-in)
+    implementation ("com.google.android.gms:play-services-auth:21.2.0")
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("androidx.core:core-ktx:1.9.0") // or latest version

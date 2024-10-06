@@ -101,7 +101,10 @@ fun SignupScreen(
         // Sign up button
         Button(
             onClick = {
-                if (password == confirmPassword && fullName.isNotBlank()) {
+                if (password == confirmPassword && fullName.isNotBlank()
+                    && email.endsWith("@shopify.com") && password.length > 5
+                    && phone.length==11)
+                        {
                     FirebaseAuthManager.signUp(email, password) { success, error ->
                         if (success) {
                             controller.navigate(Screens.Login.route)
@@ -109,6 +112,8 @@ fun SignupScreen(
                             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                         }
                     }
+                }else{
+                    Toast.makeText(context, "error, enter valid data", Toast.LENGTH_LONG).show()
                 }
             },
             modifier = Modifier.fillMaxWidth()
