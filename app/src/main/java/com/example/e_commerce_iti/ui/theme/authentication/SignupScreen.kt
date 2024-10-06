@@ -102,7 +102,7 @@ fun SignupScreen(
         Button(
             onClick = {
                 if (password == confirmPassword && fullName.isNotBlank()
-                    && email.endsWith("@shopify.com") && password.length > 5
+                    && email.endsWith(".com") && password.length > 5
                     && phone.length==11)
                         {
                     FirebaseAuthManager.signUp(email, password) { success, error ->
