@@ -56,6 +56,8 @@ android {
 
 dependencies {
     implementation ("androidx.activity:activity-ktx:1.9.2") // Ensure this is added
+    implementation ("com.google.accompanist:accompanist-pager:0.30.1")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.30.1")
 
     implementation("com.github.skydoves:landscapist-glide:1.3.7")
     implementation ("com.google.firebase:firebase-auth:23.0.0")
