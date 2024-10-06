@@ -21,6 +21,8 @@ interface IReposiatory {
     suspend fun getCustomer(email:String): Flow<CustomerX>
     suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
     suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
-    suspend fun getCurrencyFromLocal(currency: String): Flow<CurrencyExc>
+    suspend fun getCurrencyFromLocal(currency: String):Flow<Pair<String, Float>>
     suspend fun insertCurrency(currency: CurrencyExc)
+    suspend fun getChoosedCurrency():Flow<Pair<String, Float>>
+    suspend fun updateCurrency(currency: String):Flow<Pair<String, Float>>
 }

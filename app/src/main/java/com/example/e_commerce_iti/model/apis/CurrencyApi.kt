@@ -5,6 +5,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface CurrencyApi {
-    @GET("{currency}")
-    suspend fun getCurrencies(@Path("currency")currency: String): CurrencyExc
+    @GET("USD")
+    suspend fun getCurrencies(): CurrencyExc
 }

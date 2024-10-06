@@ -36,7 +36,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserD
 import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponsViewModelFactory
-import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrenciesViewModelFac
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrenciesViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
@@ -71,7 +71,7 @@ fun Navigation(networkObserver: NetworkObserver) {
     val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
         LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
-    val curreneyFactory: CurrenciesViewModelFac = CurrenciesViewModelFac(repository)
+    val curreneyFactory: CurrenciesViewModelFactory = CurrenciesViewModelFactory(repository)
     val cartFactory: CartViewModelFac = CartViewModelFac(repository)
     val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
     val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)

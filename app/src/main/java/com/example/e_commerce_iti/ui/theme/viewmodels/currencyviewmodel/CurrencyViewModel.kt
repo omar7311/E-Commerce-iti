@@ -24,17 +24,27 @@ import kotlinx.coroutines.launch
 class CurrencyViewModel(private val repository: IReposiatory) : ViewModel() {
     private val _userStateData= MutableStateFlow<UiState<CustomerX>>(UiState.Non)
     val userStateData: MutableStateFlow<UiState<CustomerX>> =_userStateData
-    private val _currencyStateFlow = MutableStateFlow<UiState<CurrencyExc>>(UiState.Non)
-    val currencyStateFlow: MutableStateFlow<UiState<CurrencyExc>> = _currencyStateFlow
-     fun getCurrency(currency: String) {
-         viewModelScope.launch(Dispatchers.IO) {
-             val data = repository.getCurrency(currency).firstOrNull()
-             if (data == null) {
-                 _currencyStateFlow.value =UiState.Error("No data available")
-             } else {
-                 _currencyStateFlow.value = UiState.Success(data)
-             }
-         }
+    private val _currencyStateFlow = MutableStateFlow<UiState<Pair<String, Float>>>(UiState.Non)
+    val currencyStateFlow: MutableStateFlow<UiState<Pair<String, Float>>> = _currencyStateFlow
+    fun changeCurrency(currency: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = repository.getCurrencyFromLocal(currency).firstOrNull()
+            if (data == null) {
+                _currencyStateFlow.value =UiState.Error("No data available")
+            } else {
+                _currencyStateFlow.value = UiState.Success(data)
+            }
+    }
+    }
+    fun getCurrency() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = repository.getChoosedCurrency().firstOrNull()
+            if (data == null) {
+                _currencyStateFlow.value =UiState.Error("No data available")
+            } else {
+                _currencyStateFlow.value = UiState.Success(data)
+            }
+        }
     }
     var job: Job?=null
     fun getCustomerData(email:String){
@@ -60,7 +70,7 @@ class CurrencyViewModel(private val repository: IReposiatory) : ViewModel() {
         }
     }
 }
-class CurrenciesViewModelFac(private val repository: IReposiatory) : ViewModelProvider.Factory {
+class CurrenciesViewModelFactory(private val repository: IReposiatory) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {

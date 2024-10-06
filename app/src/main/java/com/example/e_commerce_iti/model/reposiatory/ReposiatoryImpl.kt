@@ -31,20 +31,29 @@ class ReposiatoryImpl(val remote:IRemoteDataSource,val local: IlocalDataSource) 
 
     override suspend fun updateCustomer(id:Long,customer: String)=remote.updateCustomer(id,customer)
     override suspend fun getCurrency(currency: String)=remote.getCurrency(currency)
-    override suspend fun getCurrencyFromLocal(currency: String): Flow<CurrencyExc> {
+    override suspend fun getCurrencyFromLocal(currency: String): Flow<Pair<String, Float>> {
         val data=local.getCurrency(currency).firstOrNull()
         if (data==null){
             val response=getCurrency(currency).firstOrNull()
             if (response!=null){
                 insertCurrency(response)
-                return flowOf(response)
+                local.insertCurrency(response)
+                return local.setChoosedCurrency(currency)
             }
         }
-        return flowOf(data!!)
+        return local.setChoosedCurrency(currency)
     }
 
     override suspend fun insertCurrency(currency: CurrencyExc) {
         local.insertCurrency(currency)
+    }
+
+    override suspend fun getChoosedCurrency():Flow<Pair<String, Float>> {
+        return local.getChoosedCurrency()
+    }
+
+    override suspend fun updateCurrency(currency: String): Flow<Pair<String, Float>> {
+        return local.setChoosedCurrency(local.getChoosedCurrency().firstOrNull()?.first!!)
     }
 
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
