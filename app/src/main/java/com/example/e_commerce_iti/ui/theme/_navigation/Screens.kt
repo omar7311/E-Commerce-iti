@@ -1,7 +1,6 @@
 package com.example.e_commerce_iti.ui.theme._navigation
 
 import android.content.Context
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalContext
@@ -15,7 +14,6 @@ import com.example.e_commerce_iti.PRODUCT_ID
 import com.example.e_commerce_iti.VENDOR_NAME
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
@@ -31,14 +29,15 @@ import com.example.e_commerce_iti.ui.theme.product_details.ProductDetails
 import com.example.e_commerce_iti.ui.theme.products.ProductScreen
 import com.example.e_commerce_iti.ui.theme.profile.ProfileScreen
 import com.example.e_commerce_iti.ui.theme.search.SearchScreen
-import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
-import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModelFactory
+import com.example.e_commerce_iti.ui.theme.settings.SettingScreen
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponsViewModelFactory
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrenciesViewModelFac
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 
@@ -47,11 +46,13 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
  */
 
 sealed class Screens(val route: String) {
+    object Setting : Screens(route = "setting")
     object Home : Screens(route = "home")
     object Category : Screens(route = "category")
     object Cart : Screens(route = "cart")
     object Profile : Screens(route = "profile")
     object Favorite : Screens(route = "favorite")
+    object ChangeUserData:Screens(route = "change_user_data")
     object Search : Screens(route = "search")
     object ProductSc : Screens(route = "product/{$VENDOR_NAME}"){
         fun createRoute(vendorName: String) = "product/$vendorName"
@@ -68,14 +69,13 @@ fun Navigation(networkObserver: NetworkObserver) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
-        currentCurrency, Context.MODE_PRIVATE))
+        LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
-
+    val curreneyFactory: CurrenciesViewModelFac = CurrenciesViewModelFac(repository)
     val cartFactory: CartViewModelFac = CartViewModelFac(repository)
     val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
     val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
     val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
-
     NavHost(navController = navController, startDestination = Screens.Home.route) {
 
         composable(route = Screens.Home.route) {
@@ -93,7 +93,9 @@ fun Navigation(networkObserver: NetworkObserver) {
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
             CartScreen(cartViewModel,navController) }
-        composable(route = Screens.Profile.route) { ProfileScreen(navController) }
+        composable(route = Screens.Profile.route) {
+            ProfileScreen(navController)
+        }
         composable(route = Screens.ChangeUserData.route) {
             val changeUserDataViewModel: ChangeUserDataViewModel = viewModel(factory = changeUserDataFactory)
             ChangeUserDataScreen(viewModel = changeUserDataViewModel,navController = navController)
@@ -109,6 +111,10 @@ fun Navigation(networkObserver: NetworkObserver) {
             if (vendorName != null) {
                 ProductScreen(homeViewModel,navController, vendorName)
             }
+        }
+        composable(route = Screens.Setting.route) {
+            val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
+            SettingScreen(currencyViewModel,navController)
         }
 
         composable(

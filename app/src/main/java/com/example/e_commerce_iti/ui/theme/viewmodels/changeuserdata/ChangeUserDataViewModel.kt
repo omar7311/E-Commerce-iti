@@ -26,7 +26,7 @@ class ChangeUserDataViewModel(val repository: IReposiatory):ViewModel() {
     var job: Job?=null
     fun getCustomerData(email:String){
         job?.cancel()
-        userStateData.value=UiState.Loading
+       // userStateData.value=UiState.Loading
         job=viewModelScope.launch(Dispatchers.IO) {
            val customer= repository.getCustomer(email).first()
            _userStateData.value=UiState.Success(customer)
@@ -36,7 +36,7 @@ class ChangeUserDataViewModel(val repository: IReposiatory):ViewModel() {
         val customer=(userStateData.value as UiState.Success<CustomerX>).data
         userStateData.value=UiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
-            val uCustomer=UCustomer(id = customer.id,email = customer.email,first_name = fname, last_name = lname, addresses = listOf(
+            val uCustomer=UCustomer(currency = customer.currency,id = customer.id,email = customer.email,first_name = fname, last_name = lname, addresses = listOf(
                 UAddresse(address1 = address)
             ), phone = phone)
 

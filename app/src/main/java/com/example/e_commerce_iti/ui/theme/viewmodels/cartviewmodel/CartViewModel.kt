@@ -29,8 +29,8 @@ class CartViewModelFac(private val repo: IReposiatory) : ViewModelProvider.Facto
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(CartViewModelFac::class.java) -> {
-                CartViewModelFac(repo) as T
+            modelClass.isAssignableFrom(CartViewModel::class.java) -> {
+                CartViewModel(repo) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
