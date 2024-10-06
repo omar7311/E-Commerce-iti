@@ -83,7 +83,7 @@ sealed class Screens(val route: String) {
 @Composable
 fun Navigation(networkObserver: NetworkObserver, context: Activity) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screens.Login.route) {
+    NavHost(navController = navController, startDestination = Screens.Orders.route) {
         val repository: IReposiatory = ReposiatoryImpl(
             RemoteDataSourceImp(), LocalDataSourceImp(
                 context.getSharedPreferences(

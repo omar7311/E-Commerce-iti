@@ -80,7 +80,6 @@ import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme.ShimmerHorizontalGrid
-import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
@@ -423,14 +422,14 @@ fun CustomImage(url: String) {
 
 @Composable
 fun CustomText(
-    brandTitle: String,
+    textToUse: String,
     backGroundColor: Color,
     textColor: Color = Color.Black,
     fontSize: TextUnit = 20.sp, // Adjusted font size
-    padding: PaddingValues = PaddingValues()
+    padding: PaddingValues = PaddingValues(),
 ) {
     Text(
-        text = brandTitle,
+        text = textToUse,
         color = textColor,
         fontSize = fontSize,
         fontWeight = FontWeight.Bold,
