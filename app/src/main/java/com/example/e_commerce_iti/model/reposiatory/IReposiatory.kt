@@ -25,4 +25,5 @@ interface IReposiatory {
     suspend fun insertCurrency(currency: CurrencyExc)
     suspend fun getChoosedCurrency():Flow<Pair<String, Float>>
     suspend fun updateCurrency(currency: String):Flow<Pair<String, Float>>
+     suspend fun createCustomer(customer: Customer): Flow<Customer>
 }
