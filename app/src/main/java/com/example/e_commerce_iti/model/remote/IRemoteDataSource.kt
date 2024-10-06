@@ -2,6 +2,7 @@ package com.example.e_commerce_iti.model.remote
 
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
+import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
@@ -28,5 +29,10 @@ interface IRemoteDataSource {
     suspend fun createCustomerMeta(customer: Customer,metafields: MetaData) : Flow<MetaData>
     suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
     suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
+
+    /**
+     *  get the orders by customer id
+     */
+    suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
 
 }

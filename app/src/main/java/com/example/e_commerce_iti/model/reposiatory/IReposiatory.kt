@@ -2,6 +2,7 @@ package com.example.e_commerce_iti.model.reposiatory
 
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
+import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
@@ -25,4 +26,9 @@ interface IReposiatory {
     suspend fun insertCurrency(currency: CurrencyExc)
     suspend fun getChoosedCurrency():Flow<Pair<String, Float>>
     suspend fun updateCurrency(currency: String):Flow<Pair<String, Float>>
+
+    /**
+     *  get orders by customer id
+     */
+    suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
 }

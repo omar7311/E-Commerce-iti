@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
+import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
@@ -80,6 +81,13 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
+
+    /**
+     *      get orders by customer id
+     */
+    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
+        return flow { emit(RetrofitHelper.service.getOrdersByCustomerId(customer_id).orders) }
+    }
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> = flow {

@@ -3,6 +3,7 @@ package com.example.e_commerce_iti.model.reposiatory
 import com.example.e_commerce_iti.model.local.IlocalDataSource
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
+import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
@@ -54,6 +55,13 @@ class ReposiatoryImpl(val remote:IRemoteDataSource,val local: IlocalDataSource) 
 
     override suspend fun updateCurrency(currency: String): Flow<Pair<String, Float>> {
         return local.setChoosedCurrency(local.getChoosedCurrency().firstOrNull()?.first!!)
+    }
+
+    /**
+     *      get orders by customer id
+     */
+    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
+        return remote.getOrdersByCustomerId(customer_id)
     }
 
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
