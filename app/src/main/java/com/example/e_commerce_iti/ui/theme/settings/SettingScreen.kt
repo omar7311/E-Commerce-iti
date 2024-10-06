@@ -48,10 +48,12 @@ import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun SettingScreen(viewModel: CurrencyViewModel,navController: NavController?=null) {
-    viewModel.getCustomerData("amgedtamer123456789@gmail.com")
+    viewModel.getCustomerData(Firebase.auth.currentUser!!.email!!)
     viewModel.getCurrency()
     val state=viewModel.userStateData.collectAsState()
     Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(.8f).padding( 16.dp), verticalArrangement = Arrangement.SpaceAround){

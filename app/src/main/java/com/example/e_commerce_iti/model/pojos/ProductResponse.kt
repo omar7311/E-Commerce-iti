@@ -6,6 +6,9 @@ package com.example.e_commerce_iti.model.pojos
 data class ProductResponse(
     val products: List<Product>
 )
+data class SearchedProductResponse(
+    val product: Product
+)
 data class Product(
     val id: Long,
     val title: String,
@@ -22,6 +25,7 @@ data class Variant(
     val id: Long,
     val title: String,
     val price: String,
+    val inventory_quantity: Int,
     val inventoryQuantity: Int,
     val sku: String
 )

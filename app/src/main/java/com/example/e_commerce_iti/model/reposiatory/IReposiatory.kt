@@ -7,6 +7,8 @@ import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
+import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
+import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import kotlinx.coroutines.flow.Flow
@@ -26,4 +28,7 @@ interface IReposiatory {
     suspend fun getChoosedCurrency():Flow<Pair<String, Float>>
     suspend fun updateCurrency(currency: String):Flow<Pair<String, Float>>
      suspend fun createCustomer(customer: Customer): Flow<Customer>
+    suspend fun getMetaFields(customerId: Long): Flow<MetaData>
+    suspend fun getCart(id:Long): Flow<DraftOrder>
+     suspend fun getProductByID(id: Long): Flow<Product>
 }

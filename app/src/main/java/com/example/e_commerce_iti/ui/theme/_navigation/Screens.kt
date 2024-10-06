@@ -83,8 +83,9 @@ fun Navigation(networkObserver: NetworkObserver,context: Activity) {
     val cartFactory: CartViewModelFac = CartViewModelFac(repository)
     val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
     val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
+    val cartViewModelFac= CartViewModelFac(repository)
     val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
-        composable(route = Screens.Home.route) {
+    composable(route = Screens.Home.route) {
             // Create ViewModel using the factory
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)

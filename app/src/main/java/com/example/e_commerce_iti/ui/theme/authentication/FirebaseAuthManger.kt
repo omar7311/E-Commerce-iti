@@ -49,6 +49,7 @@ object FirebaseAuthManager {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         onResult(true, null) // Success
+
                     } else {
                         onResult(false, task.exception?.message) // Error
                     }
