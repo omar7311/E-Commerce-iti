@@ -65,15 +65,16 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
     ) {
         if (productState.value is UiState.Success){
             val products = (productState.value as? UiState.Success<MutableList<Product>>)?.data
+            val draftOrder = (draftOrderState.value as? UiState.Success<DraftOrder>)?.data
+            val currency2 = (currency.value as? UiState.Success<Pair<String, Float>>)!!.data
+
             if (products!!.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier.weight(25f),
                     contentPadding = PaddingValues(14.dp)
                 ) {
 
-                    val draftOrder = (draftOrderState.value as? UiState.Success<DraftOrder>)?.data
-                    val currency2 = (currency.value as? UiState.Success<Pair<String, Float>>)!!.data
-                    products?.let { productList ->
+                         products?.let { productList ->
                         draftOrder?.let { order ->
                             items(productList.size, key = { productList[it].bodyHtml }) { index ->
                                 val product = productList[index]
@@ -98,8 +99,7 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
 
                 // The total price will update without affecting the LazyColumn
                 Spacer(Modifier.height(10.dp))
-                TotalPriceText(totalAmount = totalAmount)
-
+                TotalPriceText(totalAmount = totalAmount,currency2)
                 Spacer(Modifier.height(10.dp))
                 CheckoutButton()
             }else{
@@ -128,10 +128,10 @@ fun MyLottiAni(id: Int) {
     )
 }
 @Composable
-fun TotalPriceText(totalAmount: MutableState<Double>) {
+fun TotalPriceText(totalAmount: MutableState<Double>,currency2: Pair<String, Float>) {
     // Only this text recomposes when the total amount changes
     Text(
-        text = "Price ${totalAmount.value.roundToTwoDecimalPlaces()} in USD",
+        text = "Price ${totalAmount.value.roundToTwoDecimalPlaces() * currency2.second} in ${currency2.first}",
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 60.dp)
