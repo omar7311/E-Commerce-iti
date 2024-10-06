@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti
+package com.example.e_commerce_iti.ui.theme.authentication
 
 import androidx.activity.ComponentActivity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -9,7 +9,8 @@ object FirebaseAuthManager {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     fun login(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
-        auth.signInWithEmailAndPassword(email, password)
+        if(email.isNotBlank() && password.isNotBlank()){
+            auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     onResult(true, null) // Success
@@ -17,6 +18,7 @@ object FirebaseAuthManager {
                     onResult(false, task.exception?.message) // Error
                 }
             }
+        }
     }
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount, activity: ComponentActivity) {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)

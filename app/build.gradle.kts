@@ -4,6 +4,8 @@ plugins {
     id("kotlin-kapt")
     // save args for navigation
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -54,7 +56,10 @@ android {
 
 dependencies {
     implementation("com.github.skydoves:landscapist-glide:1.3.7")
+    implementation ("com.google.firebase:firebase-auth:23.0.0")
 
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-analytics")
     implementation("androidx.core:core-ktx:1.9.0") // or latest version
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.activity:activity-compose:1.9.2")

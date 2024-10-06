@@ -79,7 +79,7 @@ fun Navigation(networkObserver: NetworkObserver,context: Context) {
         composable(route = Screens.Profile.route) { ProfileScreen(navController) }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController) }
-        composable(route =Screens.Signup.route) {SignupScreen(navController)}
+        composable(route =Screens.Signup.route) {SignupScreen(navController,context)}
         composable(route = Screens.Login.route){LoginScreen(navController,context)}
 
         // here im modifying the product route to Extract the product ID from the route

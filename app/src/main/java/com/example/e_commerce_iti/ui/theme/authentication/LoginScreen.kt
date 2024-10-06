@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +70,14 @@ fun LoginScreen(
 
         // Login button
         Button(
-            onClick = {controller.navigate(Screens.Home.route)},
+            onClick = { FirebaseAuthManager.login(email,password){ success,error->
+                if(success){
+                    controller.navigate(Screens.Home.route)
+                }else{
+                    Toast.makeText(context,error,Toast.LENGTH_LONG).show()
+                }
+
+            }},
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
@@ -77,6 +86,7 @@ fun LoginScreen(
         //sign in with google
         Button(
             onClick = {
+
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -87,7 +97,14 @@ fun LoginScreen(
         // Anonymous Login Button
         Button(
             onClick = {
+          FirebaseAuthManager.loginAnonymously{ success,error->
+              if(success){
+                  controller.navigate(Screens.Home.route)
+              }else{
+                  Toast.makeText(context,error,Toast.LENGTH_LONG).show()
+              }
 
+          }
 
             },
             modifier = Modifier.fillMaxWidth()

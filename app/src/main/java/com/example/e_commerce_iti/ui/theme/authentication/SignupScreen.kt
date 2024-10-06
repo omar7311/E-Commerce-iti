@@ -1,5 +1,7 @@
 package com.example.e_commerce_iti
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,12 +25,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
-    controller :NavController
-){
+    controller: NavController,
+    context: Context
+) {
+    var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -41,7 +46,15 @@ fun SignupScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Sign Up", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(16.dp))
 
+        // Email input
+        OutlinedTextField(
+            value = fullName,
+            onValueChange = { fullName = it },
+            label = { Text("full name") },
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         // Email input
@@ -85,20 +98,24 @@ fun SignupScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         // Sign up button
         Button(
             onClick = {
-                controller.navigate(Screens.Login.route)
+                if (password == confirmPassword && fullName.isNotBlank()) {
+                    FirebaseAuthManager.signUp(email, password) { success, error ->
+                        if (success) {
+                            controller.navigate(Screens.Login.route)
+                        } else {
+                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Sign Up")
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
 
     }
