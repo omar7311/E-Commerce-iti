@@ -11,7 +11,7 @@ data class Product(
     val title: String,
     val bodyHtml: String,
     val vendor: String,
-    val productType: String,
+    val product_type: String,
     val tags: String,
     val status: String,
     val variants: List<Variant>,

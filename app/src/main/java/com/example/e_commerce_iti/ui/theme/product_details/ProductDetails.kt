@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti.ui.theme.cart
+package com.example.e_commerce_iti.ui.theme.product_details
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -9,14 +9,17 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
+import com.example.e_commerce_iti.ui.theme.home.SimpleText
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen(controller: NavController) {
+fun ProductDetails(productId: Long, controller: NavController) {
     Scaffold(
-        topBar = { CustomTopBar("Cart", controller) },  // Update title to "Cart"
+        topBar = { CustomTopBar("Products Details", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
-        Carts(Modifier.padding(innerPadding))
+        Box(modifier = Modifier.padding(innerPadding)) {
+            SimpleText("Product Details Screen Content")
+        }
     }
 }
-

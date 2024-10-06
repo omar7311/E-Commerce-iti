@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Coupons
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class CouponViewModel(val remoteDataSource: IReposiatory) : ViewModel() {
@@ -25,42 +27,41 @@ class CouponViewModel(val remoteDataSource: IReposiatory) : ViewModel() {
         // Load images from a repository or generate them
         loadCouponImages()
     }
-    private val _couponsStateflow= MutableStateFlow<UiState<DiscountCode>>(UiState.Loading)
-     val couponsStateflow: StateFlow<UiState<DiscountCode>> =_couponsStateflow
-    private val _priceRulesStateflow= MutableStateFlow<UiState<PriceRules>>(UiState.Loading)
-    val priceRulesStateflow: StateFlow<UiState<PriceRules>> =_priceRulesStateflow
+
+    private val _couponsStateflow = MutableStateFlow<UiState<List<DiscountCode>>>(UiState.Loading)
+    val couponsStateflow: StateFlow<UiState<List<DiscountCode>>> = _couponsStateflow
+    private val _priceRulesStateflow = MutableStateFlow<UiState<PriceRules>>(UiState.Loading)
+
     private fun loadCouponImages() {
         // You can either fetch images from an API or locally
         val images = listOf(
-            Coupons(R.drawable.coupon1, "50% off"),
-            Coupons(R.drawable.coupon2, "30% off"),
-            Coupons(R.drawable.coupon3, "30% off"),
+            Coupons(R.drawable.discound2, "50% off"),
+            Coupons(R.drawable.discound1, "30% off"),
+            Coupons(R.drawable.discound3, "30% off"),
         )
         _couponImages.value = images
     }
+
     var job: Job? = null
-    private suspend fun getPriceRules() =remoteDataSource.getPriceRules()
-    fun getCoupons(priceId: Long) {
+    private suspend fun getPriceRules() = remoteDataSource.getPriceRules()
+    fun getCoupons() {
         job?.cancel()
-        _couponsStateflow.value=UiState.Loading
-       job=viewModelScope.launch(Dispatchers.IO) {
-            getPriceRules().collect{
-                _priceRulesStateflow.value=UiState.Success(it)
-                for (i in it.price_rules){
-                    remoteDataSource.getCopuons(i.id).collect{
-                        _couponsStateflow.value=UiState.Success(it)
-                    }
+        _couponsStateflow.value = UiState.Loading
+        job = viewModelScope.launch(Dispatchers.IO) {
+            getPriceRules().collect {
+                _priceRulesStateflow.value = UiState.Success(it)
+                val list = mutableListOf<DiscountCode>()
+                for (i in it.price_rules) {
+                    val cop = remoteDataSource.getCopuons(i.id).first()
+                    list.add(cop)
                 }
+                _couponsStateflow.value = UiState.Success(list)
             }
         }
     }
 
 }
-sealed class UiState<out T> {
-    object Loading : UiState<Nothing>()
-    data class Success<out T>(val data: T) : UiState<T>()
-    data class Error(val message: String) : UiState<Nothing>()
-}
+
 class CouponsViewModelFactory(private val repo: IReposiatory) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -68,6 +69,7 @@ class CouponsViewModelFactory(private val repo: IReposiatory) : ViewModelProvide
             modelClass.isAssignableFrom(CouponViewModel::class.java) -> {
                 CouponViewModel(repo) as T
             }
+
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

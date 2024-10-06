@@ -108,4 +108,8 @@ dependencies {
 
     // Robolectric for unit tests
     testImplementation("org.robolectric:robolectric:4.13")
+
+    // lotii animation
+    implementation ("com.airbnb.android:lottie-compose:5.0.3")
+
 }
