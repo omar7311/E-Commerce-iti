@@ -9,9 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
+import com.example.e_commerce_iti.ui.theme.home.SimpleText
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen(controller: NavController) {
+fun CartScreen(cartViewModel: CartViewModel, controller: NavController) {
     Scaffold(
         topBar = { CustomTopBar("Cart", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons

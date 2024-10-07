@@ -86,6 +86,7 @@ import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import com.airbnb.lottie.compose.LottieCompositionSpec
+
 /**
  *      don't forget navigation
  */
