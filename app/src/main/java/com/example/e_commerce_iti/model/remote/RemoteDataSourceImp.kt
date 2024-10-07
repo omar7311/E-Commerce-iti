@@ -114,6 +114,10 @@ class RemoteDataSourceImp : IRemoteDataSource {
         return flow { emit(RetrofitHelper.service.getCustomerMetafields(customerId)) }
     }
 
+    override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
+        return flow { emit(RetrofitHelper.service.updateDraftOrder(cart.id!!,cart)) }
+    }
+
     override suspend fun getCart(id: Long): Flow<DraftOrder> {
         val data=RetrofitHelper.service.getCart(id)
         Log.e("12312321312313213",  "${data} ------------ $id")

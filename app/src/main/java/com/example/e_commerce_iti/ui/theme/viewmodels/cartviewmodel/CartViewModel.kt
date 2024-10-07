@@ -59,7 +59,17 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
     }
     private var _currentCurrency = MutableStateFlow<UiState<Pair<String, Float>>>(UiState.Loading)
     val currentCurrency: StateFlow<UiState<Pair<String, Float>>> = _currentCurrency
-    suspend fun deleteCart(id: Long){}
+     fun deleteItemCart(id: Long){
+        val cart=_cartState.value as UiState.Success<DraftOrder>
+        val c= cart.data.line_items.filter {  id!=it.id }
+         cart.data.line_items=c
+        viewModelScope.launch {
+            cartRepository.updateCart(cart.data)
+            val data=(_product.value as UiState.Success<MutableList<Product>>).data.filter { it.id!=id }
+            _product.value=UiState.Loading
+            _product.value=UiState.Success(data.toMutableList())
+        }
+    }
     fun getCurrency(){
         viewModelScope.launch {
             _currentCurrency.value=UiState.Success(cartRepository.getChoosedCurrency().first())

@@ -77,7 +77,7 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
                     contentPadding = PaddingValues(14.dp)
                 ) {
 
-                         products?.let { productList ->
+                         products.let { productList ->
                         draftOrder?.let { order ->
                             items(productList.size, key = { productList[it].bodyHtml }) { index ->
                                 val product = productList[index]
