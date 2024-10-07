@@ -48,7 +48,7 @@ fun ProductInfo(name:String, price:String, currency:String, rating: Int){
     Box(modifier = Modifier.fillMaxWidth().height(150.dp).padding(16.dp)) {
         Text(text = name, fontSize = 24.sp, modifier = Modifier.align(Alignment.TopStart))
         Text(text ="$price $currency", fontSize =20.sp , modifier = Modifier.align(Alignment.BottomStart))
-        Text(text = "Review", fontSize = 16.sp, modifier = Modifier.clickable {
+        Text(text = "Review", fontSize = 18.sp, modifier = Modifier.clickable {
             isSheetVisible = true          // view all review
         }.align(Alignment.TopEnd))
         if (isSheetVisible) {
