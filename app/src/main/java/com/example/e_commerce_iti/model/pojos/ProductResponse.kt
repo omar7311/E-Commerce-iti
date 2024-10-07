@@ -11,7 +11,7 @@ data class ProductResponse(
 data class Product(
     val id: Long,
     val title: String,
-    val bodyHtml: String,
+    val body_html: String,
     val vendor: String,
     val product_type: String,
     val tags: String,
@@ -19,7 +19,7 @@ data class Product(
     val variants: List<Variant>,
     val options: List<Option>,
     val images: List<Image>
-) :Serializable
+)
 data class Variant(
     val id: Long,
     val title: String,

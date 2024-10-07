@@ -41,9 +41,7 @@ fun ProductDetails(product: Product, controller: NavController) {
 
             ImageCarousel(images)
             ProductInfo(product.title,product.variants[0].price,"EG",3)
-            if(product.vendor!=null) {
-                ProductDescription(product.vendor)
-            }
+            ProductDescription(product.body_html)
             FirebaseAuth.getInstance().currentUser?.let { Actions(it.isAnonymous,controller) }
         }
     }
