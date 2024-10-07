@@ -20,10 +20,10 @@ import com.example.e_commerce_iti.ui.theme.home.SimpleText
 @Composable
 fun ProductDetails(productId: Long, controller: NavController) {
     Scaffold(
-        topBar = { CustomTopBar("Products Details", controller) },  // Update title to "Cart"
+        topBar = { CustomTopBar("Product Details", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
-        Column(modifier = Modifier.padding(innerPadding)) {
+        Column(modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState())) {
             val images = listOf(
                 "https://via.placeholder.com/600/92c952",
                 "https://via.placeholder.com/600/771796",
