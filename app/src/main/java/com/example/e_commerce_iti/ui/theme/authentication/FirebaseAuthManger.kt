@@ -57,6 +57,7 @@ object FirebaseAuthManager {
                                 onResult(false,task.exception?.message)
                             }
                         }
+
                     } else {
                         onResult(false, task.exception?.message) // Error
                     }
