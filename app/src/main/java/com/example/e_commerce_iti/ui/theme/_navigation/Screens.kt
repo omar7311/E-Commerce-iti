@@ -57,9 +57,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.app
 import com.google.firebase.auth.auth
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-
 
 sealed class Screens(val route: String) {
     object Setting : Screens(route = "setting")
