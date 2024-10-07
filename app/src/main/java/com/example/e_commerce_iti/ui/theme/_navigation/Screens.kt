@@ -52,8 +52,6 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.Currency
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.app
 import com.google.firebase.auth.auth
@@ -102,7 +100,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         .build()
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
-    NavHost(navController = navController, startDestination = Screens.Login.route) {
+    NavHost(navController = navController, startDestination = if (Firebase.auth.currentUser==null)Screens.Login.route else Screens.Home.route) {
         val repository: IReposiatory = ReposiatoryImpl(
             RemoteDataSourceImp(), LocalDataSourceImp(
                 context.getSharedPreferences(
@@ -121,7 +119,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
 
-            HomeScreen(CopuonsViewModel, homeViewModel, navController, networkObserver)
+            HomeScreen(context,CopuonsViewModel, homeViewModel, navController, networkObserver)
     val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
         LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
@@ -194,4 +192,5 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         }
 
     }
+}
 }
