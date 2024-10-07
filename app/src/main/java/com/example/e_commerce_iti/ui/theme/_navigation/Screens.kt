@@ -2,6 +2,7 @@ package com.example.e_commerce_iti.ui.theme._navigation
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -102,18 +103,21 @@ fun Navigation(networkObserver: NetworkObserver,context: Activity) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
             LaunchedEffect(Unit){
-                if (Firebase.auth.currentUser?.email!=null) getCurrent(Firebase.auth.currentUser?.email!!,repository)
+                if (Firebase.auth.currentUser!=null&&!Firebase.auth.currentUser!!.email.isNullOrBlank()) {
+                    val e=Firebase.auth.currentUser
+                    getCurrent(e!!.email!!, repository)
+                }
             }
-            HomeScreen(CopuonsViewModel,homeViewModel, navController,networkObserver)
+            HomeScreen(context,CopuonsViewModel,homeViewModel, navController,networkObserver)
         }
 
         composable(route = Screens.Category.route) {
             val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
-            CategoryScreen(homeViewModel,navController,networkObserver)
+            CategoryScreen(homeViewModel,navController,networkObserver, LocalContext.current)
         }
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            CartScreen(cartViewModel,navController) }
+            CartScreen(cartViewModel,navController,context) }
         composable(route = Screens.Profile.route) {
             ProfileScreen(navController)
         }
@@ -122,7 +126,7 @@ fun Navigation(networkObserver: NetworkObserver,context: Activity) {
             ChangeUserDataScreen(viewModel = changeUserDataViewModel,navController = navController)
         }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
-        composable(route = Screens.Search.route) { SearchScreen(navController) }
+        composable(route = Screens.Search.route) { SearchScreen(navController,context) }
         composable(route =Screens.Signup.route) {SignupScreen(navController,context)}
         composable(route = Screens.Login.route){LoginScreen(navController,context,googleSignInClient){
             navController.navigate(Screens.Home.route)

@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.search
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,10 +15,10 @@ import com.example.e_commerce_iti.ui.theme.home.SimpleText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(controller: NavController) {
+fun SearchScreen(controller: NavController,context: Context) {
     Scaffold(
         topBar = { CustomTopBar("Search", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
+        bottomBar = { CustomButtonBar(controller,context) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
         Box(modifier = Modifier.padding(innerPadding)) {
             SimpleText("Search Screen Content")

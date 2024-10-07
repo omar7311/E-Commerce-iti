@@ -52,14 +52,17 @@ class ExampleUnitTest {
         val repo=ReposiatoryImpl((RemoteDataSourceImp()), LocalDataSourceImp(context.getSharedPreferences(LocalDataSourceImp.currencies, Context.MODE_PRIVATE)))
         val currentUser= CurrentUser(email="amgedtamer12345@gmail.com", id=7495181697201, fav=1003024744625, cart=1003024711857, name="gheaftfmed", phone="+14125957999")
         val carts= repo.getCart(currentUser.cart).first()
-        carts.customer=com.example.e_commerce_iti.model.pojos.draftorder.Customer(id=currentUser.id, email=currentUser.email)
+
+        carts.customer=
+            com.example.e_commerce_iti.model.pojos.draftorder.Customer(id=currentUser.id, email=currentUser.email)
         val aeeee = ArrayList<LineItems>(carts.line_items)
         val lineItem=LineItems()
-
         lineItem.quantity=1
-        lineItem.price="00.00"
-        lineItem.title="Dump"
-
+        lineItem.product_id=8141705806001
+        lineItem.variant_id=44695693459633
+        lineItem.price="80.00"
+        lineItem.title="OS / black"
+        lineItem.vendor="ADIDAS"
         aeeee.add(lineItem)
         carts.line_items=aeeee.toList()
         println(repo.updateCart(carts).first())

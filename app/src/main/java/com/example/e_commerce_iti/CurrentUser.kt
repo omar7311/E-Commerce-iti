@@ -7,7 +7,7 @@ data class CurrentUser(var email:String="N/A",var id:Long,var fav:Long=-1,val ca
  var currentUser : CurrentUser?=null
 
 suspend fun  getCurrent(email: String?,cartRepository:IReposiatory):CurrentUser?{
-    if (currentUser==null&&email!=null){
+    if (currentUser==null&&!email.isNullOrBlank()){
         val user= cartRepository.getCustomer(email = email).first()
         val meta= cartRepository.getMetaFields(user.id!!).first()
         var cart:Long?=null

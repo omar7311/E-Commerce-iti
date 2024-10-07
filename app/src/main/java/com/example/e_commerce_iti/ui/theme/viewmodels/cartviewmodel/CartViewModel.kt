@@ -38,11 +38,7 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
          _product.value = UiState.Success(product)
      }
     }
-    suspend fun updateCart(id: Long,draftOrder: DraftOrder){
-    }
-    suspend fun createCart(draftOrder: DraftOrder){
 
-    }
     private var _currentCurrency = MutableStateFlow<UiState<Pair<String, Float>>>(UiState.Loading)
     val currentCurrency: StateFlow<UiState<Pair<String, Float>>> = _currentCurrency
 

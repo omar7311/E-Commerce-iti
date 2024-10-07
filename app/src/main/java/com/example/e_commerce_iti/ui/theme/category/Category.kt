@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.category
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -74,7 +75,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 fun CategoryScreen(
     homeViewModel: HomeViewModel,
     controller: NavController,
-    networkObserver: NetworkObserver
+    networkObserver: NetworkObserver,context: Context
 
 ) {
     var collectionId by remember { mutableStateOf(DEFAULT_CUSTOM_COLLECTION_ID) } // default collection id
@@ -87,7 +88,7 @@ fun CategoryScreen(
     val isNetworkAvailable by networkObserver.isConnected.collectAsState(initial = false)
     Scaffold(
         topBar = { CustomTopBar("Category", controller) },
-        bottomBar = { CustomButtonBar(controller) },
+        bottomBar = { CustomButtonBar(controller,context) },
     ) { innerPadding ->
 
         if(isNetworkAvailable){

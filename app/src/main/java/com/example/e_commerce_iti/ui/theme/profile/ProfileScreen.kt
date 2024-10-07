@@ -66,7 +66,7 @@ fun ProfileScreen(controller: NavController) {
 
     Scaffold(
         topBar = { CustomTopBar("Profile", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
+        bottomBar = { CustomButtonBar(controller,context = LocalContext.current) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
        Column(modifier = Modifier
            .fillMaxSize().verticalScroll(rememberScrollState()).

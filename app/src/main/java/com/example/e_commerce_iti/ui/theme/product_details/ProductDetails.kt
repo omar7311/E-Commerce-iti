@@ -9,6 +9,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -21,7 +22,7 @@ import com.example.e_commerce_iti.ui.theme.home.SimpleText
 fun ProductDetails(productId: Long, controller: NavController) {
     Scaffold(
         topBar = { CustomTopBar("Products Details", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
+        bottomBar = { CustomButtonBar(controller, context = LocalContext.current) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
         Column(modifier = Modifier.padding(innerPadding)) {
             val images = listOf(
