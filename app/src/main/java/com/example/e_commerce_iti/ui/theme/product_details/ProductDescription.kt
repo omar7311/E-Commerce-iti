@@ -23,12 +23,11 @@ import org.checkerframework.common.returnsreceiver.qual.This
 
 @Composable
 fun ProductDescription(description:String){
-    val scrollState = rememberScrollState()
     Column(modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp)) {
         Text(text = "Description", fontSize = 32.sp)
         Spacer(Modifier.height(8.dp))
         Text(text = description, fontSize = 20.sp,
-            modifier = Modifier.fillMaxWidth().verticalScroll(scrollState))
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()))
     }
 }
 @Preview(showSystemUi = true)
