@@ -22,15 +22,16 @@ object FirebaseAuthManager {
         }
     }
 
-    fun firebaseAuthWithGoogle(
-        credential: AuthCredential,activity: ComponentActivity,onResult: (Boolean, String?) -> Unit) {
-        auth.signInWithCredential(credential).addOnCompleteListener(activity) { task ->
-            if (task.isSuccessful) {
-                onResult(true,null)// Sign-in success, navigate to main screen
-            } else {
-              onResult(false,task.exception?.message)  // Sign-in failed, show error
+    fun firebaseAuthWithGoogle(idToken: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onSuccess()
+                } else {
+                    onFailure(task.exception?.message ?: "Google Sign-In failed.")
+                }
             }
-        }
     }
 
     fun loginAnonymously(onResult: (Boolean, String?) -> Unit) {
@@ -49,6 +50,7 @@ object FirebaseAuthManager {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         onResult(true, null) // Success
+
                     } else {
                         onResult(false, task.exception?.message) // Error
                     }

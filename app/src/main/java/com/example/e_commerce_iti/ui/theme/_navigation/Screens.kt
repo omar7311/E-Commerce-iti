@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.internal.composableLambda
@@ -16,8 +17,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.e_commerce_iti.LoginScreen
 import com.example.e_commerce_iti.PRODUCT_ID
+import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
+import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -50,9 +53,17 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
 
-/**
- *      sealed Class to manage navigation between Screens in the app
- */
+import com.google.firebase.Firebase
+import com.google.firebase.app
+import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+
 
 sealed class Screens(val route: String) {
     object Orders : Screens(route = "orders")
@@ -81,29 +92,31 @@ sealed class Screens(val route: String) {
 
 
 @Composable
-fun Navigation(networkObserver: NetworkObserver, context: Activity) {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screens.Orders.route) {
-        val repository: IReposiatory = ReposiatoryImpl(
-            RemoteDataSourceImp(), LocalDataSourceImp(
-                context.getSharedPreferences(
-                    LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE
-                )
-            )
-        )
-        val curreneyFactory: CurrenciesViewModelFactory = CurrenciesViewModelFactory(repository)
-        val cartFactory: CartViewModelFac = CartViewModelFac(repository)
-        val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
-        val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
-        val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
-        val ordersFactory= OrdersFactory(repository)  // for orders view Model
+fun Navigation(networkObserver: NetworkObserver,context: Activity) {
+    val navController= rememberNavController()
+    val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(context.getString(R.string.web_api_key))
+        .requestEmail()
+        .build()
 
-        composable(route = Screens.Home.route) {
-            // Create ViewModel using the factory
+    val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
+    NavHost(navController = navController, startDestination = Screens.Login.route) {
+    val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
+        LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
+    )
+    val curreneyFactory: CurrenciesViewModelFactory = CurrenciesViewModelFactory(repository)
+    val cartFactory: CartViewModelFac = CartViewModelFac(repository)
+    val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
+    val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
+    val cartViewModelFac= CartViewModelFac(repository)
+    val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
+    composable(route = Screens.Home.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
-
-            HomeScreen(CopuonsViewModel, homeViewModel, navController, networkObserver)
+            LaunchedEffect(Unit){
+                if (Firebase.auth.currentUser?.email!=null) getCurrent(Firebase.auth.currentUser?.email!!,repository)
+            }
+            HomeScreen(CopuonsViewModel,homeViewModel, navController,networkObserver)
         }
 
         composable(route = Screens.Category.route) {
@@ -124,8 +137,10 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController) }
-        composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
-        composable(route = Screens.Login.route) { LoginScreen(navController, context) }
+        composable(route =Screens.Signup.route) {SignupScreen(navController,context)}
+        composable(route = Screens.Login.route){LoginScreen(navController,context,googleSignInClient){
+            navController.navigate(Screens.Home.route)
+        } }
 
         // here im modifying the product route to Extract the product ID from the route
         composable(route = Screens.ProductSc.route) {

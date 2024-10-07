@@ -26,9 +26,6 @@ class MainActivity : ComponentActivity() {
         networkObserver.register()  // Register the network callback
         super.onCreate(savedInstanceState)
         // Initialize Firebase Auth
-
-
-
         // Build the One-Tap sign-in request
 
         setContent {

@@ -13,12 +13,16 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
 import com.example.e_commerce_iti.model.pojos.OrderResponse
+import com.example.e_commerce_iti.model.pojos.SearchedProductResponse
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
+import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.metadata.Metafield
+import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
+import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
 import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.PUT
@@ -39,7 +43,7 @@ interface EcommerceApi {
     @GET("products.json")
     suspend fun getProductsByVendorID(@Query("vendor") vendorName: String): ProductResponse
     @POST("customers.json")
-    suspend fun createCustomer(@Body customer: Customer): Response<Customer>
+    suspend fun createCustomer(@Body customer: Customer): Customer
     @GET("customers/search.json")
     suspend fun searchCustomerByEmail(@Query("query") query: String): SearchedReslutCustomer
     @GET("customers/{customer_id}/metafields.json")
@@ -51,14 +55,20 @@ interface EcommerceApi {
     // get the products by custom collection
     @GET("products.json")
     suspend fun getProductsByCustomCollection(@Query("collection_id") collectionId: Long): ProductResponse
-    @POST("draft_orders/{IdDO}.json")
-    suspend fun updateDraftOrder(@Path("IdDO") IdDO: Long, @Body draftOrder: DraftOrder): DraftOrder
-    @GET("draft_orders.json")
-    suspend fun createDraftOrder(@Body draftOrder: DraftOrder): DraftOrder
+    @POST("draft_orders/{ahmed}.json")
+    suspend fun updateDraftOrder(@Path("ahmed") IdDO: Long, @Body draftOrder: DraftOrder): DraftOrder
+    @POST("draft_orders.json")
+    suspend fun createDraftOrder(@Body draftOrder: RDraftOrderRequest): Response<SearchDraftOrder>
     @POST("customers/{customer_id}/metafields.json")
     suspend fun updateCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: MetaData): MetaData
     @PUT("customers/{customer_id}.json")
     suspend fun updateCustomer(@Path("customer_id") customerId: Long, @Body customer: UpdateCustomer): Response<Customer>
+    @GET("draft_orders/{id}.json")
+    suspend fun getCart(@Path("id") id: Long): SearchDraftOrder
+    @GET("products/{id}.json")
+    suspend fun getProduct(@Path("id") id: Long): SearchedProductResponse
+    @POST("customers/{customer_id}/metafields.json")
+    suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData)
 
     /**
      *      function to get the orders by customer id

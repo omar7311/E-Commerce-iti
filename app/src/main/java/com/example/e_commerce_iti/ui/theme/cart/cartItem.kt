@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.cart
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.e_commerce_iti.R
@@ -42,63 +44,134 @@ import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun CartItem(e:(price:Double)->Unit,name: String="",price:Double=0.0,quantity:Int=0,total: MutableState<Double>) {
+fun CartItem(
+    currency: Pair<String, Float>
+    ,
+    image: String = "",
+    name: String = "",
+    price: Double = 0.0,
+    quantity: Int = 0,
+    totalAmount: MutableState<Double>
+) {
+    Log.i("CartItem", "$image $name $price $quantity")
     val showDialog = rememberSaveable { mutableStateOf(false) }
-    var numberOfItemChoosed by rememberSaveable { mutableIntStateOf(0) }
-    if (showDialog.value){
-        MyAlertDialog(showDialog,e,(price* numberOfItemChoosed))
+    var numberOfItemsChosen by rememberSaveable { mutableIntStateOf(0) }
+
+    // Show confirmation dialog for item deletion
+    if (showDialog.value) {
+        MyAlertDialog(
+             showDialog,
+            price * numberOfItemsChosen,totalAmount)
     }
-    Card() {
-        Row(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                .border(3.dp, MaterialTheme.colorScheme.primary).height(100.dp).padding(top=10.dp, bottom = 10.dp)
-        ) {
-              GlideImage(contentScale = ContentScale.Fit, modifier = Modifier.weight(1f).height(100.dp).clickable {  },imageModel =  "https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/thumbnail.png")
+
+    // Main Card for displaying the product item
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .border(3.dp, MaterialTheme.colorScheme.primary)
+            .height(100.dp)
+            .padding(top = 10.dp, bottom = 10.dp)
+    ) {
+        Row {
+            // Image display for the product
+            GlideImage(
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(100.dp)
+                    .clickable { /* Handle image click */ },
+                imageModel =image
+            )
             Spacer(Modifier.width(10.dp))
-            Column(modifier = Modifier.fillMaxHeight().weight(2f)) {
+
+            // Product name and price column
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(2f)
+            ) {
                 Spacer(Modifier.height(10.dp))
-                Text(text = "Hello $name!",modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                Text(
+                    text = "$name!",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Spacer(Modifier.height(20.dp))
-                Text(text = "$price USD",modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                Text(
+                    text = "${price* currency.second} ${currency.first}",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
             Spacer(Modifier.width(5.dp))
-            Column(modifier = Modifier.fillMaxHeight().weight(1f), verticalArrangement = Arrangement.Bottom) {
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(modifier = Modifier.weight(1f),onClick = {
-                        if (numberOfItemChoosed < quantity) {
-                            total.value+=price.toInt()
-                            numberOfItemChoosed++
+
+            // Quantity controls (Add/Remove)
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Add button
+                    IconButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            if (numberOfItemsChosen < quantity) {
+                                totalAmount.value += price
+                                numberOfItemsChosen++
+                            }
                         }
+                    ) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = null)
                     }
 
-                    ) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription =null)
-                    }
-                    Text(textAlign = TextAlign.Center,text = "$numberOfItemChoosed", modifier  = Modifier.weight(1f))
-                    IconButton(modifier = Modifier.weight(1f),onClick = {
-                        if (numberOfItemChoosed > 0) {
-                            total.value-=price.toInt()
+                    // Display chosen item count
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = "$numberOfItemsChosen",
+                        modifier = Modifier.weight(1f)
+                    )
 
-                            numberOfItemChoosed--
-                    }
-                    }
+                    // Remove button
+                    IconButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            if (numberOfItemsChosen > 0) {
+                                totalAmount.value -= price
+                                numberOfItemsChosen--
+                            }
+                        }
                     ) {
-                        Icon(modifier = Modifier.padding(bottom = 10.dp),painter = painterResource(id = R.drawable.baseline_minimize_24) ,contentDescription =null)
+                        Icon(
+                            modifier = Modifier.padding(bottom = 10.dp),
+                            painter = painterResource(id = R.drawable.baseline_minimize_24),
+                            contentDescription = null
+                        )
                     }
                 }
             }
-            Column (modifier = Modifier.fillMaxHeight()) {
-                IconButton(onClick = {
-                    showDialog.value=true
-                }) {
-                    Icon(imageVector = Icons.Filled.Delete, contentDescription =null)
+
+            // Delete icon
+            Column(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                IconButton(onClick = { showDialog.value = true }) {
+                    Icon(imageVector = Icons.Filled.Delete, contentDescription = null)
                 }
             }
         }
     }
 }
+
 @Composable
-fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>,e:(price:Double)->Unit,price: Double) {
+fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>,price: Double,total:MutableState<Double>) {
     if (shouldShowDialog.value) { // 2
         AlertDialog( // 3
             onDismissRequest = { // 4
@@ -110,7 +183,7 @@ fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>,e:(price:Double)->Unit
             confirmButton = { // 6
                 Button(
                     onClick = {
-                        e(price)
+                        total.value -= price
                         shouldShowDialog.value = false
                     }
                 ) {
@@ -127,6 +200,6 @@ fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>,e:(price:Double)->Unit
 @Composable
 fun GreetingPreview() {
     ECommerceITITheme {
-       // CartItem("Android")
+        CartItem(Pair("USD",1.0F),"Android","Android",10.0,10,totalAmount = rememberSaveable { mutableStateOf(0.0) })
     }
 }

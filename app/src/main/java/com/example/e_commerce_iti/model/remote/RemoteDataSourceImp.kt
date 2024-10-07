@@ -11,13 +11,19 @@ import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
+import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
+import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
+import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
+import com.example.e_commerce_iti.model.pojos.metadata.Metafield
+import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.json.JSONObject
 import retrofit2.HttpException
 
@@ -44,7 +50,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
      *      get Products by vendor name
      */
     override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {
-        val response = RetrofitHelper.service.getProductsByVendorID(vendorName)
+       // val response = RetrofitHelper.service.getProductsByVendorID(vendorName)
         return flow {
             try {
                 val response = RetrofitHelper.service.getProductsByVendorID(vendorName)
@@ -63,14 +69,38 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun createCustomer(customer: Customer): Flow<Customer> {
-        val response = RetrofitHelper.service.createCustomer(customer)
-        println(" messsadsadsadas asdsadsa    ${response.message()}")
-        return flow { emit(response.body()!!) }
+        Log.e("1231232131231adasdadad3213",  "${customer} ------------ ")
+         val helper=RetrofitHelper.service
+            val response = helper.createCustomer(customer)
+            val cart=createDumpDraft(response.customer!!)
+            val fav=createDumpDraft(response.customer!!)
+            println("cart        ${cart}")
+            println("fav        ${fav}")
+            var data=Gson().fromJson(Gson().toJson(cart),RDraftOrderRequest::class.java)
+            println("asdasdsad  ${Gson().toJson(cart)}")
+            val cartDraft=helper.createDraftOrder(data)
+              data=Gson().fromJson(Gson().toJson(fav),RDraftOrderRequest::class.java)
+            val  favDraft=helper.createDraftOrder(data)
+            println("eeeeeeeeeeeeeeeee   ${cartDraft.errorBody()?.string()}")
+            val cartmeta=createDummyMetafield("cart_id",cartDraft.body()!!.draft_order!!.id.toString())
+            println("55555555555555555  ${Gson().toJson(cartmeta)}")
+            val favmeta=createDummyMetafield("fav_id",favDraft.body()!!.draft_order!!.id.toString())
+            helper.createCustomerMetafields(response.customer!!.id!!,cartmeta)
+            helper.createCustomerMetafields(response.customer!!.id!!,favmeta)
+            return flow { emit(response) }
     }
-
-
-    override suspend fun createCustomerMeta(customer: Customer,metafields: MetaData): Flow<MetaData> {
-        return flow { emit(RetrofitHelper.service.updateCustomerMetafields(customer.customer!!.id!!,metafields)) }
+    fun createDummyMetafield(key: String, value: String) = ReMetaData(Metafield(namespace = "namespace", key = key, value = value, value_type = "string"))
+    private fun createDumpDraft(customerx: CustomerX):SearchDraftOrder{
+        val searchDraftOrder=SearchDraftOrder()
+        val lineItems=LineItems()
+        lineItems.quantity=1
+        lineItems.price="0.00"
+        lineItems.title="Dummy"
+        val customer= com.example.e_commerce_iti.model.pojos.draftorder.Customer(id =customerx.id)
+        val lineItem= listOf(lineItems)
+        val draftOrder=DraftOrder(line_items = lineItem, customer = customer,)
+        searchDraftOrder.draft_order=draftOrder
+        return searchDraftOrder
     }
 
     override suspend fun updateCustomer(id:Long,customer: String): Flow<Customer> {
@@ -81,6 +111,21 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
+    override suspend fun getMetaFields(customerId: Long): Flow<MetaData> {
+        return flow { emit(RetrofitHelper.service.getCustomerMetafields(customerId)) }
+    }
+
+    override suspend fun getCart(id: Long): Flow<DraftOrder> {
+        val data=RetrofitHelper.service.getCart(id)
+        Log.e("12312321312313213",  "${data} ------------ $id")
+        return flow { emit(data.draft_order!!) }
+    }
+
+    override suspend fun getProductByID(id: Long): Flow<Product> {
+        val data=RetrofitHelper.service.getProduct(id)
+        Log.e("12312321312313213",  "${data} ------------ $id")
+        return flow { emit(data.product) }
+    }
 
     /**
      *      get orders by customer id
@@ -123,3 +168,21 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 }
 
+data class RDraftOrderRequest(
+    val draft_order: RDraftOrder
+)
+
+data class RDraftOrder(
+    val customer: Customer,
+    val line_items: List<RLineItem>
+)
+
+data class RCustomer(
+    val id: Long
+)
+
+data class RLineItem(
+    val price: String,
+    val quantity: Int,
+    val title: String
+)

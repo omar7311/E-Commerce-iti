@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -286,7 +287,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                 )
             }
         },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color.Transparent // Transparent to let gradient shine
         ),
     )
