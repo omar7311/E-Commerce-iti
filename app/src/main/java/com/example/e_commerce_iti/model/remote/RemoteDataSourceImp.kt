@@ -6,10 +6,18 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.ProductResponse
+import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
+import com.example.e_commerce_iti.model.pojos.customer.Customer
+import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
+import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.json.JSONObject
 import retrofit2.HttpException
 
 class RemoteDataSourceImp : IRemoteDataSource {
@@ -47,7 +55,31 @@ class RemoteDataSourceImp : IRemoteDataSource {
         }
     }
 
+    override suspend fun getCustomer(email: String): Flow<CustomerX> {
 
+        val data=RetrofitHelper.service.searchCustomerByEmail("email:${email}")
+       return flow { emit(data.customers!!.get(0)) }
+    }
+
+    override suspend fun createCustomer(customer: Customer): Flow<Customer> {
+        val response = RetrofitHelper.service.createCustomer(customer)
+        println(" messsadsadsadas asdsadsa    ${response.message()}")
+        return flow { emit(response.body()!!) }
+    }
+
+
+    override suspend fun createCustomerMeta(customer: Customer,metafields: MetaData): Flow<MetaData> {
+        return flow { emit(RetrofitHelper.service.updateCustomerMetafields(customer.customer!!.id!!,metafields)) }
+    }
+
+    override suspend fun updateCustomer(id:Long,customer: String): Flow<Customer> {
+        val ucustomer= Gson().fromJson(customer, UpdateCustomer::class.java)
+        val req=RetrofitHelper.service.updateCustomer(id, ucustomer)
+        Log.e("12312321312313213",  "${req.errorBody()?.string()}")
+       return flow { emit(Customer(req.body()?.customer)) }
+    }
+
+    override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> = flow {
@@ -78,9 +110,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun getCopuons(priceId: Long): Flow<DiscountCode> {
-        Log.d("TAG", "getCopuons: $priceId")
         val data= RetrofitHelper.service.getCopuons(priceId)
-        Log.d("TAG", "getCopuons: $data")
         return flow {emit(data)}
     }
 }
