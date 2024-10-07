@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Order
+import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,10 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
 
     val _ordersFlowState = MutableStateFlow<UiState<List<Order>>>(UiState.Loading)
     val ordersFlowState = _ordersFlowState
+
+    // this for single product
+    val _singleProductFlow = MutableStateFlow<UiState<Product>>(UiState.Loading)
+    val singleProductFlow = _singleProductFlow
 
 
     /**
@@ -29,6 +34,15 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
                 }
         }
     }
+
+    fun getProductById(productId: Long){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getProductById(productId)
+                .collect { product ->
+                    _singleProductFlow.value = UiState.Success(product)
+                }
+        }
+    }
 }
 
 
@@ -40,3 +54,5 @@ class OrdersFactory(private val repository: IReposiatory) : ViewModelProvider.Fa
         throw IllegalArgumentException("Unknown OrderViewModel class")
     }
 }
+
+

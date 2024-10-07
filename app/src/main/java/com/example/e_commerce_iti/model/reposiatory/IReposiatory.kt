@@ -37,4 +37,10 @@ interface IReposiatory {
      *  get orders by customer id
      */
     suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
+
+    /**
+     *  get product by id
+     */
+    suspend fun getProductById(productId: Long):Flow<Product>
+
 }

@@ -15,7 +15,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.SimpleText
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetails(productId: Long, controller: NavController) {

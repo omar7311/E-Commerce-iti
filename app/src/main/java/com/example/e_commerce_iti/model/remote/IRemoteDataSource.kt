@@ -38,5 +38,6 @@ interface IRemoteDataSource {
      *  get the orders by customer id
      */
     suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
+    suspend fun getProductById(productId: Long):Flow<Product>
 
 }

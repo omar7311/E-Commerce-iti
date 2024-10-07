@@ -12,7 +12,9 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
-import com.example.e_commerce_iti.model.pojos.OrderResponse
+import com.example.e_commerce_iti.model.pojos.OrdersResponse
+import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.ProductWrapper
 import com.example.e_commerce_iti.model.pojos.SearchedProductResponse
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
@@ -75,6 +77,12 @@ interface EcommerceApi {
      */
 
     @GET("orders.json")
-    suspend fun getOrdersByCustomerId(@Query("customer_id") customerId: Long): OrderResponse
+    suspend fun getOrdersByCustomerId(@Query("customer_id") customerId: Long): OrdersResponse
+
+    /**
+     *      get product by id
+     */
+    @GET("products/{productId}.json")
+    suspend fun getProductById(@Path("productId") productId: Long): Response<ProductWrapper>
 
 }

@@ -1,8 +1,11 @@
 package com.example.e_commerce_iti.ui.theme.orders
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.content.MediaType.Companion.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,7 +52,8 @@ import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.LineItem
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
-import com.example.e_commerce_iti.model.pojos.ShippingAddress
+import com.example.e_commerce_iti.network.NetworkObserver
+import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
@@ -57,24 +61,44 @@ import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.HomeContent
 import com.example.e_commerce_iti.ui.theme.home.MyLottieAnimation
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
+import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrdersScreen(orderViewModel: OrdersViewModel, controller: NavController) {
+fun OrdersScreen(
+    orderViewModel: OrdersViewModel,
+    controller: NavController,
+    networkObserver: NetworkObserver
+
+) {
 
     Scaffold(
         topBar = { CustomTopBar("Orders", controller) },
-        bottomBar = { CustomButtonBar(controller) }, // give it the controller to navigate with it
+        bottomBar = { CustomButtonBar(controller) },
     ) { innerPadding ->
 
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            FetchOrdersByCustomerId(7493564661937, orderViewModel)
+        val isConnected = networkObserver.isConnected.collectAsState()
+        if (isConnected.value) {
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                OrderText(
+                    "Orders History",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                FetchOrdersByCustomerId(7491636658353, orderViewModel, controller)
 
+            }
+        } else {
+            MyLottieAnimation()
         }
+
     }
 }
 
@@ -83,6 +107,7 @@ fun OrdersScreen(orderViewModel: OrdersViewModel, controller: NavController) {
 fun FetchOrdersByCustomerId(
     customerId: Long,
     orderViewModel: OrdersViewModel,
+    controller: NavController
 ) {
     // Trigger the order fetching when the composable is first launched
     LaunchedEffect(Unit) {
@@ -92,7 +117,9 @@ fun FetchOrdersByCustomerId(
     when (val state = ordersFlow.value) { // Access the value here
         is UiState.Success -> {
             val orders = state.data
-            OrdersList(orders) // pass the orders here to show its data
+            OrdersList(orders, controller) // pass the orders here to show its data
+            Log.i("Orddddrr", "OrderDetailsScreen:$orders")
+
         }
 
         is UiState.Loading -> {
@@ -108,32 +135,41 @@ fun FetchOrdersByCustomerId(
 }
 
 @Composable
-fun OrdersList(orders: List<Order>) {
+fun OrdersList(orders: List<Order>, controller: NavController) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1), // Adjust the minimum size as needed
         contentPadding = PaddingValues(8.dp),
         modifier = Modifier.fillMaxSize() // Ensure grid takes full available space
     ) {
         items(orders) { order ->
-            OrderItem(order)
+            OrderItem(order, controller)
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }
+
 @Composable
-fun OrderItem(order: Order) {
+fun OrderItem(order: Order, controller: NavController) {
+    val gson = Gson()
+    val orderJson = gson.toJson(order)
     Card(
+        shape = RoundedCornerShape(30.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         modifier = Modifier
+            .clickable { controller.navigate(Screens.OrderDetails.createRoute(orderJson)) }
             .padding(2.dp)
             .fillMaxWidth()
             .animateContentSize(),
-        colors = CardDefaults.cardColors(containerColor = Color.LightGray),
-        elevation = CardDefaults.cardElevation(12.dp)
+        border = BorderStroke(2.dp, Color.Black),
+
+        colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
         Row(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
                 .wrapContentHeight(),
+
             verticalAlignment = Alignment.CenterVertically // Align items vertically in the center
         ) {
             // Display Order Image on the left
@@ -154,16 +190,21 @@ fun OrderItem(order: Order) {
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     OrderText(
-                        textToUse = "Order ID: ",
+                        textToUse = "Order ID:",
                         textColor = Color.Black, // Label in black
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 14.sp,
+                        modifier = Modifier.weight(1f)
+
                     )
                     OrderText(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 20.dp),
                         textToUse = order.id.toString(), // Value in different color
                         textColor = Color.Blue, // Change this to your preferred color
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
                 }
 
@@ -172,14 +213,21 @@ fun OrderItem(order: Order) {
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     OrderText(
-                        textToUse = "Date: ",
+                        modifier = Modifier
+                            .weight(1f),
+                        textToUse = "Date      :",
                         textColor = Color.Black, // Label in black
+                        fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
                     OrderText(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 20.dp),
                         textToUse = "${order.createdAt}", // Value in different color
                         textColor = Color.Blue, // Change this to your preferred color
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
 
@@ -188,25 +236,48 @@ fun OrderItem(order: Order) {
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     OrderText(
-                        textToUse = "Total: ",
+                        modifier = Modifier
+                            .weight(1f),
+                        textToUse = "Total     :",
                         textColor = Color.Black, // Label in black
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
                     OrderText(
-                        textToUse = "${order.totalCost} ${order.currency}", // Value in different color
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 20.dp),
+                        textToUse = "${order.currentTotalPrice} ${order.currency}", // Value in different color
                         textColor = Color.Blue, // Change this to your preferred color
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
                 }
 
                 // Status row
-                OrderText(
-                    textToUse = "Status: ${order.orderStatus}",
-                    fontSize = 14.sp,
-                    textColor = Color.Gray // Gray color for status text
-                )
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    // Status row
+                    OrderText(
+                        modifier = Modifier
+                            .weight(1f),
+                        textToUse = "Status  :",
+                        textColor = Color.Black, // Label in black
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                    OrderText(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 20.dp),
+                        textToUse = "${order.orderStatus}",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        textColor = Color.Blue, // Change this to your preferred color
+
+
+                    )
+                }
+
             }
         }
     }
@@ -218,7 +289,7 @@ fun OrderImage(url: String) {
     Image(
         painter = painter,
         contentDescription = null,
-        contentScale = ContentScale.Crop,
+        // contentScale = ContentScale.Crop,
         modifier = Modifier
             .size(80.dp) // Adjust size as needed
             .clip(CircleShape) // Use CircleShape for fully rounded image
@@ -233,7 +304,7 @@ fun OrderText(
     fontSize: TextUnit = 14.sp, // Default font size
     textColor: Color = Color.Black, // Default text color
     fontWeight: FontWeight? = null, // Optional font weight
-    modifier: Modifier = Modifier // Optional modifier
+    modifier: Modifier = Modifier, // Optional modifier
 ) {
     Text(
         text = textToUse,

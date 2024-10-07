@@ -3,6 +3,7 @@ package com.example.e_commerce_iti.ui.theme.profile
 import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -10,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +40,8 @@ fun ProfileScreen(controller: NavController) {
            .fillMaxSize()
            .padding(innerPadding)) {
        ItemsSettingScreen("Info", { controller.navigate(Screens.Setting.route) })
+           Spacer(modifier = Modifier.padding(10.dp))
+       ItemsSettingScreen("My Orders", { controller.navigate(Screens.Orders.route) })
        }
     }
 }
