@@ -57,7 +57,7 @@ fun Actions(isAnonymous:Boolean){
     }
     Row(horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().height(100.dp)) {
+        modifier = Modifier.fillMaxWidth().height(50.dp)) {
         Button(onClick = {
            if(isAnonymous){
                showDialog = true

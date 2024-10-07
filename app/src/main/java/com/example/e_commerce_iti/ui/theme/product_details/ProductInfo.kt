@@ -45,7 +45,7 @@ fun ProductInfo(name:String, price:String, currency:String, rating: Int){
 
     var isSheetVisible by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxWidth().height(150.dp).padding(16.dp)) {
+    Box(modifier = Modifier.fillMaxWidth().height(105.dp).padding(8.dp)) {
         Text(text = name, fontSize = 24.sp, modifier = Modifier.align(Alignment.TopStart))
         Text(text ="$price $currency", fontSize =20.sp , modifier = Modifier.align(Alignment.BottomStart))
         Text(text = "Review", fontSize = 18.sp, modifier = Modifier.clickable {

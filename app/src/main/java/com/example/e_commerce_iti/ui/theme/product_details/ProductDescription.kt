@@ -19,13 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.checkerframework.common.returnsreceiver.qual.This
 
 @Composable
 fun ProductDescription(description:String){
-    Column(modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp)) {
-        Text(text = "Description", fontSize = 32.sp)
-        Spacer(Modifier.height(8.dp))
+    Column(modifier = Modifier.fillMaxWidth().height(195.dp).padding(8.dp)) {
+        Text(text = "Description", fontSize = 28.sp)
+        Spacer(Modifier.height(4.dp))
         Text(text = description, fontSize = 20.sp,
             modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()))
     }

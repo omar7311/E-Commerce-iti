@@ -23,9 +23,8 @@ fun ImageCarousel(images: List<String>) {
     val pagerState = rememberPagerState{
         images.size
     }
-    val coroutineScope = rememberCoroutineScope()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxWidth().height(225.dp)) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
