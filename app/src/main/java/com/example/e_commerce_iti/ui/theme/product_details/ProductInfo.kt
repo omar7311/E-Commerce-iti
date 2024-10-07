@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductInfo(name:String, price:String, currency:String, rating: Int){
+    var rating by remember { mutableStateOf(rating) }
 
     // State for controlling bottom sheet visibility
     val sheetState = rememberModalBottomSheetState(
@@ -72,7 +73,9 @@ fun ProductInfo(name:String, price:String, currency:String, rating: Int){
             }
         }
 
-        RatingBar(rating = rating, modifier = Modifier.align(Alignment.BottomEnd))
+        RatingBar(rating = rating, modifier = Modifier.align(Alignment.BottomEnd)){
+                newRating -> rating = newRating
+        }
     }
 }
 @Preview(showSystemUi = true)
@@ -91,10 +94,11 @@ fun RatingBar(
     starSize: Int = 32,
     filledStarColor: Color = Color.Yellow,
     unfilledStarColor: Color = Color.Gray,
+    onRatingChanged: (Int) -> Unit
 ) {
     Row(modifier = modifier) {
         for (i in 1..starCount) {
-            IconButton(onClick = {  }) {
+            IconButton(onClick = { onRatingChanged(i) }) {
                 Icon(
                     imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.Star,
                     contentDescription = null,
