@@ -1,5 +1,7 @@
 package com.example.e_commerce_iti.model.pojos
 
+import java.io.Serializable
+
 /**
  *      below class is the actuall one used to catch products
  */
@@ -17,7 +19,7 @@ data class Product(
     val variants: List<Variant>,
     val options: List<Option>,
     val images: List<Image>
-)
+) :Serializable
 data class Variant(
     val id: Long,
     val title: String,

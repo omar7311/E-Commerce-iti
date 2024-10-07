@@ -28,5 +28,4 @@ interface IRemoteDataSource {
     suspend fun createCustomerMeta(customer: Customer,metafields: MetaData) : Flow<MetaData>
     suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
     suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
-
 }

@@ -79,7 +79,9 @@ class RemoteDataSourceImp : IRemoteDataSource {
        return flow { emit(Customer(req.body()?.customer)) }
     }
 
-    override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
+    override suspend fun getCurrency(currency: String)=flow {
+        emit(RetrofitHelper.currencyService.getCurrencies()) }
+
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> = flow {
