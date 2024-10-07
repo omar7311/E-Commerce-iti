@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.e_commerce_iti.LoginScreen
 import com.example.e_commerce_iti.PRODUCT_ID
+import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
 import com.example.e_commerce_iti.model.pojos.Product
@@ -32,6 +33,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponView
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponsViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 /**
  *      sealed Class to manage navigation between Screens in the app
@@ -63,6 +66,12 @@ sealed class Screens(val route: String) {
 @Composable
 fun Navigation(networkObserver: NetworkObserver,context: Activity) {
     val navController= rememberNavController()
+    val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(context.getString(R.string.web_api_key))
+        .requestEmail()
+        .build()
+
+    val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
     NavHost(navController = navController, startDestination = Screens.Login.route) {
 
         composable(route = Screens.Home.route) {
@@ -82,7 +91,9 @@ fun Navigation(networkObserver: NetworkObserver,context: Activity) {
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController) }
         composable(route =Screens.Signup.route) {SignupScreen(navController,context)}
-        composable(route = Screens.Login.route){LoginScreen(navController,context)}
+        composable(route = Screens.Login.route){LoginScreen(navController,context,googleSignInClient){
+            navController.navigate(Screens.Home.route)
+        } }
 
         // here im modifying the product route to Extract the product ID from the route
         composable(route = Screens.ProductSc.route) {
