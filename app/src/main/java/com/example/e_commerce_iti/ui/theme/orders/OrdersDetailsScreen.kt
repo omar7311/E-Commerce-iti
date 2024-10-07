@@ -66,6 +66,9 @@ fun OrderDetailsScreen(
     ) { innerPadding ->
         val isConnected = networkObserver.isConnected.collectAsState()
         if (isConnected.value) {
+
+            FetchProductsDetails(orderViewModel,order)  // to fetch products from details
+
             Log.i("Orddddrr", "OrderDetailsScreen:$order")
             ScreenContent(
                 order,
@@ -113,8 +116,8 @@ fun OrderHeader(order: Order) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             InfoItem("Order #", order.orderNumber.toString())
-            InfoItem("Date", order.createdAt.substringBefore('T'))
         }
+        InfoItem("Date", order.createdAt.substringBefore('T'))
         InfoItem("Name", order.name)
     }
 }
