@@ -20,6 +20,7 @@ import com.example.e_commerce_iti.PRODUCT_ID
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -54,14 +55,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.app
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
-/**
- *      sealed Class to manage navigation between Screens in the app
- */
 
 sealed class Screens(val route: String) {
     object Setting : Screens(route = "setting")
@@ -116,6 +110,7 @@ fun Navigation(networkObserver: NetworkObserver,context: Activity) {
             val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
             CategoryScreen(homeViewModel,navController,networkObserver)
         }
+        currentUser
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
             CartScreen(cartViewModel,navController) }
