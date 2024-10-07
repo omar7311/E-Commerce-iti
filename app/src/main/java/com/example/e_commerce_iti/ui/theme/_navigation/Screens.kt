@@ -50,11 +50,15 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.Currenci
 import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.app
 import com.google.firebase.auth.auth
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 
 sealed class Screens(val route: String) {
@@ -110,7 +114,6 @@ fun Navigation(networkObserver: NetworkObserver,context: Activity) {
             val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
             CategoryScreen(homeViewModel,navController,networkObserver)
         }
-        currentUser
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
             CartScreen(cartViewModel,navController) }
