@@ -88,7 +88,7 @@ fun Navigation(networkObserver: NetworkObserver,context: Activity) {
         .build()
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
-    NavHost(navController = navController, startDestination = Screens.Login.route) {
+    NavHost(navController = navController, startDestination = if(Firebase.auth.currentUser==null) Screens.Login.route else Screens.Home.route) {
     val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
         LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
