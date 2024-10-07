@@ -37,6 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.deleteCurrentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -53,7 +55,7 @@ import com.google.firebase.auth.auth
 
 @Composable
 fun SettingScreen(viewModel: CurrencyViewModel,navController: NavController?=null) {
-    viewModel.getCustomerData(Firebase.auth.currentUser!!.email!!)
+    if (currentUser!=null) viewModel.getCustomerData(currentUser?.email!!)
     viewModel.getCurrency()
     val state=viewModel.userStateData.collectAsState()
     Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(.8f).padding( 16.dp), verticalArrangement = Arrangement.SpaceAround){
@@ -63,7 +65,16 @@ fun SettingScreen(viewModel: CurrencyViewModel,navController: NavController?=nul
         Currencies(viewModel)
         ItemsSettingScreen("Contact us")
         ItemsSettingScreen("About us")
-    Button(onClick = {} , modifier = Modifier.fillMaxWidth()) { Text(text = "Logout") }
+    Button(onClick = {
+        navController?.navigate(Screens.Login.route) {
+                popUpTo(Screens.Login.route) { inclusive = false }
+                restoreState = true
+            }
+        Firebase.auth.signOut()
+        deleteCurrentUser()
+        Log.e("currentUser", currentUser.toString())
+
+    } , modifier = Modifier.fillMaxWidth()) { Text(text = "Logout") }
     }else{
         CircularProgressIndicator()
     }

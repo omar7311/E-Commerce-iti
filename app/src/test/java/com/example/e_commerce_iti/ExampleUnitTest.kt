@@ -2,9 +2,11 @@ package com.example.e_commerce_iti
 
 import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme.createCustomer
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -19,7 +21,7 @@ import org.robolectric.RobolectricTestRunner
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-//@RunWith(RobolectricTestRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class ExampleUnitTest {
 //    @Test
 //    fun addition_isCorrect() :Unit= runBlocking {
@@ -36,11 +38,14 @@ class ExampleUnitTest {
 //    }
     @Test
     fun createCustomertest():Unit= runBlocking {
-        val data=RemoteDataSourceImp()
-
-
-        val customerx= CustomerX(first_name = "gheaftfmed", last_name = "sgggagttfmy", email = "sdekttt9853513@gmail.com", phone = "+14125957791")
-        val customer=Customer(customer =customerx)
-        data.createCustomer(customer)
+//        val data=RemoteDataSourceImp()
+//
+//
+//        val customerx= CustomerX(first_name = "gheaftfmed", last_name = "sgggagttfmy", email = "sdekttt9853513@gmail.com", phone = "+14125957791")
+//        val customer=Customer(customer =customerx)
+//        data.createCustomer(customer)
+        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        val currentUser= getCurrent(email = "mostafa.123456@gmail.com", cartRepository = ReposiatoryImpl((RemoteDataSourceImp()), LocalDataSourceImp(context.getSharedPreferences(LocalDataSourceImp.currencies, Context.MODE_PRIVATE))))
+        println(currentUser)
     }
 }

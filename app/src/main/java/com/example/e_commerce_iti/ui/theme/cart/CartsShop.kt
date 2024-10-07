@@ -29,6 +29,8 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -47,13 +49,14 @@ import kotlinx.coroutines.flow.SharedFlow
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
-    viewModel.getCart(Firebase.auth.currentUser!!.email!!)
+    if (currentUser!=null) {
+        viewModel.getCartDraftOrder(currentUser!!.cart)
+    }
     viewModel.getCurrency()
     Log.i("CartScreen", "Screen Rebuild")
     val currency = viewModel.currentCurrency.collectAsState()
     // Observing the product and draft order states
     val productState = viewModel.product.collectAsState()
-    val draftOrderState = viewModel.cartState.collectAsState()
 
     // Store total amount in a separate state that won't trigger LazyColumn recomposition
     val totalAmount = remember { mutableStateOf(0.0) }
@@ -65,7 +68,7 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
     ) {
         if (productState.value is UiState.Success){
             val products = (productState.value as? UiState.Success<MutableList<Product>>)?.data
-            val draftOrder = (draftOrderState.value as? UiState.Success<DraftOrder>)?.data
+            val draftOrder = (viewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
             val currency2 = (currency.value as? UiState.Success<Pair<String, Float>>)!!.data
 
             if (products!!.isNotEmpty()) {

@@ -38,17 +38,19 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
            }
        }
     }
-    private suspend fun getCartDraftOrder(id: Long){
-     val cart= cartRepository.getCart(id).first()
-        _cartState.value=UiState.Success(cart)
-        _product.value=UiState.Loading
-        val product= mutableListOf<Product>()
-        for (i in cart.line_items) {
-            if (i.product_id != null) {
-                product.add(cartRepository.getProductByID(i.product_id!!.toLong()).first())
-            }
-        }
-        _product.value=UiState.Success(product)
+      fun getCartDraftOrder(id: Long){
+     viewModelScope.launch {
+         val cart = cartRepository.getCart(id).first()
+         _cartState.value = UiState.Success(cart)
+         _product.value = UiState.Loading
+         val product = mutableListOf<Product>()
+         for (i in cart.line_items) {
+             if (i.product_id != null) {
+                 product.add(cartRepository.getProductByID(i.product_id!!.toLong()).first())
+             }
+         }
+         _product.value = UiState.Success(product)
+     }
     }
     suspend fun updateCart(id: Long,draftOrder: DraftOrder){
     }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.internal.composableLambda
@@ -18,6 +19,7 @@ import com.example.e_commerce_iti.LoginScreen
 import com.example.e_commerce_iti.PRODUCT_ID
 import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
+import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -46,6 +48,13 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.Currenci
 import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
+import com.google.firebase.Firebase
+import com.google.firebase.app
+import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  *      sealed Class to manage navigation between Screens in the app
@@ -86,10 +95,11 @@ fun Navigation(networkObserver: NetworkObserver,context: Activity) {
     val cartViewModelFac= CartViewModelFac(repository)
     val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
     composable(route = Screens.Home.route) {
-            // Create ViewModel using the factory
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
-
+            LaunchedEffect(Unit){
+                if (Firebase.auth.currentUser?.email!=null) getCurrent(Firebase.auth.currentUser?.email!!,repository)
+            }
             HomeScreen(CopuonsViewModel,homeViewModel, navController,networkObserver)
         }
 
