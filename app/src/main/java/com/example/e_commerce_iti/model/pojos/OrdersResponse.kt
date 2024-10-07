@@ -1,7 +1,6 @@
 package com.example.e_commerce_iti.model.pojos
 
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
 
 data class OrdersResponse(
     val orders: List<Order>

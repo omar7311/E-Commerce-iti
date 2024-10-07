@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.e_commerce_iti.DEFAULT_CUSTOM_COLLECTION_ID
+import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.CustomCollectionStates
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
@@ -137,7 +138,7 @@ fun CategoryScreen(
             }
         }else
         {
-            MyLottieAnimation()  // play lotti when no network
+            NetworkErrorContent() // when no connection
         }
 
     }

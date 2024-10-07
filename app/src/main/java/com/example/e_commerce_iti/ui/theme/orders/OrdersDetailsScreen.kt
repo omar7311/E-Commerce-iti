@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -31,7 +30,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +43,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.viewModelScope
 import coil.compose.rememberAsyncImagePainter
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Address
@@ -53,7 +50,6 @@ import com.example.e_commerce_iti.model.pojos.Customer
 import com.example.e_commerce_iti.model.pojos.LineItem
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
-import kotlinx.coroutines.flow.first
 
 
 @Composable
@@ -71,7 +67,14 @@ fun OrderDetailsScreen(
         val isConnected = networkObserver.isConnected.collectAsState()
         if (isConnected.value) {
             Log.i("Orddddrr", "OrderDetailsScreen:$order")
-            ScreenContent(order,orderViewModel, modifier = Modifier.padding(innerPadding)) // ScreenContent
+            ScreenContent(
+                order,
+                orderViewModel,
+                modifier = Modifier.padding(innerPadding)
+            ) // ScreenContent
+        } else {
+            NetworkErrorContent() // when no connection
+
         }
     }
 }
@@ -126,7 +129,10 @@ fun OrderSummary(order: Order) {
             Text("Order Summary", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(8.dp))
             InfoItem("Subtotal", "${order.currentSubtotalPrice} ${order.currency}")
-            InfoItem("Shipping", "${order.totalShippingPriceSet.shopMoney.amount} ${order.currency}")
+            InfoItem(
+                "Shipping",
+                "${order.totalShippingPriceSet.shopMoney.amount} ${order.currency}"
+            )
             InfoItem("Tax", "${order.currentTotalTax} ${order.currency}")
             InfoItem("Discounts", "-${order.totalDiscounts} ${order.currency}")
             Divider(modifier = Modifier.padding(vertical = 8.dp))
@@ -229,26 +235,29 @@ fun InfoItem(label: String, value: String, fontWeight: FontWeight = FontWeight.N
 }
 
 
-
 /**
  *      this for orders items images and titels
  */
 @Composable
-fun FetchProductsDetails(orderViewModel: OrdersViewModel,order:Order){
+fun FetchProductsDetails(orderViewModel: OrdersViewModel, order: Order) {
     val productsIds = getLineItemsProductsIds(order)  // get line item products frist
     Log.i("ProductIds", "FetchProductsDetails: $productsIds")
-    val ActualProducts = getActualProductsFromApi(productsIds.toMutableList(),orderViewModel) // then get Actuall products
-    OrderItemsRow(ActualProducts,orderViewModel)
+    val ActualProducts = getActualProductsFromApi(
+        productsIds.toMutableList(),
+        orderViewModel
+    ) // then get Actuall products
+    OrderItemsRow(ActualProducts, orderViewModel)
 
 }
+
 @Composable
 fun OrderItemsRow(
     products: List<Product>,
     orderViewModel: OrdersViewModel
 ) {
     val configuration = LocalConfiguration.current
- /*   val screenWidth = configuration.screenWidthDp.dp
-    val ActualProducts = getActualProductsFromApi(products.toMutableList(),orderViewModel)*/
+    /*   val screenWidth = configuration.screenWidthDp.dp
+       val ActualProducts = getActualProductsFromApi(products.toMutableList(),orderViewModel)*/
     LazyRow(
         modifier = Modifier
             .padding(7.dp)
@@ -263,32 +272,32 @@ fun OrderItemsRow(
 
 @Composable
 fun OrderItems(
-   product:Product,
-    ) {
+    product: Product,
+) {
 
-        Column(
-            modifier = Modifier
-                .padding(4.dp)
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(product.images[0].src),
+    Column(
+        modifier = Modifier
+            .padding(4.dp)
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(product.images[0].src),
             contentDescription = null,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface),
-                contentScale = ContentScale.FillBounds
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = product.title,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
-                textAlign = TextAlign.Center
-            )
-        }
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surface),
+            contentScale = ContentScale.FillBounds
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = product.title,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 fun getLineItemsProductsIds(order: Order): List<Long> {
@@ -317,8 +326,12 @@ fun getLineItemsProductsIds(order: Order): List<Long> {
     return ActualProducts
 }*/
 @Composable
-fun getActualProductsFromApi(productIds: List<Long>, orderViewModel: OrdersViewModel): List<Product> {
-    val actualProducts = remember { mutableStateListOf<Product>() } // State-backed list for recomposition
+fun getActualProductsFromApi(
+    productIds: List<Long>,
+    orderViewModel: OrdersViewModel
+): List<Product> {
+    val actualProducts =
+        remember { mutableStateListOf<Product>() } // State-backed list for recomposition
     val scope = rememberCoroutineScope() // Use a coroutine scope for launching coroutines
 
     LaunchedEffect(productIds) { // Re-run when productIds changes
@@ -332,7 +345,10 @@ fun getActualProductsFromApi(productIds: List<Long>, orderViewModel: OrdersViewM
                 orderViewModel.singleProductFlow.collect { state ->
                     when (state) {
                         is UiState.Success -> actualProducts.add(state.data)
-                        is UiState.Error -> Log.e("Product Error", state.message) // Handle errors if necessary
+                        is UiState.Error -> Log.e(
+                            "Product Error",
+                            state.message
+                        ) // Handle errors if necessary
                         else -> {} // Handle loading state if needed
                     }
                 }

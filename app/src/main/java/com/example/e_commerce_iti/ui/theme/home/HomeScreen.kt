@@ -85,6 +85,7 @@ import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.example.e_commerce_iti.NetworkErrorContent
 
 /**
  *      don't forget navigation
@@ -108,7 +109,7 @@ fun HomeScreen(
         if (isConnected.value) {
             HomeContent(couponViewModel, homeViewModel, controller, Modifier.padding(innerPadding))
         } else {
-            MyLottieAnimation()
+            NetworkErrorContent() // when no connection
         }
     }
 

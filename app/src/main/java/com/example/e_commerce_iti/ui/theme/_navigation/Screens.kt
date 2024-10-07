@@ -1,15 +1,9 @@
 package com.example.e_commerce_iti.ui.theme._navigation
-
 import android.app.Activity
 import android.content.Context
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.internal.composableLambda
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,10 +16,7 @@ import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
 import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
 import com.example.e_commerce_iti.model.pojos.Order
-import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
@@ -54,15 +45,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
-
 import com.google.firebase.Firebase
-import com.google.firebase.app
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.gson.Gson

@@ -1,10 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.product_details
-
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,8 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
-import com.example.e_commerce_iti.ui.theme.home.SimpleText
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun ProductDetails(productId: Long, controller: NavController) {
     Scaffold(
