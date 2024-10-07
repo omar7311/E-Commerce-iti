@@ -32,7 +32,6 @@ fun ImageCarousel(images: List<String>) {
             Image(
                 painter = rememberImagePainter(images[page]),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
         }

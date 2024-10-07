@@ -29,6 +29,7 @@ interface IReposiatory {
     suspend fun updateCurrency(currency: String):Flow<Pair<String, Float>>
     suspend fun updateCart(cart:DraftOrder):Flow<DraftOrder>
      suspend fun createCustomer(customer: Customer): Flow<Customer>
+
     suspend fun getMetaFields(customerId: Long): Flow<MetaData>
     suspend fun getCart(id:Long): Flow<DraftOrder>
      suspend fun getProductByID(id: Long): Flow<Product>

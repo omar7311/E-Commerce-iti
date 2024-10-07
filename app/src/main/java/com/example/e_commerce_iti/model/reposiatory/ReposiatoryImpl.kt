@@ -76,6 +76,7 @@ class ReposiatoryImpl(val remote:IRemoteDataSource,val local: IlocalDataSource) 
     override suspend fun getProductByID(id: Long): Flow<Product> {
         return remote.getProductByID(id)
     }
+
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
         return remote.getCustomCollections()
     }

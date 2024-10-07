@@ -109,6 +109,9 @@ class RemoteDataSourceImp : IRemoteDataSource {
        return flow { emit(Customer(req.body()?.customer)) }
     }
 
+    override suspend fun getCurrency(currency: String)=flow {
+        emit(RetrofitHelper.currencyService.getCurrencies()) }
+
     override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
     override suspend fun getMetaFields(customerId: Long): Flow<MetaData> {
         return flow { emit(RetrofitHelper.service.getCustomerMetafields(customerId)) }
