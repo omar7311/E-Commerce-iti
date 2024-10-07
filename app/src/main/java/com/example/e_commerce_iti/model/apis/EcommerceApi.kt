@@ -68,7 +68,7 @@ interface EcommerceApi {
     suspend fun getProduct(@Path("id") id: Long): SearchedProductResponse
     @POST("customers/{customer_id}/metafields.json")
     suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData)
-    @POST("draft_orders/{id}.json")
-    suspend fun updateCartDraftOrder(@Path("id") id: Long, @Body draftOrder: DraftOrder): Response<SearchDraftOrder>
+    @PUT("draft_orders/{id}.json")
+    suspend fun updateCartDraftOrder(@Path("id") id: Long, @Body draftOrder: SearchDraftOrder): Response<SearchDraftOrder>
 
 }

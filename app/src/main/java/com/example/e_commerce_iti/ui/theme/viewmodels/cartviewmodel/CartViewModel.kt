@@ -22,22 +22,7 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
     val cartState: StateFlow<UiState<DraftOrder>> = _cartState
     private val _product = MutableStateFlow<UiState<MutableList<Product>>>(UiState.Loading)
      val product :StateFlow<UiState<MutableList<Product>>> = _product
-    var job: Job? = null
-    fun getCart(customer :String) {
-        job?.cancel()
-        job=viewModelScope.launch(Dispatchers.IO) {
-        val user= cartRepository.getCustomer(email = customer).first()
-        getMetaFilds(user.id!!)
-        }
-    }
-  private suspend fun getMetaFilds(id:Long){
-       val meta= cartRepository.getMetaFields(id).first()
-       for (i in meta.metafields!!){
-           if (i?.key=="cart_id"){
-               getCartDraftOrder(i.value!!.toLong())
-           }
-       }
-    }
+
       fun getCartDraftOrder(id: Long){
      viewModelScope.launch {
          val cart = cartRepository.getCart(id).first()
@@ -49,6 +34,7 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
                  product.add(cartRepository.getProductByID(i.product_id!!.toLong()).first())
              }
          }
+         Log.i("CartViewModel", "Product: $product")
          _product.value = UiState.Success(product)
      }
     }
@@ -59,17 +45,21 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
     }
     private var _currentCurrency = MutableStateFlow<UiState<Pair<String, Float>>>(UiState.Loading)
     val currentCurrency: StateFlow<UiState<Pair<String, Float>>> = _currentCurrency
-     fun deleteItemCart(id: Long){
+
+     fun updateCart(id: Long){
         val cart=_cartState.value as UiState.Success<DraftOrder>
+         val dd=cart.data.line_items.find { it.id==id }
         val c= cart.data.line_items.filter {  id!=it.id }
          cart.data.line_items=c
         viewModelScope.launch {
             cartRepository.updateCart(cart.data)
-            val data=(_product.value as UiState.Success<MutableList<Product>>).data.filter { it.id!=id }
+            val data=(_product.value as UiState.Success<MutableList<Product>>).data.filter { it.id==dd!!.product_id }
             _product.value=UiState.Loading
+             Log.i("CartViewModel", "Product: $data")
             _product.value=UiState.Success(data.toMutableList())
         }
     }
+
     fun getCurrency(){
         viewModelScope.launch {
             _currentCurrency.value=UiState.Success(cartRepository.getChoosedCurrency().first())
