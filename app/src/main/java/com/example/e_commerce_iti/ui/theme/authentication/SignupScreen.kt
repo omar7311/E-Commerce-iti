@@ -15,17 +15,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager
+import com.example.e_commerce_iti.ui.theme.createCustomer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,12 +109,17 @@ fun SignupScreen(
         // Sign up button
         Button(
             onClick = {
+            //    var flag= false
                 if (password == confirmPassword && fullName.isNotBlank()
                     && email.endsWith(".com") && password.length > 5
-                    && phone.length==11)
+                    )
                         {
                     FirebaseAuthManager.signUp(email, password) { success, error ->
                         if (success) {
+                            //flag=true
+                           GlobalScope.launch(Dispatchers.IO){
+                               RemoteDataSourceImp().createCustomer(createCustomer(email,fullName,fullName,phone))
+                            }
                             controller.navigate(Screens.Login.route)
                         } else {
                             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
@@ -115,6 +128,9 @@ fun SignupScreen(
                 }else{
                     Toast.makeText(context, "error, enter valid data", Toast.LENGTH_LONG).show()
                 }
+//                if (flag){
+//                   creataccunt(email,fullName,phone)
+//                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -123,5 +139,12 @@ fun SignupScreen(
 
 
 
+    }
+
+}
+@Composable
+fun creataccunt(email:String,fname:String,phone:String){
+    LaunchedEffect(Unit) {
+        RemoteDataSourceImp().createCustomer(createCustomer(email,fname,fname,phone))
     }
 }

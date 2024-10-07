@@ -41,10 +41,12 @@ import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.cart.Carts
 import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun ChangeUserDataScreen(viewModel: ChangeUserDataViewModel, navController: NavController) {
-    viewModel.getCustomerData("amgedtamer123456789@gmail.com")
+    viewModel.getCustomerData(Firebase.auth.currentUser!!.email!!)
     ChangeUserDataScreenContent(viewModel)
 }
 

@@ -7,6 +7,8 @@ import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
+import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
+import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
@@ -57,6 +59,19 @@ class ReposiatoryImpl(val remote:IRemoteDataSource,val local: IlocalDataSource) 
     }
 
     override suspend fun createCustomer(customer: Customer)=remote.createCustomer(customer)
+    override suspend fun getMetaFields(customerId: Long): Flow<MetaData> {
+        return remote.getMetaFields(customerId)
+    }
+
+
+
+    override suspend fun getCart(id: Long): Flow<DraftOrder> {
+        return remote.getCart(id)
+    }
+
+    override suspend fun getProductByID(id: Long): Flow<Product> {
+        return remote.getProductByID(id)
+    }
 
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
         return remote.getCustomCollections()
