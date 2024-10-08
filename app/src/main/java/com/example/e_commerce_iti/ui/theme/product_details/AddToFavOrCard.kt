@@ -38,7 +38,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewMode
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun Actions(isAnonymous:Boolean,navController: NavController,cartViewModel: CartViewModel){
+fun Actions(isAnonymous:Boolean,navController: NavController){
     var showDialog by remember { mutableStateOf(false) }
 
 

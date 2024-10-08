@@ -13,7 +13,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
 import com.example.e_commerce_iti.model.pojos.Product
-import com.example.e_commerce_iti.model.pojos.SearchedProductResponse
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.OrdersResponse
 import com.example.e_commerce_iti.model.pojos.ProductWrapper
@@ -22,11 +21,9 @@ import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.metadata.Metafield
-import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
-import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
 import org.json.JSONObject
 import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
 import retrofit2.Response

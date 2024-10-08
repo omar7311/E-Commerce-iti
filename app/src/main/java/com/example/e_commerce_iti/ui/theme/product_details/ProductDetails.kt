@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.product_details
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
@@ -28,8 +30,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ProductDetails(product: Product, controller: NavController,cartViewModel: CartViewModel) {
-fun ProductDetails(product: Product, controller: NavController,context: Context) {
+fun ProductDetails(product: Product, controller: NavController,context:Context) {
+    currentUser?.fav
     Scaffold(
         topBar = { CustomTopBar("Product Details", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller,context) },     // Keep the navigation controller for buttons
@@ -44,7 +46,7 @@ fun ProductDetails(product: Product, controller: NavController,context: Context)
             ImageCarousel(images)
             ProductInfo(product.title,product.variants[0].price,"EG",3)
             ProductDescription(description)
-            FirebaseAuth.getInstance().currentUser?.let { Actions(it.isAnonymous,controller,cartViewModel) }
+            FirebaseAuth.getInstance().currentUser?.let { Actions(it.isAnonymous,controller) }
         }
     }
 }

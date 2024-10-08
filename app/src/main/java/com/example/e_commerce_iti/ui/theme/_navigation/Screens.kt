@@ -52,7 +52,6 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
 
-import com.google.firebase.Firebase
 import com.google.firebase.app
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
@@ -116,7 +115,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         .build()
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
-    NavHost(navController = navController, startDestination = Screens.Orders.route) {
+    NavHost(navController = navController, startDestination = Screens.Login.route) {
         val repository: IReposiatory = ReposiatoryImpl(
             RemoteDataSourceImp(), LocalDataSourceImp(
                 context.getSharedPreferences(
@@ -171,8 +170,8 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.Search.route) { SearchScreen(navController,context) }
         composable(route = Screens.Favorite.route) {
             val cartViewModel:CartViewModel = viewModel(factory = cartFactory)
-            FavoriteScreen(cartViewModel,navController) }
-        composable(route = Screens.Search.route) { SearchScreen(navController) }
+            FavoriteScreen(navController) }
+        composable(route = Screens.Search.route) { SearchScreen(navController,context) }
         composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
         composable(route = Screens.Login.route) {
             LoginScreen(navController, context, googleSignInClient) {
