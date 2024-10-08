@@ -29,6 +29,7 @@ interface IRemoteDataSource {
     suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
     suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
     suspend fun getMetaFields(customerId: Long): Flow<MetaData>
+    suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder>
     suspend fun getCart(id:Long): Flow<DraftOrder>
     suspend fun getProductByID(id: Long): Flow<Product>
 

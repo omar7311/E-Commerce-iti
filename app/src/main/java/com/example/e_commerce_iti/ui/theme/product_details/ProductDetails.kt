@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.product_details
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,10 +28,10 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ProductDetails(product: Product, controller: NavController) {
+fun ProductDetails(product: Product, controller: NavController,context: Context) {
     Scaffold(
         topBar = { CustomTopBar("Product Details", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
+        bottomBar = { CustomButtonBar(controller,context) },     // Keep the navigation controller for buttons
     ) { innerPadding ->
     // Use padding for the content
         Column(modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState())){

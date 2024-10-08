@@ -21,6 +21,7 @@ import com.example.e_commerce_iti.PRODUCT_ID
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -51,6 +52,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.Currency
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.app
 import com.google.firebase.auth.auth
@@ -59,8 +62,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.gson.Gson
 import java.net.URLEncoder
 
@@ -100,25 +101,6 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
     NavHost(navController = navController, startDestination = Screens.Login.route) {
-        val repository: IReposiatory = ReposiatoryImpl(
-            RemoteDataSourceImp(), LocalDataSourceImp(
-                context.getSharedPreferences(
-                    LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE
-                )
-            )
-        )
-        val curreneyFactory: CurrenciesViewModelFactory = CurrenciesViewModelFactory(repository)
-        val cartFactory: CartViewModelFac = CartViewModelFac(repository)
-        val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
-        val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
-        val changeUserDataFactory: ChangeUserDataViewModelFactory =
-            ChangeUserDataViewModelFactory(repository)
-        composable(route = Screens.Home.route) {
-            // Create ViewModel using the factory
-            val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
-            val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
-
-            HomeScreen(CopuonsViewModel, homeViewModel, navController, networkObserver)
     val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
         LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
@@ -132,35 +114,34 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
             LaunchedEffect(Unit){
-                if (Firebase.auth.currentUser?.email!=null) getCurrent(Firebase.auth.currentUser?.email!!,repository)
+                if (Firebase.auth.currentUser!=null&&!Firebase.auth.currentUser!!.email.isNullOrBlank()) {
+                    val e=Firebase.auth.currentUser
+                    getCurrent(e!!.email!!, repository)
+                }
             }
-            HomeScreen(CopuonsViewModel,homeViewModel, navController,networkObserver)
+            HomeScreen(context,CopuonsViewModel,homeViewModel, navController,networkObserver)
         }
 
         composable(route = Screens.Category.route) {
-            val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
-            CategoryScreen(homeViewModel, navController, networkObserver)
+            val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
+            CategoryScreen(homeViewModel,navController,networkObserver, LocalContext.current)
         }
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            CartScreen(cartViewModel, navController)
-        }
+            CartScreen(cartViewModel,navController,context) }
         composable(route = Screens.Profile.route) {
             ProfileScreen(navController)
         }
         composable(route = Screens.ChangeUserData.route) {
-            val changeUserDataViewModel: ChangeUserDataViewModel =
-                viewModel(factory = changeUserDataFactory)
-            ChangeUserDataScreen(viewModel = changeUserDataViewModel, navController = navController)
+            val changeUserDataViewModel: ChangeUserDataViewModel = viewModel(factory = changeUserDataFactory)
+            ChangeUserDataScreen(viewModel = changeUserDataViewModel,navController = navController)
         }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
-        composable(route = Screens.Search.route) { SearchScreen(navController) }
-        composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
-        composable(route = Screens.Login.route) {
-            LoginScreen(navController, context, googleSignInClient) {
-                navController.navigate(Screens.Home.route)
-            }
-        }
+        composable(route = Screens.Search.route) { SearchScreen(navController,context) }
+        composable(route =Screens.Signup.route) {SignupScreen(navController,context)}
+        composable(route = Screens.Login.route){LoginScreen(navController,context,googleSignInClient){
+            navController.navigate(Screens.Home.route)
+        } }
 
         // here im modifying the product route to Extract the product ID from the route
         composable(route = Screens.ProductSc.route) {
@@ -168,12 +149,12 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val vendorName = it.arguments?.getString(VENDOR_NAME)
             if (vendorName != null) {
-                ProductScreen(homeViewModel, navController, vendorName)
+                ProductScreen(homeViewModel,navController, vendorName)
             }
         }
         composable(route = Screens.Setting.route) {
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
-            SettingScreen(currencyViewModel, navController)
+            SettingScreen(currencyViewModel,navController)
         }
 
         composable(
@@ -183,12 +164,13 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             })
         ) { backStackEntry ->
             val gsonProduct=backStackEntry.arguments?.getString("product")
-              val gson=Gson()
-               val product=gson.fromJson(gsonProduct,Product::class.java)
-                ProductDetails(product = product, controller = navController)
+            val gson=Gson()
+            val product=gson.fromJson(gsonProduct,Product::class.java)
+            ProductDetails(product = product, controller = navController,context)
 
 
         }
+        }
+
 
     }
-}

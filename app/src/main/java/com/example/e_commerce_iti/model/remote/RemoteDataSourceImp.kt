@@ -109,12 +109,18 @@ class RemoteDataSourceImp : IRemoteDataSource {
        return flow { emit(Customer(req.body()?.customer)) }
     }
 
-    override suspend fun getCurrency(currency: String)=flow {
-        emit(RetrofitHelper.currencyService.getCurrencies()) }
+
 
     override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
     override suspend fun getMetaFields(customerId: Long): Flow<MetaData> {
         return flow { emit(RetrofitHelper.service.getCustomerMetafields(customerId)) }
+    }
+
+    override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
+        val data=RetrofitHelper.service.updateCartDraftOrder(cart.id!!,SearchDraftOrder(cart))
+        println(cart)
+        println(data.errorBody()?.string())
+        return flow { emit(data.body()!!.draft_order!!) }
     }
 
     override suspend fun getCart(id: Long): Flow<DraftOrder> {
