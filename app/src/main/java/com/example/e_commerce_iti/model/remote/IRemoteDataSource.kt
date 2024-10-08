@@ -8,9 +8,14 @@ import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
+import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCodeX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
+import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
+import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import kotlinx.coroutines.flow.Flow
 
@@ -28,9 +33,12 @@ interface IRemoteDataSource {
     suspend fun createCustomer(customer: Customer) : Flow<Customer>
     suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
     suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
-    suspend fun getMetaFields(customerId: Long): Flow<MetaData>
+    suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse>
     suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder>
     suspend fun getCart(id:Long): Flow<DraftOrder>
     suspend fun getProductByID(id: Long): Flow<Product>
-
+    suspend fun getDiscountCode(code: String): Flow<DiscountCodeX>
+    suspend fun getPriceRulesByid(priceId: Long): Flow<PriceRule>
+    suspend fun updateMetaData(id: Long, metaData: ResponseMetaData): Flow<ResponseMetaData>
+    suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
 }

@@ -17,6 +17,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,8 +31,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
+import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun Actions(isAnonymous:Boolean,navController: NavController){
@@ -80,6 +88,18 @@ fun Actions(isAnonymous:Boolean,navController: NavController){
                 showDialog = true
             }
             else{
+                CoroutineScope(Dispatchers.IO).launch {
+//                   val cart= RemoteDataSourceImp().getCart(currentUser!!.cart).first()
+//                    val lineItems=LineItems()
+//                    lineItems.variant_id=product.variants[0].id
+//                    lineItems.product_id=product.id
+//                    lineItems.quantity=1
+//                    cart.line_items.find { it.variant_id==product.variants[0].id }
+//                    val items=ArrayList<LineItems>(cart.line_items)
+//                    items.add(lineItems)
+//                    cart.line_items=items.toList()
+//                    RemoteDataSourceImp().updateCart(cart)
+                }
 
             }
         }) {

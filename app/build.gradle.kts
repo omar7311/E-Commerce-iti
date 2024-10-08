@@ -123,4 +123,5 @@ dependencies {
     // lotii animation
     implementation ("com.airbnb.android:lottie-compose:5.0.3")
 
+    implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
 }

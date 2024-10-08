@@ -31,6 +31,7 @@ import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.network.NetworkObserver
+import com.example.e_commerce_iti.ui.theme.PaymentScreen
 import com.example.e_commerce_iti.ui.theme.cart.CartScreen
 import com.example.e_commerce_iti.ui.theme.category.CategoryScreen
 import com.example.e_commerce_iti.ui.theme.changeuserinfo.ChangeUserDataScreen
@@ -41,6 +42,8 @@ import com.example.e_commerce_iti.ui.theme.products.ProductScreen
 import com.example.e_commerce_iti.ui.theme.profile.ProfileScreen
 import com.example.e_commerce_iti.ui.theme.search.SearchScreen
 import com.example.e_commerce_iti.ui.theme.settings.SettingScreen
+import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModel
@@ -73,6 +76,7 @@ sealed class Screens(val route: String) {
     object Signup : Screens(route = "signUP")
     object Login : Screens(route = "Login")
     object Cart : Screens(route = "cart")
+    object Payment : Screens(route = "Payment")
     object Profile : Screens(route = "profile")
     object Favorite : Screens(route = "favorite")
     object ChangeUserData : Screens(route = "change_user_data")
@@ -100,7 +104,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         .build()
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
-    NavHost(navController = navController, startDestination = Screens.Login.route) {
+    NavHost(navController = navController, startDestination = if (Firebase.auth.currentUser==null)Screens.Login.route else Screens.Home.route) {
     val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
         LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
@@ -108,6 +112,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
     val cartFactory: CartViewModelFac = CartViewModelFac(repository)
     val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
     val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
+    val paymentViewModelFactory = PaymentViewModelFactory(repository)
     val cartViewModelFac= CartViewModelFac(repository)
     val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
     composable(route = Screens.Home.route) {
@@ -135,6 +140,10 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.ChangeUserData.route) {
             val changeUserDataViewModel: ChangeUserDataViewModel = viewModel(factory = changeUserDataFactory)
             ChangeUserDataScreen(viewModel = changeUserDataViewModel,navController = navController)
+        }
+        composable(route = Screens.Payment.route) {
+            val paymentViewModel: PaymentViewModel = viewModel(factory = paymentViewModelFactory)
+            PaymentScreen(navController,paymentViewModel)
         }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController,context) }

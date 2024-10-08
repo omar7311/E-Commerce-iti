@@ -1,6 +1,8 @@
 package com.example.e_commerce_iti.model.remote
 
 import android.util.Log
+import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.metadata
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
@@ -10,13 +12,18 @@ import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
+import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCodeX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
 import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
+import com.example.e_commerce_iti.model.pojos.invoice.DraftOrderInvoice
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.metadata.Metafield
 import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
+import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import com.google.gson.Gson
@@ -93,6 +100,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
         val searchDraftOrder=SearchDraftOrder()
         val lineItems=LineItems()
         lineItems.quantity=1
+        lineItems.taxable=false
         lineItems.price="0.00"
         lineItems.title="Dummy"
         val customer= com.example.e_commerce_iti.model.pojos.draftorder.Customer(id =customerx.id)
@@ -112,7 +120,8 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
 
     override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
-    override suspend fun getMetaFields(customerId: Long): Flow<MetaData> {
+    override suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse> {
+
         return flow { emit(RetrofitHelper.service.getCustomerMetafields(customerId)) }
     }
 
@@ -134,6 +143,47 @@ class RemoteDataSourceImp : IRemoteDataSource {
         Log.e("12312321312313213",  "${data} ------------ $id")
         return flow { emit(data.product) }
     }
+
+    override suspend fun getDiscountCode(code: String): Flow<DiscountCodeX> {
+        return flow { emit(RetrofitHelper.service.getDiscountCode(code).discount_codes.get(0)) }
+    }
+
+    override suspend fun getPriceRulesByid(priceId: Long): Flow<PriceRule> {
+        return flow { emit(RetrofitHelper.service.getPriceRulesByid(priceId).price_rule) }
+    }
+
+    override suspend fun updateMetaData(
+        id: Long,
+        metaData: ResponseMetaData
+    ): Flow<ResponseMetaData> {
+        return flow { emit(RetrofitHelper.service.updateCustomerMetafield(id,metaData.id!!,UReposeMeta(metaData)))}
+    }
+
+    override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
+        try {
+            val draft1 = createDumpDraft(
+                CustomerX(
+                    id = currentUser!!.id,
+                    email = currentUser!!.email,
+                    first_name = currentUser!!.name,
+                    last_name = currentUser!!.lname
+                )
+            )
+            val draft = Gson().fromJson(Gson().toJson(draft1), RDraftOrderRequest::class.java)
+            val data = RetrofitHelper.service.createDraftOrder(draft)
+            metadata?.value=data.body()!!.draft_order!!.id.toString()
+            metadata=RetrofitHelper.service.updateCustomerMetafield(currentUser!!.id, metadata!!.id!!,UReposeMeta(metadata!!))
+//            val invoice= DraftOrderInvoice()
+//            RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
+         RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
+         return flowOf(true)
+        } catch (e: Exception) {
+            println(e.message.toString())
+            Log.e("12312321312313213",  "${e} ------------ ")
+            return flowOf(false)
+        }
+    }
+
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> = flow {
@@ -178,12 +228,9 @@ data class RDraftOrder(
     val line_items: List<RLineItem>
 )
 
-data class RCustomer(
-    val id: Long
-)
-
 data class RLineItem(
     val price: String,
     val quantity: Int,
     val title: String
 )
+data class UReposeMeta(val metafield: ResponseMetaData)
