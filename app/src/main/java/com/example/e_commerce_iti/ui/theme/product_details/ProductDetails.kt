@@ -38,10 +38,10 @@ fun ProductDetails(product: Product, controller: NavController) {
             for (i in 0 until  product.images.size){
                 images.add(product.images[i].src)
             }
-
+            val description=product.body_html.replace("+"," ")
             ImageCarousel(images)
             ProductInfo(product.title,product.variants[0].price,"EG",3)
-            ProductDescription(product.body_html)
+            ProductDescription(description)
             FirebaseAuth.getInstance().currentUser?.let { Actions(it.isAnonymous,controller) }
         }
     }

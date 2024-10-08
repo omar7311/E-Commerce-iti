@@ -1,8 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.authentication
 
-import androidx.activity.ComponentActivity
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.firebase.auth.AuthCredential
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
