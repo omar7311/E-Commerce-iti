@@ -17,6 +17,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,12 +32,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun Actions(isAnonymous:Boolean,navController: NavController){
+fun Actions(isAnonymous:Boolean,navController: NavController,cartViewModel: CartViewModel){
     var showDialog by remember { mutableStateOf(false) }
+
+
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },  // When the dialog is dismissed
@@ -67,7 +73,7 @@ fun Actions(isAnonymous:Boolean,navController: NavController){
                showDialog = true
            }
             else{
-
+                //ReposiatoryImpl(ReposiatoryImpl())
             }
         }) {
             Text(text = "add to favourite")

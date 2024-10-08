@@ -23,11 +23,12 @@ import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.SimpleText
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ProductDetails(product: Product, controller: NavController) {
+fun ProductDetails(product: Product, controller: NavController,cartViewModel: CartViewModel) {
     Scaffold(
         topBar = { CustomTopBar("Product Details", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
@@ -42,7 +43,7 @@ fun ProductDetails(product: Product, controller: NavController) {
             ImageCarousel(images)
             ProductInfo(product.title,product.variants[0].price,"EG",3)
             ProductDescription(description)
-            FirebaseAuth.getInstance().currentUser?.let { Actions(it.isAnonymous,controller) }
+            FirebaseAuth.getInstance().currentUser?.let { Actions(it.isAnonymous,controller,cartViewModel) }
         }
     }
 }

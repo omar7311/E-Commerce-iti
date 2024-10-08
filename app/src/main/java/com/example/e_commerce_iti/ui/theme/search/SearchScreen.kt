@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.ui.theme.search
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -19,8 +20,8 @@ fun SearchScreen(controller: NavController) {
         topBar = { CustomTopBar("Search", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
-        Box(modifier = Modifier.padding(innerPadding)) {
-            SimpleText("Search Screen Content")
+        Column(modifier = Modifier.padding(innerPadding)) {
+
         }
     }
 }

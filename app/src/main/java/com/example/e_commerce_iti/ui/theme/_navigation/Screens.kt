@@ -21,6 +21,7 @@ import com.example.e_commerce_iti.PRODUCT_ID
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
+import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -131,7 +132,6 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             }
             HomeScreen(CopuonsViewModel,homeViewModel, navController,networkObserver)
 
-            HomeScreen(CopuonsViewModel, homeViewModel, navController, networkObserver)
         }
 
         composable(route = Screens.Category.route) {
@@ -150,7 +150,9 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
                 viewModel(factory = changeUserDataFactory)
             ChangeUserDataScreen(viewModel = changeUserDataViewModel, navController = navController)
         }
-        composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
+        composable(route = Screens.Favorite.route) {
+            val cartViewModel:CartViewModel = viewModel(factory = cartFactory)
+            FavoriteScreen(cartViewModel,navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController) }
         composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
         composable(route = Screens.Login.route) {
@@ -179,13 +181,15 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
                 type = NavType.StringType // take care of this it to mention that long will sent
             })
         ) { backStackEntry ->
+            val cartViewModel:CartViewModel = viewModel(factory = cartFactory)
             val gsonProduct=backStackEntry.arguments?.getString("product")
               val gson=Gson()
                val product=gson.fromJson(gsonProduct,Product::class.java)
-                ProductDetails(product = product, controller = navController)
+                ProductDetails(product = product, controller = navController,cartViewModel)
 
 
         }
 
     }
+}
 }

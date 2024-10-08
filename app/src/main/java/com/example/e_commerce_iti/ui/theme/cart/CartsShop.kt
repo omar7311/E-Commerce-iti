@@ -79,7 +79,7 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
 
                          products?.let { productList ->
                         draftOrder?.let { order ->
-                            items(productList.size, key = { productList[it].bodyHtml }) { index ->
+                            items(productList.size, key = { productList[it].body_html }) { index ->
                                 val product = productList[index]
                                 val variant = order.line_items
                                     .flatMap { lineItem -> product.variants.filter { it.id == lineItem.variant_id } }
