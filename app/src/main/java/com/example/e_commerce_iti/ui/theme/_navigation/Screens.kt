@@ -57,6 +57,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.app
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.gson.Gson
+import java.net.URLEncoder
 
 
 sealed class Screens(val route: String) {
@@ -64,32 +73,36 @@ sealed class Screens(val route: String) {
     object Home : Screens(route = "home")
     object Category : Screens(route = "category")
     object Signup : Screens(route = "signUP")
-    object Login :Screens(route="Login")
+    object Login : Screens(route = "Login")
     object Cart : Screens(route = "cart")
     object Profile : Screens(route = "profile")
     object Favorite : Screens(route = "favorite")
-    object ChangeUserData:Screens(route = "change_user_data")
+    object ChangeUserData : Screens(route = "change_user_data")
     object Search : Screens(route = "search")
-    object ProductSc : Screens(route = "product/{$VENDOR_NAME}"){
+    object ProductSc : Screens(route = "product/{$VENDOR_NAME}") {
         fun createRoute(vendorName: String) = "product/$vendorName"
     }
-    object ProductDetails : Screens(route = "product_details/{$PRODUCT_ID}") {
-        fun createDetailRoute(productId: Long) = "product_details/$productId"
+
+    object ProductDetails : Screens(route = "product_details/{product}") {
+        fun createDetailRoute(gsonProduct: String) :String{
+            val encodedProduct=URLEncoder.encode(gsonProduct,"UTF-8")
+            return "product_details/$encodedProduct"
+    }
     }
 
 }
 
 
 @Composable
-fun Navigation(networkObserver: NetworkObserver,context: Activity) {
-    val navController= rememberNavController()
+fun Navigation(networkObserver: NetworkObserver, context: Activity) {
+    val navController = rememberNavController()
     val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
         .requestIdToken(context.getString(R.string.web_api_key))
         .requestEmail()
         .build()
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
-    NavHost(navController = navController, startDestination = if(Firebase.auth.currentUser==null) Screens.Login.route else Screens.Home.route) {
+    NavHost(navController = navController, startDestination = Screens.Login.route) {
     val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
         LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
