@@ -65,7 +65,6 @@ import com.example.e_commerce_iti.ui.theme.ShimmerLoadingCustomCollection
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
-import com.example.e_commerce_iti.ui.theme.home.MyLottieAnimation
 import com.example.e_commerce_iti.ui.theme.products.FilterButtonWithSlider
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel

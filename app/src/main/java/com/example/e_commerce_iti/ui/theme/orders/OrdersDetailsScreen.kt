@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.orders
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,6 +55,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
 
 @Composable
 fun OrderDetailsScreen(
+    context: Context,
     order: Order,
     orderViewModel: OrdersViewModel,
     controller: NavHostController,
@@ -62,13 +64,13 @@ fun OrderDetailsScreen(
 
     Scaffold(
         topBar = { CustomTopBar("Orders", controller) },
-        bottomBar = { CustomButtonBar(controller) },
+        bottomBar = { CustomButtonBar(controller, context) },
     ) { innerPadding ->
         val isConnected = networkObserver.isConnected.collectAsState()
         if (isConnected.value) {
 
-            FetchProductsDetails(orderViewModel,order)  // to fetch products from details
-
+    /*       val products =  FetchProductsDetails(orderViewModel, order)  // to fetch products from details
+            OrderItemsRow(products, orderViewModel)*/
             Log.i("Orddddrr", "OrderDetailsScreen:$order")
             ScreenContent(
                 order,
@@ -242,15 +244,14 @@ fun InfoItem(label: String, value: String, fontWeight: FontWeight = FontWeight.N
  *      this for orders items images and titels
  */
 @Composable
-fun FetchProductsDetails(orderViewModel: OrdersViewModel, order: Order) {
+fun FetchProductsDetails(orderViewModel: OrdersViewModel, order: Order): List<Product> {
     val productsIds = getLineItemsProductsIds(order)  // get line item products frist
     Log.i("ProductIds", "FetchProductsDetails: $productsIds")
     val ActualProducts = getActualProductsFromApi(
         productsIds.toMutableList(),
         orderViewModel
     ) // then get Actuall products
-    OrderItemsRow(ActualProducts, orderViewModel)
-
+    return ActualProducts
 }
 
 @Composable

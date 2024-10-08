@@ -121,13 +121,12 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
 
 
-    override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
     override suspend fun getMetaFields(customerId: Long): Flow<MetaData> {
         return flow { emit(RetrofitHelper.service.getCustomerMetafields(customerId)) }
     }
 
     override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
-        val data=RetrofitHelper.service.updateCartDraftOrder(cart.id!!,SearchDraftOrder(cart))
+        val data = RetrofitHelper.service.updateCartDraftOrder(cart.id!!, SearchDraftOrder(cart))
         println(cart)
         println(data.errorBody()?.string())
         return flow { emit(data.body()!!.draft_order!!) }
@@ -156,11 +155,11 @@ class RemoteDataSourceImp : IRemoteDataSource {
      *      get Product By id
      */
     override suspend fun getProductById(productId: Long): Flow<Product> {
-            // Make the network call to fetch the product by ID
-            val response = RetrofitHelper.service.getProduct(productId)
-            Log.e("API Error", "Error fetching product: $response")
-      return flow { response.product }
-        }
+        // Make the network call to fetch the product by ID
+        val response = RetrofitHelper.service.getProduct(productId)
+        Log.e("API Error", "Error fetching product: $response")
+        return flow { response.product }
+    }
 
 
     // to get the custom collections
