@@ -19,7 +19,7 @@ fun CartScreen(cartViewModel: CartViewModel, controller: NavController) {
         topBar = { CustomTopBar("Cart", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
-        Carts(Modifier.padding(innerPadding))
+        Carts(Modifier.padding(innerPadding), viewModel = cartViewModel)
     }
 }
 

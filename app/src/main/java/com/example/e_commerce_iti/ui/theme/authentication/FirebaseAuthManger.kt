@@ -48,6 +48,7 @@ object FirebaseAuthManager {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         onResult(true, null) // Success
+
                         auth.currentUser?.sendEmailVerification()?.addOnCompleteListener {
                             if(task.isSuccessful){
                                 onResult(true,null)
