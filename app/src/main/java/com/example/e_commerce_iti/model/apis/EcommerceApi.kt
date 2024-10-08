@@ -13,17 +13,15 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.OrdersResponse
+import com.example.e_commerce_iti.model.pojos.ProductWrapper
 import com.example.e_commerce_iti.model.pojos.SearchedProductResponse
-import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
-import com.example.e_commerce_iti.model.pojos.metadata.Metafield
 import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
-import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
-import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.PUT
 
@@ -68,6 +66,20 @@ interface EcommerceApi {
     suspend fun getProduct(@Path("id") id: Long): SearchedProductResponse
     @POST("customers/{customer_id}/metafields.json")
     suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData)
+
+    /**
+     *      function to get the orders by customer id
+     */
+
+    @GET("orders.json")
+    suspend fun getOrdersByCustomerId(@Query("customer_id") customerId: Long): OrdersResponse
+
+    /**
+     *      get product by id
+     */
+    @GET("products/{productId}.json")
+    suspend fun getProductById(@Path("productId") productId: Long): Response<ProductWrapper>
+
     @PUT("draft_orders/{id}.json")
     suspend fun updateCartDraftOrder(@Path("id") id: Long, @Body draftOrder: SearchDraftOrder): Response<SearchDraftOrder>
 

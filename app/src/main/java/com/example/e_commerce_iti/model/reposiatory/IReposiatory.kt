@@ -1,7 +1,7 @@
 package com.example.e_commerce_iti.model.reposiatory
-
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
+import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
@@ -10,7 +10,6 @@ import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
-import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import kotlinx.coroutines.flow.Flow
 
 interface IReposiatory {
@@ -33,4 +32,15 @@ interface IReposiatory {
     suspend fun getMetaFields(customerId: Long): Flow<MetaData>
     suspend fun getCart(id:Long): Flow<DraftOrder>
      suspend fun getProductByID(id: Long): Flow<Product>
+
+    /**
+     *  get orders by customer id
+     */
+    suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
+
+    /**
+     *  get product by id
+     */
+    suspend fun getProductById(productId: Long):Flow<Product>
+
 }
