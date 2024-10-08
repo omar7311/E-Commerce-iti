@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.category
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.e_commerce_iti.DEFAULT_CUSTOM_COLLECTION_ID
+import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.model.apistates.CustomCollectionStates
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
@@ -63,7 +65,6 @@ import com.example.e_commerce_iti.ui.theme.ShimmerLoadingCustomCollection
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
-import com.example.e_commerce_iti.ui.theme.home.MyLottieAnimation
 import com.example.e_commerce_iti.ui.theme.products.FilterButtonWithSlider
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
@@ -74,7 +75,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 fun CategoryScreen(
     homeViewModel: HomeViewModel,
     controller: NavController,
-    networkObserver: NetworkObserver
+    networkObserver: NetworkObserver,context: Context
 
 ) {
     var collectionId by remember { mutableStateOf(DEFAULT_CUSTOM_COLLECTION_ID) } // default collection id
@@ -87,7 +88,7 @@ fun CategoryScreen(
     val isNetworkAvailable by networkObserver.isConnected.collectAsState(initial = false)
     Scaffold(
         topBar = { CustomTopBar("Category", controller) },
-        bottomBar = { CustomButtonBar(controller) },
+        bottomBar = { CustomButtonBar(controller,context) },
     ) { innerPadding ->
 
         if(isNetworkAvailable){
@@ -137,7 +138,7 @@ fun CategoryScreen(
             }
         }else
         {
-            MyLottieAnimation()  // play lotti when no network
+            NetworkErrorContent() // when no connection
         }
 
     }

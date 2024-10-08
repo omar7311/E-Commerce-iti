@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,7 +49,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewMode
 fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
     Scaffold(
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
+        bottomBar = { CustomButtonBar(controller,LocalContext.current) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
         Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             LazyVerticalGrid(
@@ -62,40 +63,4 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
             }
         }
     }
-}
-
-@Composable
-fun FavouriteItem(src:String,title:String){
-    Card(
-        modifier = Modifier.padding(8.dp), // Padding around the card
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Set elevation
-        shape = RoundedCornerShape(10.dp), // Rounded corners
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .background(Color.White), // Background color of the card
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CustomImage(src)
-            Spacer(modifier = Modifier.size(10.dp))
-            CustomText(
-                title,
-                Color.White,
-                textColor = Color.Black,
-                fontSize = 16.sp
-            ) // Title
-            Image(imageVector = Icons.Filled.Delete, contentDescription = null,
-                modifier = Modifier.clickable {
-
-                })
-        }
-    }
-}
-@Preview
-@Composable
-fun FavouritePreview(){
-    FavouriteItem("https://via.placeholder.com/600/92c952","title")
 }

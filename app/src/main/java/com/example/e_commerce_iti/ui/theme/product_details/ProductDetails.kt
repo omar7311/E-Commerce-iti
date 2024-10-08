@@ -29,9 +29,10 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProductDetails(product: Product, controller: NavController,cartViewModel: CartViewModel) {
+fun ProductDetails(product: Product, controller: NavController,context: Context) {
     Scaffold(
         topBar = { CustomTopBar("Product Details", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
+        bottomBar = { CustomButtonBar(controller,context) },     // Keep the navigation controller for buttons
     ) { innerPadding ->
     // Use padding for the content
         Column(modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState())){

@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,6 +29,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.e_commerce_iti.CurrentUser
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.getCurrent
@@ -48,17 +50,19 @@ import kotlinx.coroutines.flow.SharedFlow
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
-    if (currentUser!=null) {
-        viewModel.getCartDraftOrder(currentUser!!.cart)
-    }
-    viewModel.getCurrency()
-    Log.i("CartScreen", "Screen Rebuild")
-    val currency = viewModel.currentCurrency.collectAsState()
-    // Observing the product and draft order states
-    val productState = viewModel.product.collectAsState()
 
-    // Store total amount in a separate state that won't trigger LazyColumn recomposition
+fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
+
+    // Ensure these functions are called only once when the composable enters the composition
+    LaunchedEffect(Unit) {
+        viewModel.getCartDraftOrder(currentUser!!.cart)
+        viewModel.getCurrency()
+    }
+
+    Log.i("CartScreen", "Screen Rebuild")
+
+    val currency = viewModel.currentCurrency.collectAsState()
+    val productState = viewModel.product.collectAsState()
     val totalAmount = remember { mutableStateOf(0.0) }
 
     Column(
@@ -66,7 +70,7 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
             .fillMaxSize()
             .padding(bottom = 50.dp)
     ) {
-        if (productState.value is UiState.Success){
+        if (productState.value is UiState.Success) {
             val products = (productState.value as? UiState.Success<MutableList<Product>>)?.data
             val draftOrder = (viewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
             val currency2 = (currency.value as? UiState.Success<Pair<String, Float>>)!!.data
@@ -76,22 +80,24 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
                     modifier = Modifier.weight(25f),
                     contentPadding = PaddingValues(14.dp)
                 ) {
-
-                         products?.let { productList ->
+                    products.let { productList ->
                         draftOrder?.let { order ->
                             items(productList.size, key = { productList[it].body_html }) { index ->
                                 val product = productList[index]
                                 val variant = order.line_items
                                     .flatMap { lineItem -> product.variants.filter { it.id == lineItem.variant_id } }
                                     .firstOrNull()
-
+                                val changeQuantity = remember { mutableStateOf(0) }
                                 variant?.let {
                                     CartItem(
                                         currency2,
                                         image = product.images[0].src,
                                         name = product.title,
                                         price = order.line_items[index].price!!.toDouble(),
-                                        quantity = it.inventory_quantity, totalAmount = totalAmount
+                                        numberOfItemsChosen = changeQuantity,
+                                        quantity = it.inventory_quantity,
+                                        totalAmount = totalAmount
+                                        , e = {viewModel.updateCart(order.line_items[index].id!!)}
                                     )
                                     Spacer(Modifier.height(10.dp))
                                 }
@@ -100,24 +106,22 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
                     }
                 }
 
-                // The total price will update without affecting the LazyColumn
                 Spacer(Modifier.height(10.dp))
-                TotalPriceText(totalAmount = totalAmount,currency2)
+                TotalPriceText(totalAmount = totalAmount, currency2)
                 Spacer(Modifier.height(10.dp))
                 CheckoutButton()
-            }else{
-                Column(modifier = Modifier.fillMaxWidth()){
-                MyLottiAni(R.raw.emptycart)
+            } else {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    MyLottiAni(R.raw.emptycart)
+                }
             }
+        } else if (productState.value is UiState.Loading) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                MyLottiAni(R.raw.loadingcart)
             }
-        }else if (productState.value is UiState.Loading){
-            Column(modifier = Modifier.fillMaxWidth()){
-            MyLottiAni(R.raw.loadingcart)
-        }
         }
     }
 }
-
 @Composable
 fun MyLottiAni(id: Int) {
     // Load the Lottie animation from the assets folder
@@ -134,7 +138,7 @@ fun MyLottiAni(id: Int) {
 fun TotalPriceText(totalAmount: MutableState<Double>,currency2: Pair<String, Float>) {
     // Only this text recomposes when the total amount changes
     Text(
-        text = "Price ${totalAmount.value.roundToTwoDecimalPlaces() * currency2.second} in ${currency2.first}",
+        text = "Price ${(totalAmount.value * currency2.second).roundToTwoDecimalPlaces()} in ${currency2.first}",
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 60.dp)
@@ -164,6 +168,7 @@ fun CartsPreview() {
                 LocalDataSourceImp(context.getSharedPreferences(currentCurrency, Context.MODE_PRIVATE))
             )
         )
+        currentUser= CurrentUser(id = 7494620905649, cart = 1003013144753L)
         Carts(viewModel = viewModel)
     }
 }
