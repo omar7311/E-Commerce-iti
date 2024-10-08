@@ -62,8 +62,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.gson.Gson
 import java.net.URLEncoder
 
@@ -161,17 +159,18 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(
             route = Screens.ProductDetails.route,
-            arguments = listOf(navArgument(PRODUCT_ID) {
-                type = NavType.LongType // take care of this it to mention that long will sent
+            arguments = listOf(navArgument("product") {
+                type = NavType.StringType // take care of this it to mention that long will sent
             })
-        ) {
-            val productId = it.arguments?.getLong(PRODUCT_ID)
-            if (productId != null) {
-                ProductDetails(productId, navController)
-            }
+        ) { backStackEntry ->
+            val gsonProduct=backStackEntry.arguments?.getString("product")
+            val gson=Gson()
+            val product=gson.fromJson(gsonProduct,Product::class.java)
+            ProductDetails(product = product, controller = navController,context)
+
+
+        }
         }
 
 
     }
-
-}
