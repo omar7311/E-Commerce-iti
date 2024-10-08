@@ -86,6 +86,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.e_commerce_iti.NetworkErrorContent
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 /**
  *      don't forget navigation
@@ -95,6 +97,7 @@ import com.example.e_commerce_iti.NetworkErrorContent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    context: Context,
     couponViewModel: CouponViewModel,
     homeViewModel: HomeViewModel,
     controller: NavController = rememberNavController(),
@@ -103,7 +106,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = { CustomTopBar("Home", controller) },
-        bottomBar = { CustomButtonBar(controller) }, // give it the controller to navigate with it
+        bottomBar = { CustomButtonBar(controller,context) }, // give it the controller to navigate with it
     ) { innerPadding ->
         val isConnected = networkObserver.isConnected.collectAsState()
         if (isConnected.value) {
@@ -334,7 +337,10 @@ fun CustomButtonBar(controller: NavController) {
             label = { Text("Cart") },
             selected = currentRoute.value == Screens.Cart.route,
             onClick = {
-                controller.navigate(Screens.Cart.route)
+                if (Firebase.auth.currentUser!=null&&!Firebase.auth.currentUser!!.email.isNullOrBlank())
+                   controller.navigate(Screens.Cart.route)
+                else
+                    Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show()
             }
         )
 

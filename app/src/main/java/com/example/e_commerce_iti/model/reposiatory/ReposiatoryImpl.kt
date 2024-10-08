@@ -58,7 +58,11 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         return local.setChoosedCurrency(local.getChoosedCurrency().firstOrNull()?.first!!)
     }
 
-    override suspend fun createCustomer(customer: Customer) = remote.createCustomer(customer)
+    override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
+        return remote.updateCart(cart)
+    }
+
+    override suspend fun createCustomer(customer: Customer)=remote.createCustomer(customer)
     override suspend fun getMetaFields(customerId: Long): Flow<MetaData> {
         return remote.getMetaFields(customerId)
     }
@@ -97,6 +101,7 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
     override suspend fun getPriceRules(): Flow<PriceRules> = remote.getPriceRules()
 
     override suspend fun getCopuons(priceId: Long) = remote.getCopuons(priceId)
+
 
 
 }

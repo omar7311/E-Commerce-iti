@@ -66,14 +66,15 @@ fun SettingScreen(viewModel: CurrencyViewModel,navController: NavController?=nul
         ItemsSettingScreen("Contact us")
         ItemsSettingScreen("About us")
     Button(onClick = {
-        navController?.navigate(Screens.Login.route) {
-                popUpTo(Screens.Login.route) { inclusive = false }
-                restoreState = true
-            }
         Firebase.auth.signOut()
         deleteCurrentUser()
         Log.e("currentUser", currentUser.toString())
-
+        navController?.navigate(Screens.Login.route) {
+            // Clear the entire back stack before navigating to the login screen
+            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+            // Use launchSingleTop to prevent multiple instances of the same destination
+            launchSingleTop = true
+        }
     } , modifier = Modifier.fillMaxWidth()) { Text(text = "Logout") }
     }else{
         CircularProgressIndicator()

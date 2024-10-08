@@ -46,6 +46,10 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun CartItem(
     currency: Pair<String, Float>
+      ,
+    numberOfItemsChosen:MutableState<Int>
+    ,
+    e:()->Unit
     ,
     image: String = "",
     name: String = "",
@@ -55,13 +59,11 @@ fun CartItem(
 ) {
     Log.i("CartItem", "$image $name $price $quantity")
     val showDialog = rememberSaveable { mutableStateOf(false) }
-    var numberOfItemsChosen by rememberSaveable { mutableIntStateOf(0) }
-
     // Show confirmation dialog for item deletion
     if (showDialog.value) {
-        MyAlertDialog(
+        MyAlertDialog(e,
              showDialog,
-            price * numberOfItemsChosen,totalAmount)
+            price * numberOfItemsChosen.value,totalAmount)
     }
 
     // Main Card for displaying the product item
@@ -101,7 +103,7 @@ fun CartItem(
                 )
                 Spacer(Modifier.height(20.dp))
                 Text(
-                    text = "${price* currency.second} ${currency.first}",
+                    text = "${(price* currency.second).roundToTwoDecimalPlaces()} ${currency.first}",
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
@@ -123,9 +125,9 @@ fun CartItem(
                     IconButton(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            if (numberOfItemsChosen < quantity) {
+                            if (numberOfItemsChosen.value < quantity) {
                                 totalAmount.value += price
-                                numberOfItemsChosen++
+                                numberOfItemsChosen.value++
                             }
                         }
                     ) {
@@ -135,7 +137,7 @@ fun CartItem(
                     // Display chosen item count
                     Text(
                         textAlign = TextAlign.Center,
-                        text = "$numberOfItemsChosen",
+                        text = "${numberOfItemsChosen.value}",
                         modifier = Modifier.weight(1f)
                     )
 
@@ -143,9 +145,9 @@ fun CartItem(
                     IconButton(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            if (numberOfItemsChosen > 0) {
+                            if (numberOfItemsChosen.value  > 0) {
                                 totalAmount.value -= price
-                                numberOfItemsChosen--
+                                numberOfItemsChosen.value--
                             }
                         }
                     ) {
@@ -171,7 +173,7 @@ fun CartItem(
 }
 
 @Composable
-fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>,price: Double,total:MutableState<Double>) {
+fun MyAlertDialog(e:()->Unit,shouldShowDialog: MutableState<Boolean>,price: Double,total:MutableState<Double>) {
     if (shouldShowDialog.value) { // 2
         AlertDialog( // 3
             onDismissRequest = { // 4
@@ -185,6 +187,7 @@ fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>,price: Double,total:Mu
                     onClick = {
                         total.value -= price
                         shouldShowDialog.value = false
+                        e()
                     }
                 ) {
                     Text(
@@ -200,6 +203,6 @@ fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>,price: Double,total:Mu
 @Composable
 fun GreetingPreview() {
     ECommerceITITheme {
-        CartItem(Pair("USD",1.0F),"Android","Android",10.0,10,totalAmount = rememberSaveable { mutableStateOf(0.0) })
+        //CartItem(Pair("USD",1.0F),"Android","Android",10.0,10,totalAmount = rememberSaveable { mutableStateOf(0.0) })
     }
 }

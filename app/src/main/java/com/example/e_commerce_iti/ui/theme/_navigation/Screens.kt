@@ -1,6 +1,8 @@
 package com.example.e_commerce_iti.ui.theme._navigation
 import android.app.Activity
 import android.content.Context
+import android.util.Log
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -14,6 +16,7 @@ import com.example.e_commerce_iti.PRODUCT_ID
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.SignupScreen
 import com.example.e_commerce_iti.VENDOR_NAME
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.pojos.Order
@@ -45,10 +48,20 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.gson.Gson
+import java.net.URLEncoder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
 import com.google.gson.Gson
 import java.net.URLEncoder
 
@@ -78,8 +91,11 @@ sealed class Screens(val route: String) {
         fun createRoute(vendorName: String) = "product/$vendorName"
     }
 
-    object ProductDetails : Screens(route = "product_details/{$PRODUCT_ID}") {
-        fun createDetailRoute(productId: Long) = "product_details/$productId"
+    object ProductDetails : Screens(route = "product_details/{product}") {
+        fun createDetailRoute(gsonProduct: String) :String{
+            val encodedProduct=URLEncoder.encode(gsonProduct,"UTF-8")
+            return "product_details/$encodedProduct"
+    }
     }
 
 }
@@ -113,23 +129,22 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.Home.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
-            LaunchedEffect(Unit) {
-                if (Firebase.auth.currentUser?.email != null) getCurrent(
-                    Firebase.auth.currentUser?.email!!,
-                    repository
-                )
+            LaunchedEffect(Unit){
+                if (Firebase.auth.currentUser!=null&&!Firebase.auth.currentUser!!.email.isNullOrBlank()) {
+                    val e=Firebase.auth.currentUser
+                    getCurrent(e!!.email!!, repository)
+                }
             }
-            HomeScreen(CopuonsViewModel, homeViewModel, navController, networkObserver)
+            HomeScreen(context,CopuonsViewModel,homeViewModel, navController,networkObserver)
         }
 
         composable(route = Screens.Category.route) {
-            val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
-            CategoryScreen(homeViewModel, navController, networkObserver)
+            val homeViewModel :HomeViewModel = viewModel(factory = homeFactory)
+            CategoryScreen(homeViewModel,navController,networkObserver, LocalContext.current)
         }
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            CartScreen(cartViewModel, navController)
-        }
+            CartScreen(cartViewModel,navController,context) }
         composable(route = Screens.Profile.route) {
             ProfileScreen(navController)
         }
@@ -139,6 +154,11 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             ChangeUserDataScreen(viewModel = changeUserDataViewModel, navController = navController)
         }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
+        composable(route = Screens.Search.route) { SearchScreen(navController,context) }
+        composable(route =Screens.Signup.route) {SignupScreen(navController,context)}
+        composable(route = Screens.Login.route){LoginScreen(navController,context,googleSignInClient){
+            navController.navigate(Screens.Home.route)
+        } }
         composable(route = Screens.Search.route) { SearchScreen(navController) }
         composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
         composable(route = Screens.Login.route) {
@@ -153,26 +173,28 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val vendorName = it.arguments?.getString(VENDOR_NAME)
             if (vendorName != null) {
-                ProductScreen(homeViewModel, navController, vendorName)
+                ProductScreen(homeViewModel,navController, vendorName)
             }
         }
         composable(route = Screens.Setting.route) {
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
-            SettingScreen(currencyViewModel, navController)
+            SettingScreen(currencyViewModel,navController)
         }
 
         composable(
             route = Screens.ProductDetails.route,
-            arguments = listOf(navArgument(PRODUCT_ID) {
-                type = NavType.LongType // take care of this it to mention that long will sent
+            arguments = listOf(navArgument("product") {
+                type = NavType.StringType // take care of this it to mention that long will sent
             })
-        ) {
-            val productId = it.arguments?.getLong(PRODUCT_ID)
-            if (productId != null) {
-                ProductDetails(productId, navController)
-            }
-        }
+        ) { backStackEntry ->
+            val gsonProduct=backStackEntry.arguments?.getString("product")
+            val gson=Gson()
+            val product=gson.fromJson(gsonProduct,Product::class.java)
+            ProductDetails(product = product, controller = navController,context)
 
+
+        }
+        }
 
         composable(route = Screens.Orders.route) {
             val orderViewModel: OrdersViewModel = viewModel(factory = ordersFactory)
@@ -193,4 +215,4 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
     }
 
-}
+    }

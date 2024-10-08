@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currencies
@@ -65,6 +66,10 @@ fun ChangeUserDataScreenContent(viewModel: ChangeUserDataViewModel) {
         when (val uiState = state.value) {
             is UiState.Success -> {
                 val data = uiState.data
+                currentUser!!.email=data.email!!
+                currentUser!!.name=data.first_name!!
+                currentUser!!.phone=data.phone!!
+                currentUser!!.id=data.id!!
                 val fname = rememberSaveable { mutableStateOf(data.first_name ?: "user") }
                 val lname = rememberSaveable { mutableStateOf(data.last_name ?: "user") }
                 val address = rememberSaveable {

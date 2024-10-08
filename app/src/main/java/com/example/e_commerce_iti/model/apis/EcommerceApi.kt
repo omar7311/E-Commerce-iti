@@ -12,6 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
+import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.OrdersResponse
 import com.example.e_commerce_iti.model.pojos.ProductWrapper
 import com.example.e_commerce_iti.model.pojos.SearchedProductResponse
@@ -48,7 +49,6 @@ interface EcommerceApi {
     // get the custom collections
     @GET("custom_collections.json")
     suspend fun getCustomCollections(): CustomCollectionsResponse
-
     // get the products by custom collection
     @GET("products.json")
     suspend fun getProductsByCustomCollection(@Query("collection_id") collectionId: Long): ProductResponse
@@ -79,5 +79,8 @@ interface EcommerceApi {
      */
     @GET("products/{productId}.json")
     suspend fun getProductById(@Path("productId") productId: Long): Response<ProductWrapper>
+
+    @PUT("draft_orders/{id}.json")
+    suspend fun updateCartDraftOrder(@Path("id") id: Long, @Body draftOrder: SearchDraftOrder): Response<SearchDraftOrder>
 
 }

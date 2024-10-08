@@ -1,5 +1,7 @@
 package com.example.e_commerce_iti.model.pojos
 
+import java.io.Serializable
+
 /**
  *      below class is the actuall one used to catch products
  */
@@ -16,7 +18,7 @@ data class SearchedProductResponse(
 data class Product(
     val id: Long,
     val title: String,
-    val bodyHtml: String,
+    val body_html: String,
     val vendor: String,
     val product_type: String,
     val tags: String,

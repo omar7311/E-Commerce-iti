@@ -28,11 +28,13 @@ import androidx.compose.ui.graphics.vector.DefaultFillType
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun Actions(isAnonymous:Boolean){
+fun Actions(isAnonymous:Boolean,navController: NavController){
     var showDialog by remember { mutableStateOf(false) }
     if (showDialog) {
         AlertDialog(
@@ -44,7 +46,9 @@ fun Actions(isAnonymous:Boolean){
                 Text("you are guest currently , you have to login to take this action")
             },
             confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
+                TextButton(onClick = { showDialog = false
+                    navController.navigate(Screens.Login.route)
+                }) {
                     Text("Login")
                 }
             },
@@ -91,6 +95,6 @@ fun Actions(isAnonymous:Boolean){
 @Composable
 fun ActionsPreview(){
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-        Actions(true)
+       // Actions(true)
     }
 }

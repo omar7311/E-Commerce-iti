@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,6 +55,7 @@ import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +63,7 @@ fun ProductScreen(homeVieVModel: HomeViewModel, controller: NavController, vendo
 
     Scaffold(
         topBar = { CustomTopBar("Products", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller) },     // Keep the navigation controller for buttons
+        bottomBar = { CustomButtonBar(controller,context = LocalContext.current) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
 
         ProductsContent(
@@ -163,11 +165,13 @@ fun ProductsList(products: List<Product>, controller: NavController) {
 
 @Composable
 fun ProductItem(product: Product, controller: NavController) {
+    val gson= Gson()
+    val gsonProduct=gson.toJson(product)
     Card(
         modifier = Modifier
             .clickable {
                 // Navigation to Product Details here
-                controller.navigate(Screens.ProductDetails.createDetailRoute(product.id))
+                controller.navigate(Screens.ProductDetails.createDetailRoute(gsonProduct))
             }
             .padding(8.dp), // Padding around the card
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Set elevation
