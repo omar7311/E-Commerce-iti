@@ -2,6 +2,7 @@ package com.example.e_commerce_iti.model.remote
 
 import android.util.Log
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
@@ -161,6 +162,10 @@ class RemoteDataSourceImp : IRemoteDataSource {
         val response = RetrofitHelper.service.getProduct(productId)
         Log.e("API Error", "Error fetching product: $response")
         return flow { response.product }
+    }
+
+    override  fun getAllProduct(): Flow<AllProduct> = flow{
+        emit(RetrofitHelper.service.getAllProduct())
     }
 
 

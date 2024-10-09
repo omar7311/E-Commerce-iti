@@ -15,6 +15,7 @@ data class ProductWrapper(
 data class SearchedProductResponse(
     val product: Product
 )
+data class AllProduct(var products: List<Product>)
 data class Product(
     val id: Long,
     val title: String,

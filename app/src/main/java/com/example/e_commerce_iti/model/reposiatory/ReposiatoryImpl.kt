@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.model.reposiatory
 import com.example.e_commerce_iti.model.local.IlocalDataSource
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
@@ -13,6 +14,7 @@ import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 
 
 /**
@@ -88,6 +90,10 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
      */
     override suspend fun getProductById(productId: Long): Flow<Product> {
         return remote.getProductById(productId)
+    }
+
+    override fun getAllProduct(): Flow<AllProduct> {
+        return remote.getAllProduct()
     }
 
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {

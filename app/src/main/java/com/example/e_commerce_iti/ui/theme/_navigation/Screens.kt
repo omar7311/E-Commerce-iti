@@ -53,6 +53,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModelFac
+import com.example.e_commerce_iti.ui.theme.viewmodels.searchViewModel.SearchViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.searchViewModel.SearchViewModelFac
 
 import com.google.firebase.app
 import com.google.firebase.auth.auth
@@ -125,6 +127,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
                 )
             )
         )
+        val searchFactory=SearchViewModelFac(repository)
         val curreneyFactory: CurrenciesViewModelFactory = CurrenciesViewModelFactory(repository)
         val cartFactory: CartViewModelFac = CartViewModelFac(repository)
         val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
@@ -167,24 +170,19 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.Favorite.route) {
             val cartViewModel:CartViewModel= viewModel(factory = cartFactory)
             FavoriteScreen(cartViewModel,navController) }
-        composable(route = Screens.Search.route) { SearchScreen(navController, context) }
-        composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
         composable(route = Screens.Login.route) {
             LoginScreen(navController, context, googleSignInClient) {
                 navController.navigate(Screens.Home.route)
             }
         }
-        composable(route = Screens.Search.route) { SearchScreen(navController,context) }
         composable(route = Screens.Favorite.route) {
             val cartViewModel:CartViewModel = viewModel(factory = cartFactory)
             FavoriteScreen(cartViewModel,navController) }
-        composable(route = Screens.Search.route) { SearchScreen(navController,context) }
+        composable(route = Screens.Search.route) {
+            val searchViewModel:SearchViewModel= viewModel(factory = searchFactory)
+            SearchScreen(navController,context,searchViewModel) }
         composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
-        composable(route = Screens.Login.route) {
-            LoginScreen(navController, context, googleSignInClient) {
-                navController.navigate(Screens.Home.route)
-            }
-        }
+
 
         // here im modifying the product route to Extract the product ID from the route
         composable(route = Screens.ProductSc.route) {

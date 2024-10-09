@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.model.apis
 
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 import com.example.e_commerce_iti.model.pojos.SmartCollectionResponse
 import com.example.e_commerce_iti.model.pojos.customer.Customer
@@ -68,6 +69,8 @@ interface EcommerceApi {
     suspend fun getCart(@Path("id") id: Long): SearchDraftOrder
     @GET("products/{id}.json")
     suspend fun getProduct(@Path("id") id: Long): SearchedProductResponse
+    @GET("products.json")
+    suspend fun getAllProduct(): AllProduct
     @POST("customers/{customer_id}/metafields.json")
     suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData)
 

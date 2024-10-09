@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.model.reposiatory
 
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
@@ -44,5 +45,6 @@ interface IReposiatory {
      *  get product by id
      */
     suspend fun getProductById(productId: Long):Flow<Product>
+    fun getAllProduct():Flow<AllProduct>
 
 }
