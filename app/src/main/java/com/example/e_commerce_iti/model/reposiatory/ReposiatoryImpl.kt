@@ -1,4 +1,5 @@
 package com.example.e_commerce_iti.model.reposiatory
+
 import com.example.e_commerce_iti.model.local.IlocalDataSource
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
@@ -7,9 +8,14 @@ import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
+import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCodeX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
+import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -62,10 +68,10 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         return remote.updateCart(cart)
     }
 
-    override suspend fun createCustomer(customer: Customer)=remote.createCustomer(customer)
-    override suspend fun getMetaFields(customerId: Long): Flow<MetaData> {
+    override suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse> {
         return remote.getMetaFields(customerId)
     }
+
 
 
     override suspend fun getCart(id: Long): Flow<DraftOrder> {
@@ -75,22 +81,6 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
     override suspend fun getProductByID(id: Long): Flow<Product> {
         return remote.getProductByID(id)
     }
-
-    /**
-     *      get orders by customer id
-     */
-    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
-        return remote.getOrdersByCustomerId(customer_id)
-    }
-
-    /**
-     *  get Product by id
-     */
-    override suspend fun getProductById(productId: Long): Flow<Product> {
-        val result  = remote.getProductById(productId)
-        return result
-    }
-
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
         return remote.getCustomCollections()
     }
@@ -104,5 +94,33 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
     override suspend fun getCopuons(priceId: Long) = remote.getCopuons(priceId)
 
 
+    override suspend fun getPrice_rules(id: Long): Flow<PriceRule> {
+        return remote.getPriceRulesByid(id)
+    }
 
+    override suspend fun updateMetaData(
+        id: Long,
+        metaData: ResponseMetaData
+    ): Flow<ResponseMetaData> {
+        return remote.updateMetaData(id,metaData)
+    }
+
+    override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getDiscountCode(code: String): Flow<DiscountCodeX> {
+        return remote.getDiscountCode(code)
+    }
+    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
+        return remote.getOrdersByCustomerId(customer_id)
+    }
+
+    /**
+     *  get Product by id
+     */
+    override suspend fun getProductById(productId: Long): Flow<Product> {
+        val result  = remote.getProductById(productId)
+        return result
+    }
 }

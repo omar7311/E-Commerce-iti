@@ -60,6 +60,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -106,7 +107,7 @@ fun SignupScreen(
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-
+    val flag= rememberSaveable{ mutableStateOf(false) }
     val emailRegex = remember { Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$") }
     val passwordRegex = remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
     val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
@@ -266,35 +267,25 @@ fun SignupScreen(
                     isLoading = true
                     FirebaseAuthManager.signUp(email, password) { success, error ->
                         if (success) {
-                            // Use viewModelScope for proper coroutine scope
-                            homeViewModel.viewModelScope.launch(Dispatchers.IO) {
-                                try {
-                                    // Create customer
-                                     createCustomer(email, fullName, fullName, phoneNumber)
-                                    // Collect the result of the createCustomer flow
-                                    val customer = RemoteDataSourceImp().createCustomer(createCustomer(email,fullName,fullName,phoneNumber))
-                                    customer.collect { result ->
-                                        // Assuming result is of a type that indicates success/failure
-                                        if (result.customer?.email!=null) {
-                                            // Customer created successfully, navigate to Login
-                                            withContext(Dispatchers.Main) {
-                                                isLoading = false
-                                                controller.navigate(Screens.Login.route) // Navigate to Login
-                                            }
-                                        } else {
-                                            // Handle failure case
-                                            withContext(Dispatchers.Main) {
-                                                isLoading = false
-                                                errorMessage = "Failed to create customer. Please try again."
-                                            }
-                                        }
-                                    }
-                                } catch (e: Exception) {
-                                    withContext(Dispatchers.Main) {
-                                        isLoading = false
-                                        errorMessage = "An error occurred: ${e.message}"
-                                    }
-                                }
+
+                            GlobalScope.launch(Dispatchers.IO){
+
+                                    RemoteDataSourceImp().createCustomer(
+                                        createCustomer(
+                                            email,
+                                            fullName,
+                                            fullName,
+                                            phoneNumber
+                                        )
+                                    )
+                                isLoading = true
+                                delay(7000) // 3 seconds delay
+                            }
+
+                            // Start a new coroutine for the delay
+                            scope.launch {
+                                isLoading = false
+                                controller.navigate(Screens.Login.route)
                             }
                         } else {
                             isLoading = false
@@ -316,7 +307,6 @@ fun SignupScreen(
                 Text("SIGN UP", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
             }
         }
-
         // "Already have an account?" button can be added here...
 
         // Display error message if exists
@@ -324,7 +314,6 @@ fun SignupScreen(
             Text(it, color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
-
 // ... (keep the existing "Already have an account?" button)
 
         AnimatedVisibility(visible = errorMessage != null) {
@@ -347,9 +336,3 @@ fun SignupAnimation(modifier: Modifier) {
         )
     }
 }*/
-@Composable
-fun creataccunt(email:String,fname:String,phone:String){
-    LaunchedEffect(Unit) {
-        RemoteDataSourceImp().createCustomer(createCustomer(email,fname,fname,phone))
-    }
-}

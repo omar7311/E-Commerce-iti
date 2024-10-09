@@ -38,6 +38,8 @@ import com.example.e_commerce_iti.ui.theme.products.ProductScreen
 import com.example.e_commerce_iti.ui.theme.profile.ProfileScreen
 import com.example.e_commerce_iti.ui.theme.search.SearchScreen
 import com.example.e_commerce_iti.ui.theme.settings.SettingScreen
+import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModelFactory
+import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModel
@@ -76,6 +78,7 @@ sealed class Screens(val route: String) {
     object Signup : Screens(route = "signUP")
     object Login : Screens(route = "Login")
     object Cart : Screens(route = "cart")
+    object Payment : Screens(route = "Payment")
     object Profile : Screens(route = "profile")
     object Favorite : Screens(route = "favorite")
     object ChangeUserData : Screens(route = "change_user_data")
@@ -104,22 +107,19 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
     NavHost(navController = navController, startDestination = Screens.Login.route) {
-        val repository: IReposiatory = ReposiatoryImpl(
-            RemoteDataSourceImp(), LocalDataSourceImp(
-                context.getSharedPreferences(
-                    LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE
-                )
-            )
-        )
-        val curreneyFactory: CurrenciesViewModelFactory = CurrenciesViewModelFactory(repository)
-        val cartFactory: CartViewModelFac = CartViewModelFac(repository)
-        val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
-        val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
-        val cartViewModelFac = CartViewModelFac(repository)
-        val changeUserDataFactory: ChangeUserDataViewModelFactory =
-            ChangeUserDataViewModelFactory(repository)
+    val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
+        LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
+    )
+        val paymentViewModelFactory = PaymentViewModelFactory(repository)
         val ordersFactory: OrdersFactory = OrdersFactory(repository)
-        composable(route = Screens.Home.route) {
+
+        val curreneyFactory: CurrenciesViewModelFactory = CurrenciesViewModelFactory(repository)
+    val cartFactory: CartViewModelFac = CartViewModelFac(repository)
+    val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
+    val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
+    val cartViewModelFac= CartViewModelFac(repository)
+    val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
+    composable(route = Screens.Home.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
             LaunchedEffect(Unit) {
@@ -148,6 +148,10 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
                 viewModel(factory = changeUserDataFactory)
             ChangeUserDataScreen(viewModel = changeUserDataViewModel, navController = navController)
         }
+//        composable(route = Screens.Payment.route) {
+//            val paymentViewModel: PaymentViewModel = viewModel(factory = paymentViewModelFactory)
+//            PaymentScreen(navController,paymentViewModel)
+//        }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController, context) }
     /*    composable(route = Screens.Signup.route) { SignupScreen(navController) }

@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3") // Use latest version directly
     implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
 
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
@@ -122,4 +123,5 @@ dependencies {
     implementation ("androidx.compose.ui:ui:$2024.1.0")
 
 
+    implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
 }
