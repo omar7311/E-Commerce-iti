@@ -80,86 +80,92 @@ import com.google.accompanist.flowlayout.FlowRow
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SettingScreen(viewModel: CurrencyViewModel, navController: NavController? = null) {
-    // Fetch user data
-
-   viewModel.getCustomerData(currentUser!!.email)
-    viewModel.getCurrency()
-    val state = viewModel.userStateData.collectAsState()
-    Column(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(top = 15.dp)) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                verticalAlignment = Alignment.CenterVertically // Align items vertically to center
-            ) {
-                IconButton(onClick = { navController?.navigateUp() }) {
-                    androidx.compose.material.Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp)) // Add some spacing between the icon and the text
-                Text(text = "Settings", style = MaterialTheme.typography.headlineMedium)
-            }
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
+    if (currentUser?.email != null) {
+        viewModel.getCustomerData(currentUser!!.email)
+        viewModel.getCurrency()
+        val state = viewModel.userStateData.collectAsState()
+        Column(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(top = 15.dp)) {
+                Row(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp).verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.SpaceEvenly
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    verticalAlignment = Alignment.CenterVertically // Align items vertically to center
                 ) {
-                    when (state.value) {
-                        is UiState.Success<CustomerX> -> {
-                            val user = (state.value as UiState.Success<CustomerX>).data
-                            Text(
-                                text = "Hello ${user.first_name}",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                    IconButton(onClick = { navController?.navigateUp() }) {
+                        androidx.compose.material.Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp)) // Add some spacing between the icon and the text
+                    Text(text = "Settings", style = MaterialTheme.typography.headlineMedium)
+                }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp).verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        when (state.value) {
+                            is UiState.Success<CustomerX> -> {
+                                val user = (state.value as UiState.Success<CustomerX>).data
+                                Text(
+                                    text = "Hello ${user.first_name}",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
 
-                            ItemsSettingScreen("Change User Data") { navController?.navigate(Screens.ChangeUserData.route) }
-                            Currencies(viewModel)
-                            ItemsSettingScreen("Contact Us")
-                            ItemsSettingScreen("About Us")
+                                ItemsSettingScreen("Change User Data") {
+                                    navController?.navigate(
+                                        Screens.ChangeUserData.route
+                                    )
+                                }
+                                Currencies(viewModel)
+                                ItemsSettingScreen("Contact Us")
+                                ItemsSettingScreen("About Us")
 
-                            // Logout Button
-                            Button(
-                                onClick = {
-                                    navController?.navigate(Screens.Login.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            inclusive = true
+                                // Logout Button
+                                Button(
+                                    onClick = {
+                                        navController?.navigate(Screens.Login.route) {
+                                            popUpTo(navController.graph.startDestinationId) {
+                                                inclusive = true
+                                            }
+                                            launchSingleTop = true
                                         }
-                                        launchSingleTop = true
-                                    }
-                                    Firebase.auth.signOut()
-                                    deleteCurrentUser()
-                                },
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
-                            ) {
-                                Text(text = "Logout", style = MaterialTheme.typography.bodyLarge)
+                                        Firebase.auth.signOut()
+                                        deleteCurrentUser()
+                                    },
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+                                ) {
+                                    Text(
+                                        text = "Logout",
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
                             }
-                        }
 
-                        else -> {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
+                            else -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
                     }
                 }
-            }
 
+            }
         }
     }
+
 }
-
-
 @Composable
 fun ItemsSettingScreen(text: String, onClick: (() -> Unit)? = null) {
     Card(

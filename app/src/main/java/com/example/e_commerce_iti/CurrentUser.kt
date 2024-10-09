@@ -27,7 +27,7 @@ suspend fun  getCurrent(email: String?,cartRepository:IReposiatory):CurrentUser?
             }
         }
         Log.i("fffffffffffffffffffff", "$cart ${user.id}  $email  $fav")
-        currentUser= CurrentUser(id=user.id!!,email=email,fav = fav!!, cart = cart!!, address = "medaerde")
+        currentUser= CurrentUser(name = user.first_name!!, lname = user.last_name!!,id=user.id!!,email=email,fav = fav!!, cart = cart!!, address = "medaerde")
     }
     return currentUser
 }
