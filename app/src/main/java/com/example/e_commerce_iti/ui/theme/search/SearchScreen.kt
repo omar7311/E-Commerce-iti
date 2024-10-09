@@ -39,7 +39,6 @@ import com.example.e_commerce_iti.ui.theme.products.ProductsList
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(controller: NavController,context: Context) {
-    val products= mutableListOf<Product>()
     Scaffold(
         topBar = { CustomTopBar("Search", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller,context) },     // Keep the navigation controller for buttons
@@ -52,20 +51,13 @@ fun SearchScreen(controller: NavController,context: Context) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                val str=mutableListOf<String>()
-                str.add("omar")
-                str.add("ahmed")
-                str.add("mostafa")
-                str.add("omar")
-                str.add("ahmed")
-                str.add("mostafa")
-                itemsIndexed(str) { _, title ->
-                    FavouriteItem(title)
+
                 }
             }
         }
     }
-}
+
+
 @Preview(showSystemUi = true)
 @Composable
 fun SearchBarWithClearButton() {

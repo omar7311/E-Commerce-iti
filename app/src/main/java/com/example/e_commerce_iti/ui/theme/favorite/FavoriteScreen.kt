@@ -29,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,7 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
@@ -51,41 +55,53 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewMode
 
 
 @Composable
-fun FavoriteScreen( controller: NavController) {
+fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
+    val product by cartViewModel.product.collectAsState()
+    var productList=mutableListOf<Product>()
     Scaffold(
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller,LocalContext.current) },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
-        Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                val str=mutableListOf<String>()
-                str.add("omar")
-                str.add("ahmed")
-                str.add("mostafa")
-                str.add("omar")
-                str.add("ahmed")
-                str.add("mostafa")
-               itemsIndexed(str) { _, title ->
-                   FavouriteItem(title)
+        Box(modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()) {
+
+                when(product) {
+                    is UiState.Loading -> {
+                            ShimmerLoadingGrid()
+                    }
+                    is UiState.Success -> {
+                        productList = (product as UiState.Success).data
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            itemsIndexed(productList) { _, product ->
+                                FavouriteItem(product)
+                            }
+                        }
+                    }
+
+                    is UiState.Error -> {}
+                    is UiState.Failure -> {}
+                    UiState.Non -> {}
                 }
+
             }
         }
     }
-}
+
 
 @Preview(showSystemUi = true)
 @Composable
 fun FavouriteScreenPreview(){
     val controller= rememberNavController()
-    FavoriteScreen(controller)
+    //FavoriteScreen(controller)
 
 }
 @Composable
-fun FavouriteItem(title:String){
+fun FavouriteItem(product: Product){
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Card(
             modifier = Modifier.padding(8.dp), // Padding around the card
@@ -100,14 +116,14 @@ fun FavouriteItem(title:String){
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CustomImage("https://via.placeholder.com/600/92c952")
+                CustomImage(product.images[0].src)
                 Spacer(modifier = Modifier.size(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     CustomText(
-                        title,
+                        product.title,
                         Color.White,
                         textColor = Color.Black,
                         fontSize = 16.sp

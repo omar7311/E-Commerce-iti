@@ -51,6 +51,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModelFac
 
 import com.google.firebase.app
 import com.google.firebase.auth.auth
@@ -128,19 +130,22 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
         val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
         val cartViewModelFac = CartViewModelFac(repository)
+        val productInfoViewModelFac= ProductInfoViewModelFac(repository)
         val changeUserDataFactory: ChangeUserDataViewModelFactory =
             ChangeUserDataViewModelFactory(repository)
         val ordersFactory: OrdersFactory = OrdersFactory(repository)
         composable(route = Screens.Home.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
+            val cartViewModel:CartViewModel= viewModel(factory = cartFactory)
             LaunchedEffect(Unit) {
                 if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
                     val e = Firebase.auth.currentUser
                     getCurrent(e!!.email!!, repository)
                 }
             }
-            HomeScreen(context, CopuonsViewModel, homeViewModel, navController, networkObserver)
+            HomeScreen(context, CopuonsViewModel, homeViewModel,
+                navController, networkObserver,cartViewModel)
         }
 
         composable(route = Screens.Category.route) {
@@ -159,7 +164,9 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
                 viewModel(factory = changeUserDataFactory)
             ChangeUserDataScreen(viewModel = changeUserDataViewModel, navController = navController)
         }
-        composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
+        composable(route = Screens.Favorite.route) {
+            val cartViewModel:CartViewModel= viewModel(factory = cartFactory)
+            FavoriteScreen(cartViewModel,navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController, context) }
         composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
         composable(route = Screens.Login.route) {
@@ -170,7 +177,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.Search.route) { SearchScreen(navController,context) }
         composable(route = Screens.Favorite.route) {
             val cartViewModel:CartViewModel = viewModel(factory = cartFactory)
-            FavoriteScreen(navController) }
+            FavoriteScreen(cartViewModel,navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController,context) }
         composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
         composable(route = Screens.Login.route) {
@@ -199,10 +206,11 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
                 type = NavType.StringType // take care of this it to mention that long will sent
             })
         ) { backStackEntry ->
+            val productInfoViewModel:ProductInfoViewModel= viewModel(factory = productInfoViewModelFac)
             val gsonProduct = backStackEntry.arguments?.getString("product")
             val gson = Gson()
             val product = gson.fromJson(gsonProduct, Product::class.java)
-            ProductDetails(product = product, controller = navController, context)
+            ProductDetails(productInfoViewModel,product = product, controller = navController, context)
 
 
         }

@@ -68,6 +68,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -86,6 +87,13 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.e_commerce_iti.NetworkErrorContent
+import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.model.local.LocalDataSourceImp
+import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
+import com.example.e_commerce_iti.model.reposiatory.IReposiatory
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -101,7 +109,8 @@ fun HomeScreen(
     couponViewModel: CouponViewModel,
     homeViewModel: HomeViewModel,
     controller: NavController = rememberNavController(),
-    networkObserver: NetworkObserver
+    networkObserver: NetworkObserver,
+    cartViewModel: CartViewModel
 ) {
 
     Scaffold(
@@ -235,6 +244,15 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopBar(customTitle: String, controller: NavController) {
+    val repository: IReposiatory = ReposiatoryImpl(
+        RemoteDataSourceImp(), LocalDataSourceImp(
+            LocalContext.current.getSharedPreferences(
+                LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE
+            )
+        )
+    )
+    val cartViewModelFac=CartViewModelFac(repository)
+    val cartViewModel:CartViewModel= viewModel(factory = cartViewModelFac)
     TopAppBar(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 5.dp)
@@ -282,7 +300,10 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
         },
         actions = {
             // Favorite icon on the right
-            IconButton(onClick = { controller.navigate(Screens.Favorite.route) }) {
+            IconButton(onClick = {
+                currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
+                controller.navigate(Screens.Favorite.route)
+            }) {
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
                     imageVector = Icons.Default.FavoriteBorder,
