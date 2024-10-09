@@ -1,4 +1,5 @@
 package com.example.e_commerce_iti.ui.theme._navigation
+
 import android.app.Activity
 import android.content.Context
 import android.util.Log
@@ -52,8 +53,21 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModelFac
+import com.example.e_commerce_iti.ui.theme.viewmodels.searchViewModel.SearchViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.searchViewModel.SearchViewModelFac
+
+import com.google.firebase.app
+import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.play.integrity.internal.al
 
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -71,7 +85,6 @@ sealed class Screens(val route: String) {
         }
     }
 
-    //
     object Setting : Screens(route = "setting")
     object Home : Screens(route = "home")
     object Category : Screens(route = "category")
@@ -88,14 +101,12 @@ sealed class Screens(val route: String) {
     }
 
     object ProductDetails : Screens(route = "product_details/{product}") {
-        fun createDetailRoute(gsonProduct: String) :String{
-            val encodedProduct=URLEncoder.encode(gsonProduct,"UTF-8")
+        fun createDetailRoute(gsonProduct: String): String {
+            val encodedProduct = URLEncoder.encode(gsonProduct, "UTF-8")
             return "product_details/$encodedProduct"
+        }
     }
-    }
-
 }
-
 
 @Composable
 fun Navigation(networkObserver: NetworkObserver, context: Activity) {
@@ -106,81 +117,87 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         .build()
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
-    NavHost(navController = navController, startDestination = Screens.Login.route) {
-    val repository: IReposiatory = ReposiatoryImpl(RemoteDataSourceImp(), LocalDataSourceImp(context.getSharedPreferences(
-        LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
+    val repository: IReposiatory = ReposiatoryImpl(
+        RemoteDataSourceImp(),
+        LocalDataSourceImp(context.getSharedPreferences(LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
     )
-        val paymentViewModelFactory = PaymentViewModelFactory(repository)
-        val ordersFactory: OrdersFactory = OrdersFactory(repository)
 
-        val curreneyFactory: CurrenciesViewModelFactory = CurrenciesViewModelFactory(repository)
-    val cartFactory: CartViewModelFac = CartViewModelFac(repository)
-    val homeFactory: HomeViewModelFactory = HomeViewModelFactory(repository)
-    val couponFactory: CouponsViewModelFactory = CouponsViewModelFactory(repository)
-    val cartViewModelFac= CartViewModelFac(repository)
-    val changeUserDataFactory: ChangeUserDataViewModelFactory = ChangeUserDataViewModelFactory(repository)
-    composable(route = Screens.Home.route) {
+    val paymentViewModelFactory = PaymentViewModelFactory(repository)
+    val ordersFactory = OrdersFactory(repository)
+    val searchFactory = SearchViewModelFac(repository)
+    val curreneyFactory = CurrenciesViewModelFactory(repository)
+    val cartFactory = CartViewModelFac(repository)
+    val homeFactory = HomeViewModelFactory(repository)
+    val couponFactory = CouponsViewModelFactory(repository)
+    val productInfoViewModelFac = ProductInfoViewModelFac(repository)
+    val changeUserDataFactory = ChangeUserDataViewModelFactory(repository)
+
+    NavHost(navController = navController, startDestination = Screens.Login.route) {
+
+        composable(route = Screens.Home.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
+            val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
             LaunchedEffect(Unit) {
                 if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
                     val e = Firebase.auth.currentUser
                     getCurrent(e!!.email!!, repository)
                 }
             }
-            HomeScreen(context, CopuonsViewModel, homeViewModel, navController, networkObserver)
+            HomeScreen(context, CopuonsViewModel, homeViewModel, navController, networkObserver, cartViewModel)
         }
 
         composable(route = Screens.Category.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
-            CategoryScreen(homeViewModel,currencyViewModel, navController, networkObserver, LocalContext.current)
+            CategoryScreen(homeViewModel, currencyViewModel, navController, networkObserver, LocalContext.current)
         }
+
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
             CartScreen(cartViewModel, navController, context)
         }
+
         composable(route = Screens.Profile.route) {
             ProfileScreen(navController)
         }
+
         composable(route = Screens.ChangeUserData.route) {
-            val changeUserDataViewModel: ChangeUserDataViewModel =
-                viewModel(factory = changeUserDataFactory)
+            val changeUserDataViewModel: ChangeUserDataViewModel = viewModel(factory = changeUserDataFactory)
             ChangeUserDataScreen(viewModel = changeUserDataViewModel, navController = navController)
         }
-//        composable(route = Screens.Payment.route) {
-//            val paymentViewModel: PaymentViewModel = viewModel(factory = paymentViewModelFactory)
-//            PaymentScreen(navController,paymentViewModel)
-//        }
-        composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
-        composable(route = Screens.Search.route) { SearchScreen(navController, context) }
-    /*    composable(route = Screens.Signup.route) { SignupScreen(navController) }
-        composable(route = Screens.Login.route) {
-            LoginScreen(navController, context, googleSignInClient) {
-                navController.navigate(Screens.Home.route)
-            }
-        }*/
-        composable(route = Screens.Search.route) { SearchScreen(navController,context) }
+
+        composable(route = Screens.Favorite.route) {
+            val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
+            FavoriteScreen(cartViewModel, navController)
+        }
+
+        composable(route = Screens.Search.route) {
+            val searchViewModel: SearchViewModel = viewModel(factory = searchFactory)
+            val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
+            SearchScreen(navController, context, searchViewModel, currencyViewModel)
+        }
+
         composable(route = Screens.Signup.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
-            SignupScreen(navController,homeViewModel)
+            SignupScreen(navController)
         }
+
         composable(route = Screens.Login.route) {
             LoginScreen(navController, context, googleSignInClient) {
                 navController.navigate(Screens.Home.route)
             }
         }
 
-        // here im modifying the product route to Extract the product ID from the route
         composable(route = Screens.ProductSc.route) {
-            // Create ViewModel using the factory
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
             val vendorName = it.arguments?.getString(VENDOR_NAME)
             if (vendorName != null) {
-                ProductScreen(homeViewModel, currencyViewModel , navController, vendorName)
+                ProductScreen(homeViewModel, currencyViewModel, navController, vendorName)
             }
         }
+
         composable(route = Screens.Setting.route) {
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
             SettingScreen(currencyViewModel, navController)
@@ -188,35 +205,29 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(
             route = Screens.ProductDetails.route,
-            arguments = listOf(navArgument("product") {
-                type = NavType.StringType // take care of this it to mention that long will sent
-            })
+            arguments = listOf(navArgument("product") { type = NavType.StringType })
         ) { backStackEntry ->
             val gsonProduct = backStackEntry.arguments?.getString("product")
             val gson = Gson()
             val product = gson.fromJson(gsonProduct, Product::class.java)
-            ProductDetails(product = product, controller = navController, context)
-
-
+            val productInfoViewModel: ProductInfoViewModel = viewModel(factory = productInfoViewModelFac)
+            ProductDetails(productInfoViewModel,product = product, controller = navController, context)
         }
 
         composable(route = Screens.Orders.route) {
             val orderViewModel: OrdersViewModel = viewModel(factory = ordersFactory)
-            OrdersScreen(context,orderViewModel, navController, networkObserver)
+            OrdersScreen(context, orderViewModel, navController, networkObserver)
         }
 
         composable(
             route = Screens.OrderDetails.route,
             arguments = listOf(navArgument("order") { type = NavType.StringType })
-        ) {backStackEntry ->
-            val orderJson = backStackEntry.arguments?.getString("order")  // get the json
+        ) { backStackEntry ->
+            val orderJson = backStackEntry.arguments?.getString("order")
             val gson = Gson()
             val order = gson.fromJson(orderJson, Order::class.java)
             val orderViewModel: OrdersViewModel = viewModel(factory = ordersFactory)
-
-            OrderDetailsScreen(context,order = order, orderViewModel,controller = navController, networkObserver)
+            OrderDetailsScreen(context, order = order, orderViewModel, controller = navController, networkObserver)
         }
-
     }
-
-    }
+}

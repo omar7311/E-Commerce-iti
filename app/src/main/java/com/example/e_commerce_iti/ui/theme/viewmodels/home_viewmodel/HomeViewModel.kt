@@ -49,12 +49,12 @@ class HomeViewModel(val repo: IReposiatory) : ViewModel() {
         }
     }
 
-    fun getProductsByVendor(vendornName: String) {
+    fun getProductsByVendor(vendorName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getProductsByVendor(vendornName)
+            repo.getProductsByVendor(vendorName)
                 .catch { error -> _productStateFlow.value = ProductsApiState.Failure(error) }
                 .collect { products ->
-                    _productStateFlow.value = ProductsApiState.Success(products)
+                    _productStateFlow.emit(ProductsApiState.Success(products))
                 }
         }
     }

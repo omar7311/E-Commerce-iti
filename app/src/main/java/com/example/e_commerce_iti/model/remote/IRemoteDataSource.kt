@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.model.remote
 
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
@@ -44,5 +45,5 @@ interface IRemoteDataSource {
     suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
     suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
     suspend fun getProductById(productId: Long):Flow<Product>
-
+    fun getAllProduct():Flow<AllProduct>
 }

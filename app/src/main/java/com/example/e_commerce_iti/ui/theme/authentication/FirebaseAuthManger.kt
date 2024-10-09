@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.authentication
 
+
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -51,6 +52,7 @@ object FirebaseAuthManager {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         onResult(true, null) // Success
+
                         auth.currentUser?.sendEmailVerification()?.addOnCompleteListener {
                             if(task.isSuccessful){
                                 onResult(true,null)

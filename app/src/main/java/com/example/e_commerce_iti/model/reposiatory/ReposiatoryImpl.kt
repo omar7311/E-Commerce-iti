@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.model.reposiatory
 
 import com.example.e_commerce_iti.model.local.IlocalDataSource
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
@@ -19,6 +20,7 @@ import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 
 
 /**
@@ -81,6 +83,15 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
     override suspend fun getProductByID(id: Long): Flow<Product> {
         return remote.getProductByID(id)
     }
+
+
+
+
+
+    override fun getAllProduct(): Flow<AllProduct> {
+        return remote.getAllProduct()
+    }
+
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
         return remote.getCustomCollections()
     }
@@ -105,9 +116,8 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         return remote.updateMetaData(id,metaData)
     }
 
-    override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
-        TODO("Not yet implemented")
-    }
+//    override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
+//    }
 
     override suspend fun getDiscountCode(code: String): Flow<DiscountCodeX> {
         return remote.getDiscountCode(code)

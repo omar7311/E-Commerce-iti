@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -18,103 +20,127 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.DefaultFillType
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.model.apistates.UiState
+import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
-import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
-import com.example.e_commerce_iti.ui.theme._navigation.Screens
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+
 
 @Composable
-fun Actions(isAnonymous:Boolean,navController: NavController){
-    var showDialog by remember { mutableStateOf(false) }
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },  // When the dialog is dismissed
-            title = {
-                Text(text = "Login first")
-            },
-            text = {
-                Text("you are guest currently , you have to login to take this action")
-            },
-            confirmButton = {
-                TextButton(onClick = { showDialog = false
-                    navController.navigate(Screens.Login.route)
-                }) {
-                    Text("Login")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-    Row(horizontalArrangement = Arrangement.SpaceEvenly,
+fun Actions(
+    product: Product,
+    productInfoViewModel: ProductInfoViewModel,
+    navController: NavController
+) {
+    val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().height(50.dp)) {
-        Button(onClick = {
-           if(isAnonymous){
-               showDialog = true
-           }
-            else{
-
-            }
-        }) {
-            Text(text = "add to favourite")
-            Spacer(Modifier.width(8.dp))
-            Icon(imageVector = Icons.Filled.Favorite
-                ,contentDescription = null)
-        }
-        Button(onClick = {
-            if(isAnonymous){
-                showDialog = true
-            }
-            else{
-                CoroutineScope(Dispatchers.IO).launch {
-//                   val cart= RemoteDataSourceImp().getCart(currentUser!!.cart).first()
-//                    val lineItems=LineItems()
-//                    lineItems.variant_id=product.variants[0].id
-//                    lineItems.product_id=product.id
-//                    lineItems.quantity=1
-//                    cart.line_items.find { it.variant_id==product.variants[0].id }
-//                    val items=ArrayList<LineItems>(cart.line_items)
-//                    items.add(lineItems)
-//                    cart.line_items=items.toList()
-//                    RemoteDataSourceImp().updateCart(cart)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+    ) {
+        Button(
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)),
+            onClick = {
+                currentUser?.fav?.let {
+                    productInfoViewModel.getDraftOrder(it)
+                } ?: run {
+                    // Handle null cart case
+                    println("User not logged in or cart is null")
                 }
-
-            }
-        }) {
-            Text(text = "add to card")
+            }) {
+            Text(text = "Add to favorite", color = Color.Black, fontSize = 16.sp)
             Spacer(Modifier.width(8.dp))
-            Icon(imageVector = Icons.Filled.ShoppingCart
-                ,contentDescription = null)
+            Icon(
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = null
+            )
+        }
+
+        Button(
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)),
+            onClick = {
+                currentUser?.cart?.let {
+                    productInfoViewModel.getDraftOrder(it)
+                } ?: run {
+                    // Handle null cart case
+                    println("User not logged in or cart is null")
+                }
+            }) {
+            Text(text = "Add to cart", color = Color.Black, fontSize = 16.sp)
+            Spacer(Modifier.width(8.dp))
+            Icon(
+                imageVector = Icons.Filled.ShoppingCart,
+                contentDescription = null
+            )
+        }
+    }
+
+    // Observe changes in draft order state
+    LaunchedEffect(draftOrderState) {
+        when (draftOrderState) {
+            is UiState.Success -> {
+                val draftOrder = (draftOrderState as UiState.Success).data
+                // Check if product is already in cart or add new product to cart
+                if (!draftOrder.line_items.any { it.product_id == product.id }) {
+                    addToCardOFavorite(productInfoViewModel, product, draftOrder)
+                }
+            }
+            is UiState.Error -> {
+                // Handle error, show message
+                println("Error fetching draft order")
+            }
+            else -> {}
         }
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun ActionsPreview(){
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-       // Actions(true)
+
+
+
+
+fun addToCardOFavorite(
+    productInfoViewModel: ProductInfoViewModel,
+    product: Product,
+    draftOrder: DraftOrder
+) {
+    val lineItem = LineItems(
+        title = product.title,
+        price = product.variants[0].price,
+        quantity = product.variants[0].inventory_quantity.toLong(),
+        variant_id = product.variants[0].id,
+        product_id = product.id
+    )
+
+    val updatedLineItems = ArrayList<LineItems>(draftOrder.line_items).apply {
+        add(lineItem)
     }
+
+    draftOrder.line_items = updatedLineItems
+    productInfoViewModel.updateDraftOrder(draftOrder)
 }
+
+

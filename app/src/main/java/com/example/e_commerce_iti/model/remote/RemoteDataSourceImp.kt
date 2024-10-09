@@ -5,6 +5,7 @@ import com.example.e_commerce_iti.CurrentUser
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.metadata
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
@@ -31,6 +32,8 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOf
+import org.json.JSONObject
 import retrofit2.HttpException
 
 class RemoteDataSourceImp : IRemoteDataSource {
@@ -228,6 +231,11 @@ class RemoteDataSourceImp : IRemoteDataSource {
             }
         }
     }
+
+    override  fun getAllProduct(): Flow<AllProduct> = flow{
+        emit(RetrofitHelper.service.getAllProduct())
+    }
+
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> = flow {

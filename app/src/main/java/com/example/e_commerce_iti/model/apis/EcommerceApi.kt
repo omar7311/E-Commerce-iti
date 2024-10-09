@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.model.apis
 
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.ProductResponse
 import com.example.e_commerce_iti.model.pojos.SmartCollectionResponse
 import com.example.e_commerce_iti.model.pojos.customer.Customer
@@ -13,12 +14,14 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.OrdersResponse
 import com.example.e_commerce_iti.model.pojos.ProductWrapper
 import com.example.e_commerce_iti.model.pojos.SearchedProductResponse
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
+import com.example.e_commerce_iti.model.pojos.metadata.Metafield
 import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.FoundPriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
@@ -71,6 +74,8 @@ interface EcommerceApi {
     suspend fun getCart(@Path("id") id: Long): SearchDraftOrder
     @GET("products/{id}.json")
     suspend fun getProduct(@Path("id") id: Long): SearchedProductResponse
+    @GET("products.json")
+    suspend fun getAllProduct(): AllProduct
     @POST("customers/{customer_id}/metafields.json")
     suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData): UMeatDataResponse
 

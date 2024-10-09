@@ -90,7 +90,6 @@ import kotlinx.coroutines.withContext
 @Composable
 fun SignupScreen(
     controller: NavController,
-    homeViewModel: HomeViewModel
 ) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -307,6 +306,7 @@ fun SignupScreen(
                 Text("SIGN UP", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
             }
         }
+
         // "Already have an account?" button can be added here...
 
         // Display error message if exists
@@ -314,6 +314,7 @@ fun SignupScreen(
             Text(it, color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
+
 // ... (keep the existing "Already have an account?" button)
 
         AnimatedVisibility(visible = errorMessage != null) {

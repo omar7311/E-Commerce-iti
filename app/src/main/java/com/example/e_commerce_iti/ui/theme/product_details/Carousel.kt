@@ -6,6 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -20,37 +23,44 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ImageCarousel(images: List<String>) {
-    val pagerState = rememberPagerState{
+    val pagerState = rememberPagerState {
         images.size
     }
-
-    Box(modifier = Modifier.fillMaxWidth().height(225.dp)) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            Image(
-                painter = rememberImagePainter(images[page]),
-                contentDescription = null,
+    Card(modifier = Modifier.padding(12.dp).fillMaxWidth().height(300.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        // Add page indicators (optional)
-        Row(
-            Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(images.size) { index ->
-                val isSelected = pagerState.currentPage == index
-                Box(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(if (isSelected) 12.dp else 8.dp)
-                        .background(if (isSelected) Color.White else Color.Gray, shape = CircleShape)
+            ) { page ->
+                Image(
+                    painter = rememberImagePainter(images[page]),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
+            }
+
+            // Add page indicators (optional)
+            Row(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(images.size) { index ->
+                    val isSelected = pagerState.currentPage == index
+                    Box(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .size(if (isSelected) 12.dp else 8.dp)
+                            .background(
+                                if (isSelected) Color.White else Color.Gray,
+                                shape = CircleShape
+                            )
+                    )
+                }
             }
         }
     }

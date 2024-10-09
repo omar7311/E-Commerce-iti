@@ -1,5 +1,7 @@
 package com.example.e_commerce_iti.model.reposiatory
 
+import com.example.e_commerce_iti.model.pojos.AllProduct
+
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
@@ -36,9 +38,10 @@ interface IReposiatory {
     suspend fun updateCart(cart:DraftOrder):Flow<DraftOrder>
     suspend fun getPrice_rules(id: Long): Flow<PriceRule>
     suspend fun updateMetaData(id: Long, metaData: ResponseMetaData): Flow<ResponseMetaData>
-    suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
+   // suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
     suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
     suspend fun getProductById(productId: Long):Flow<Product>
+    fun getAllProduct():Flow<AllProduct>
 
     suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse>
     suspend fun getCart(id:Long): Flow<DraftOrder>
