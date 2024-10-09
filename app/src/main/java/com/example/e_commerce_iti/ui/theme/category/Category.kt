@@ -67,15 +67,18 @@ import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.products.FilterButtonWithSlider
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+import kotlinx.coroutines.flow.first
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
     homeViewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel,
     controller: NavController,
-    networkObserver: NetworkObserver,context: Context
+    networkObserver: NetworkObserver, context: Context
 
 ) {
     var collectionId by remember { mutableStateOf(DEFAULT_CUSTOM_COLLECTION_ID) } // default collection id
@@ -83,7 +86,8 @@ fun CategoryScreen(
     var selectedCategory by remember { mutableStateOf<String?>(null) } //state for selected category
 
     val minPrice = 0f  // Minimum price fixed
-    val maxPrice = 5000f  // Maximum price fixed
+    currencyViewModel.getCurrency()
+    val maxPrice = 2000f  // Maximum price fixed
     // Observe network state
     val isNetworkAvailable by networkObserver.isConnected.collectAsState(initial = false)
     Scaffold(
@@ -115,6 +119,7 @@ fun CategoryScreen(
                     if (collectionId != 0L) {
                         FetchProductsByCustomCollection(
                             homeViewModel,
+                            currencyViewModel,
                             controller,
                             collectionId,
                             selectedPrice,
@@ -191,6 +196,7 @@ fun FetchCustomCollections(
 @Composable
 fun FetchProductsByCustomCollection(
     homeViewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel,
     controller: NavController,
     collectionId: Long,
     maxPrice: Float,
@@ -218,7 +224,7 @@ fun FetchProductsByCustomCollection(
                     }
                 }
 
-            ProductGrid(filteredProducts, controller)  // here im passing the products
+            ProductGrid(filteredProducts, controller,currencyViewModel)  // here im passing the products
         }
 
         is ProductsApiState.Failure -> {
@@ -266,9 +272,8 @@ fun CustomCollectionItem(
     customCollection: CustomCollection,
     onCustomCollectionSelected: (CustomCollection) -> Unit,
     modifier: Modifier = Modifier,
-    isSelected: Boolean,
-
-    ) {
+    isSelected: Boolean
+) {
     val scale by animateFloatAsState(if (isSelected) 1.1f else 1f) // Pop up slightly when selected
     val offsetY by animateDpAsState(if (isSelected) (-10).dp else 0.dp) // Move up slightly when selected
     Column(
@@ -276,40 +281,47 @@ fun CustomCollectionItem(
             .clickable { onCustomCollectionSelected(customCollection) }
             .scale(scale) // Apply scale transformation
             .offset(y = offsetY) // Apply translation in the Y direction for pop-up effect
-            .padding(4.dp)
-
+            .padding(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally // Ensures both Image and Text are centered
     ) {
         Image(
-            painter = rememberAsyncImagePainter(customCollection.image.src),
+            painter = rememberAsyncImagePainter(
+                model = customCollection.image.src,
+                placeholder = painterResource(id = R.drawable.img), // Placeholder image
+                error = painterResource(id = R.drawable.errorimag) // Error image
+            ),
             contentDescription = customCollection.handle,
             modifier = Modifier
                 .size(70.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface),
-            contentScale = ContentScale.FillBounds
+                .background(MaterialTheme.colorScheme.surface), // Ensure background matches the surface
+            contentScale = ContentScale.Crop // Crop for better aspect ratio
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = customCollection.title,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
-            textAlign = TextAlign.Center
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium // Use typography from MaterialTheme
         )
     }
 }
 
 
+
+
 // create a  lazy Grid to show the products in the right
 @Composable
-fun ProductGrid(products: List<Product>, controller: NavController) {
+fun ProductGrid(products: List<Product>, controller: NavController,currencyViewModel: CurrencyViewModel) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.padding(1.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
         items(products) { product ->
-            ProductItem(product, controller) // to navigate when press on it
+            ProductItem(product , controller,currencyViewModel ) // to navigate when press on it
         }
     }
 }

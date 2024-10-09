@@ -103,7 +103,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         .build()
 
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
-    NavHost(navController = navController, startDestination = Screens.Orders.route) {
+    NavHost(navController = navController, startDestination = Screens.Login.route) {
         val repository: IReposiatory = ReposiatoryImpl(
             RemoteDataSourceImp(), LocalDataSourceImp(
                 context.getSharedPreferences(
@@ -133,7 +133,8 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Category.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
-            CategoryScreen(homeViewModel, navController, networkObserver, LocalContext.current)
+            val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
+            CategoryScreen(homeViewModel,currencyViewModel, navController, networkObserver, LocalContext.current)
         }
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
@@ -149,14 +150,17 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController, context) }
-        composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
+    /*    composable(route = Screens.Signup.route) { SignupScreen(navController) }
         composable(route = Screens.Login.route) {
             LoginScreen(navController, context, googleSignInClient) {
                 navController.navigate(Screens.Home.route)
             }
-        }
+        }*/
         composable(route = Screens.Search.route) { SearchScreen(navController,context) }
-        composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
+        composable(route = Screens.Signup.route) {
+            val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
+            SignupScreen(navController,homeViewModel)
+        }
         composable(route = Screens.Login.route) {
             LoginScreen(navController, context, googleSignInClient) {
                 navController.navigate(Screens.Home.route)
@@ -167,9 +171,10 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.ProductSc.route) {
             // Create ViewModel using the factory
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
+            val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
             val vendorName = it.arguments?.getString(VENDOR_NAME)
             if (vendorName != null) {
-                ProductScreen(homeViewModel, navController, vendorName)
+                ProductScreen(homeViewModel, currencyViewModel , navController, vendorName)
             }
         }
         composable(route = Screens.Setting.route) {

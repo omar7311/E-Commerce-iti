@@ -1,16 +1,37 @@
 package com.example.e_commerce_iti
 
+import android.app.Activity
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.DropdownMenu
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.IconButton
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -22,126 +43,310 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
+
+import com.example.e_commerce_iti.ui.theme.createCustomer
+
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.TextButton
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager
-import com.example.e_commerce_iti.ui.theme.createCustomer
-import kotlinx.coroutines.CoroutineScope
+import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager.firebaseAuthWithGoogle
+import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.common.api.ApiException
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+@OptIn(ExperimentalMaterialApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun SignupScreen(
     controller: NavController,
-    context: Context
+    homeViewModel: HomeViewModel
 ) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var fullNameError by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var phoneError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+    var confirmPasswordError by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isConfirmPasswordVisible by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    val emailRegex = remember { Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$") }
+    val passwordRegex = remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
+    val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Sign Up", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(16.dp))
+        // Header and other components can be added here...
 
-        // Email input
         OutlinedTextField(
             value = fullName,
-            onValueChange = { fullName = it },
-            label = { Text("full name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Email input
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-        //phone
-        OutlinedTextField(
-            value = phone,
-            onValueChange = { phone = it },
-            label = { Text("Phone") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Password input
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Confirm Password input
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Sign up button
-        Button(
-            onClick = {
-            //    var flag= false
-                if (password == confirmPassword && fullName.isNotBlank()
-                    && email.endsWith(".com") && password.length > 5
-                    )
-                        {
-                    FirebaseAuthManager.signUp(email, password) { success, error ->
-                        if (success) {
-                            //flag=true
-                           GlobalScope.launch(Dispatchers.IO){
-                               RemoteDataSourceImp().createCustomer(createCustomer(email,fullName,fullName,phone))
-                            }
-                            controller.navigate(Screens.Login.route)
-                        } else {
-                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }else{
-                    Toast.makeText(context, "error, enter valid data", Toast.LENGTH_LONG).show()
-                }
-//                if (flag){
-//                   creataccunt(email,fullName,phone)
-//                }
+            onValueChange = {
+                fullName = it
+                fullNameError = if (it.isBlank()) "Full name is required" else null
             },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Sign Up")
+            label = { Text("Full Name") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF6200EE),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.6f),
+                errorBorderColor = Color.Red,
+                focusedLabelColor = Color(0xFF6200EE),
+                unfocusedLabelColor = Color.Gray,
+                errorLabelColor = Color.Red,
+                textColor = Color.Black,
+                cursorColor = Color(0xFF6200EE),
+                backgroundColor = Color(0xFFF5F5F5),
+            ),
+            isError = fullNameError != null,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+        )
+        if (fullNameError != null) {
+            Text(fullNameError!!, color = Color.Red, modifier = Modifier.align(Alignment.Start))
         }
 
+        OutlinedTextField(
+            value = email,
+            onValueChange = {
+                email = it
+                emailError = if (!emailRegex.matches(it)) "Invalid email format" else null
+            },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF6200EE),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.6f),
+                errorBorderColor = Color.Red,
+                focusedLabelColor = Color(0xFF6200EE),
+                unfocusedLabelColor = Color.Gray,
+                errorLabelColor = Color.Red,
+                textColor = Color.Black,
+                cursorColor = Color(0xFF6200EE),
+                backgroundColor = Color(0xFFF5F5F5),
+            ),
+            isError = emailError != null,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
+        if (emailError != null) {
+            Text(emailError!!, color = Color.Red, modifier = Modifier.align(Alignment.Start))
+        }
 
+        OutlinedTextField(
+            value = phoneNumber,
+            onValueChange = {
+                phoneNumber = it
+                phoneError = if (!phoneRegex.matches(it)) "Invalid Egyptian phone number" else null
+            },
+            label = { Text("Phone Number") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF6200EE),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.6f),
+                errorBorderColor = Color.Red,
+                focusedLabelColor = Color(0xFF6200EE),
+                unfocusedLabelColor = Color.Gray,
+                errorLabelColor = Color.Red,
+                textColor = Color.Black,
+                cursorColor = Color(0xFF6200EE),
+                backgroundColor = Color(0xFFF5F5F5),
+            ),
+            isError = phoneError != null,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+        )
+        if (phoneError != null) {
+            Text(phoneError!!, color = Color.Red, modifier = Modifier.align(Alignment.Start))
+        }
 
+        OutlinedTextField(
+            value = password,
+            onValueChange = {
+                password = it
+                passwordError = if (!passwordRegex.matches(it)) "Password must be at least 8 characters long and include numbers, uppercase letters, lowercase letters, and special characters." else null
+            },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF6200EE),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.6f),
+                errorBorderColor = Color.Red,
+                focusedLabelColor = Color(0xFF6200EE),
+                unfocusedLabelColor = Color.Gray,
+                errorLabelColor = Color.Red,
+                textColor = Color.Black,
+                cursorColor = Color(0xFF6200EE),
+                backgroundColor = Color(0xFFF5F5F5),
+            ),
+            isError = passwordError != null,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
+        )
+        if (passwordError != null) {
+            Text(passwordError!!, color = Color.Red, modifier = Modifier.align(Alignment.Start))
+        }
+
+        OutlinedTextField(
+            value = confirmPassword,
+            onValueChange = {
+                confirmPassword = it
+                confirmPasswordError = if (it != password) "Passwords do not match" else null
+            },
+            label = { Text("Confirm Password") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF6200EE),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.6f),
+                errorBorderColor = Color.Red,
+                focusedLabelColor = Color(0xFF6200EE),
+                unfocusedLabelColor = Color.Gray,
+                errorLabelColor = Color.Red,
+                textColor = Color.Black,
+                cursorColor = Color(0xFF6200EE),
+                backgroundColor = Color(0xFFF5F5F5),
+            ),
+            isError = confirmPasswordError != null,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
+        )
+        if (confirmPasswordError != null) {
+            Text(confirmPasswordError!!, color = Color.Red, modifier = Modifier.align(Alignment.Start))
+        }
+
+        Button(
+            onClick = {
+                if (fullName.isBlank() || !emailRegex.matches(email) || !phoneRegex.matches(phoneNumber) ||
+                    !passwordRegex.matches(password) || password != confirmPassword) {
+                    errorMessage = "Please correct the errors in the form"
+                } else {
+                    isLoading = true
+                    FirebaseAuthManager.signUp(email, password) { success, error ->
+                        if (success) {
+                            // Use viewModelScope for proper coroutine scope
+                            homeViewModel.viewModelScope.launch(Dispatchers.IO) {
+                                try {
+                                    // Create customer
+                                     createCustomer(email, fullName, fullName, phoneNumber)
+                                    // Collect the result of the createCustomer flow
+                                    val customer = RemoteDataSourceImp().createCustomer(createCustomer(email,fullName,fullName,phoneNumber))
+                                    customer.collect { result ->
+                                        // Assuming result is of a type that indicates success/failure
+                                        if (result.customer?.email!=null) {
+                                            // Customer created successfully, navigate to Login
+                                            withContext(Dispatchers.Main) {
+                                                isLoading = false
+                                                controller.navigate(Screens.Login.route) // Navigate to Login
+                                            }
+                                        } else {
+                                            // Handle failure case
+                                            withContext(Dispatchers.Main) {
+                                                isLoading = false
+                                                errorMessage = "Failed to create customer. Please try again."
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    withContext(Dispatchers.Main) {
+                                        isLoading = false
+                                        errorMessage = "An error occurred: ${e.message}"
+                                    }
+                                }
+                            }
+                        } else {
+                            isLoading = false
+                            errorMessage = error
+                        }
+                    }
+                }
+            },
+            modifier = Modifier.wrapContentSize(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = turquoise,
+                contentColor = mediumVioletRed
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            if (isLoading) {
+                LoadingIndicator()
+            } else {
+                Text("SIGN UP", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
+            }
+        }
+
+        // "Already have an account?" button can be added here...
+
+        // Display error message if exists
+        errorMessage?.let {
+            Text(it, color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
+        }
     }
 
-}
+// ... (keep the existing "Already have an account?" button)
+
+        AnimatedVisibility(visible = errorMessage != null) {
+            errorMessage?.let {
+                Text(text = it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
+            }
+        }
+    }
+
+/*@Composable
+fun SignupAnimation(modifier: Modifier) {
+    val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.signup))
+    val isAnimationPlaying = lottieComposition != null
+
+    if (isAnimationPlaying) {
+        LottieAnimation(
+            composition = lottieComposition,
+            iterations = 1,
+            modifier = modifier
+        )
+    }
+}*/
 @Composable
 fun creataccunt(email:String,fname:String,phone:String){
     LaunchedEffect(Unit) {

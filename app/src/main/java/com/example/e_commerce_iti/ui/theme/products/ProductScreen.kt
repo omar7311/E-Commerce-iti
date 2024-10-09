@@ -1,6 +1,14 @@
 package com.example.e_commerce_iti.ui.theme.products
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,29 +53,55 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.room.util.query
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.coralColor
+import com.example.e_commerce_iti.crimson
+import com.example.e_commerce_iti.firebrick
+import com.example.e_commerce_iti.gradientBrush
+import com.example.e_commerce_iti.indigo
+import com.example.e_commerce_iti.limeGreen
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
+import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.navyBlue
+import com.example.e_commerce_iti.paleGoldenrod
+import com.example.e_commerce_iti.pastelBrush
+import com.example.e_commerce_iti.tomato
+import com.example.e_commerce_iti.turquoise
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+import com.example.e_commerce_iti.whiteBrush
 import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductScreen(homeVieVModel: HomeViewModel, controller: NavController, vendorName: String) {
+fun ProductScreen(
+    homeVieVModel: HomeViewModel,
+    currencyViewModle: CurrencyViewModel,
+    controller: NavController,
+    vendorName: String
+) {
 
     Scaffold(
         topBar = { CustomTopBar("Products", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller,context = LocalContext.current) },     // Keep the navigation controller for buttons
+        bottomBar = {
+            CustomButtonBar(
+                controller,
+                context = LocalContext.current
+            )
+        },     // Keep the navigation controller for buttons
     ) { innerPadding ->                                // Use padding for the content
 
         ProductsContent(
             homeVieVModel,
+            currencyViewModle,
             controller,
             vendorName,
             Modifier.padding(innerPadding)
@@ -79,6 +113,7 @@ fun ProductScreen(homeVieVModel: HomeViewModel, controller: NavController, vendo
 @Composable
 fun ProductsContent(
     homeViewModel: HomeViewModel,
+    currencyViewModle: CurrencyViewModel,
     controller: NavController,
     vendorName: String,
     modifier: Modifier
@@ -92,7 +127,7 @@ fun ProductsContent(
             .fillMaxSize()
             .padding(5.dp)
     ) {
-        CustomText("Available Products", Color.White, padding = PaddingValues(15.dp))
+        CustomText("Available Products", whiteBrush, padding = PaddingValues(15.dp))
 
         FilterButtonWithSlider(minPrice, maxPrice) { price ->
             selectedPrice = price  // Update the selected price
@@ -100,7 +135,13 @@ fun ProductsContent(
 
 
         // Pass the selected price for filtering products
-        FetchingProductsByVendor(homeViewModel, controller, vendorName, selectedPrice)
+        FetchingProductsByVendor(
+            homeViewModel,
+            currencyViewModle,
+            controller,
+            vendorName,
+            selectedPrice
+        )
     }
 }
 
@@ -108,6 +149,7 @@ fun ProductsContent(
 @Composable
 fun FetchingProductsByVendor(
     homeViewModel: HomeViewModel,
+    currencyViewModle: CurrencyViewModel,
     controller: NavController,
     vendorName: String,
     maxPrice: Float
@@ -136,7 +178,7 @@ fun FetchingProductsByVendor(
                 val productPrice = product.variants[0].price.toFloatOrNull() ?: 0f
                 productPrice <= maxPrice  // Filter products with price <= slider value
             }
-            ProductsList(filteredProducts, controller)
+            ProductsList(filteredProducts, controller, currencyViewModle)
 
         }
 
@@ -150,7 +192,11 @@ fun FetchingProductsByVendor(
 
 
 @Composable
-fun ProductsList(products: List<Product>, controller: NavController) {
+fun ProductsList(
+    products: List<Product>,
+    controller: NavController,
+    currencyViewModle: CurrencyViewModel
+) {
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -158,52 +204,98 @@ fun ProductsList(products: List<Product>, controller: NavController) {
             .fillMaxSize()
     ) {
         itemsIndexed(products) { _, product ->
-            ProductItem(product, controller)
+            ProductItem(product, controller, currencyViewModle)
         }
     }
 }
 
 @Composable
-fun ProductItem(product: Product, controller: NavController) {
-    val gson= Gson()
-    val gsonProduct=gson.toJson(product)
-    Card(
-        modifier = Modifier
-            .clickable {
-                // Navigation to Product Details here
-                controller.navigate(Screens.ProductDetails.createDetailRoute(gsonProduct))
-            }
-            .padding(8.dp), // Padding around the card
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Set elevation
-        shape = RoundedCornerShape(10.dp), // Rounded corners
+fun ProductItem(product: Product, controller: NavController, currencyViewModel: CurrencyViewModel) {
+    var visible by remember { mutableStateOf(false) }
+
+    // Launch effect to make the item visible
+    LaunchedEffect(Unit) {
+        visible = true
+    }
+
+    // Animation for the product item
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
+                scaleIn(initialScale = 0.9f, animationSpec = tween(durationMillis = 400)) +
+                slideInVertically(initialOffsetY = { -it }, animationSpec = tween(durationMillis = 400)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
+                scaleOut(targetScale = 0.8f, animationSpec = tween(durationMillis = 300)) +
+                slideOutVertically(targetOffsetY = { it }, animationSpec = tween(durationMillis = 300))
     ) {
-        Column(
+        Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .background(Color.White), // Background color of the card
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .clickable {
+                    // Navigation to Product Details here
+                    controller.navigate(Screens.ProductDetails.createDetailRoute(Gson().toJson(product)))
+                }
+                .padding(8.dp), // Padding around the card
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp), // Set elevation
+            shape = RoundedCornerShape(10.dp), // Rounded corners
         ) {
-            CustomImage(product.images[0].src)
-            Spacer(modifier = Modifier.size(10.dp))
-            CustomText(
-                product.title,
-                Color.White,
-                textColor = Color.Black,
-                fontSize = 16.sp
-            ) // Title
-            CustomText(
-                product.variants[0].price,
-                Color.Cyan,
-                textColor = Color.Black,
-                fontSize = 12.sp,
-                padding = PaddingValues(10.dp)
-            ) // Price
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(Color.White), // Background color of the card
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Image display
+                CustomImage(product.images[0].src)
+                Spacer(modifier = Modifier.size(10.dp))
+                // Title
+                CustomText(
+                    product.title,
+                    whiteBrush,
+                    textColor = Color.Black,
+                    fontSize = 16.sp
+                )
+                // Price display
+                getCurrencyAndPrice(product.variants[0].price, currencyViewModel)?.let {
+                    CustomText(
+                        it,
+                        pastelBrush,
+                        textColor = navyBlue,
+                        fontSize = 18.sp,
+                        padding = PaddingValues(10.dp)
+                    )
+                }
+            }
         }
     }
 }
 
+
+@Composable
+fun getCurrencyAndPrice(price: String, currencyViewModle: CurrencyViewModel): String? {
+
+    var priceAndCurrency: String? = null
+    LaunchedEffect(Unit) {
+        currencyViewModle.getCurrency()
+    }
+    val currency = currencyViewModle.currencyStateFlow.collectAsState()
+    when (currency.value) {
+        is UiState.Success -> {
+            val currency = (currency.value as UiState.Success).data
+            val priceNum = (price.toFloat() * currency.second)
+            val formattedPrice = String.format("%.2f", priceNum)
+            val currc = currency.first
+            priceAndCurrency = "$formattedPrice  $currc"
+        }
+
+        is UiState.Error -> "Price Error"
+        is UiState.Failure -> "Price Error"
+        UiState.Loading -> {}
+        UiState.Non -> {}
+    }
+    return priceAndCurrency
+}
 
 /**
  *      this function for price filter using the slider
