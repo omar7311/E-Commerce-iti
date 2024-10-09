@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.transparentBrush
@@ -57,7 +59,13 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewMode
 
 @Composable
 fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
+
+    LaunchedEffect(Unit) {
+        currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
+    }
     val product by cartViewModel.product.collectAsState()
+
+
     var productList=mutableListOf<Product>()
     Scaffold(
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
