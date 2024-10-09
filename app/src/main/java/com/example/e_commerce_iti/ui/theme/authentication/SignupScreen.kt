@@ -106,7 +106,7 @@ fun SignupScreen(
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-
+    val flag= rememberSaveable{ mutableStateOf(false) }
     val emailRegex = remember { Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$") }
     val passwordRegex = remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
     val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
@@ -266,17 +266,25 @@ fun SignupScreen(
                     isLoading = true
                     FirebaseAuthManager.signUp(email, password) { success, error ->
                         if (success) {
-                            // Call createAccount function to handle customer creation
+
                             GlobalScope.launch(Dispatchers.IO){
-                                RemoteDataSourceImp().createCustomer(createCustomer(email,fullName,fullName,phoneNumber))
-                                delay(3000) // 3 seconds delay
+
+                                    RemoteDataSourceImp().createCustomer(
+                                        createCustomer(
+                                            email,
+                                            fullName,
+                                            fullName,
+                                            phoneNumber
+                                        )
+                                    )
                                 isLoading = true
+                                delay(7000) // 3 seconds delay
                             }
 
                             // Start a new coroutine for the delay
                             scope.launch {
                                 isLoading = false
-                                controller.navigate(Screens.Home.route)
+                                controller.navigate(Screens.Login.route)
                             }
                         } else {
                             isLoading = false
@@ -298,6 +306,7 @@ fun SignupScreen(
                 Text("SIGN UP", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
             }
         }
+
         // "Already have an account?" button can be added here...
 
         // Display error message if exists
@@ -328,9 +337,3 @@ fun SignupAnimation(modifier: Modifier) {
         )
     }
 }*/
-@Composable
-fun creataccunt(email:String,fname:String,phone:String){
-    LaunchedEffect(Unit) {
-        RemoteDataSourceImp().createCustomer(createCustomer(email,fname,fname,phone))
-    }
-}

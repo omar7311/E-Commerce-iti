@@ -17,6 +17,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ class CurrencyViewModel(private val repository: IReposiatory) : ViewModel() {
     private val _userStateData= MutableStateFlow<UiState<CustomerX>>(UiState.Non)
     val userStateData: MutableStateFlow<UiState<CustomerX>> =_userStateData
     private val _currencyStateFlow = MutableStateFlow<UiState<Pair<String, Float>>>(UiState.Non)
-    val currencyStateFlow: MutableStateFlow<UiState<Pair<String, Float>>> = _currencyStateFlow
+    val currencyStateFlow: StateFlow<UiState<Pair<String, Float>>> = _currencyStateFlow
     fun changeCurrency(currency: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getCurrencyFromLocal(currency).firstOrNull()

@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -80,6 +81,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -99,18 +101,18 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponView
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.e_commerce_iti.LoadingIndicator
 import com.example.e_commerce_iti.NetworkErrorContent
-import com.example.e_commerce_iti.blueBrush
-import com.example.e_commerce_iti.crimson
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.earthyBrush
-import com.example.e_commerce_iti.goldBrush
-import com.example.e_commerce_iti.gradientBrush
-import com.example.e_commerce_iti.mistyRose
+import com.example.e_commerce_iti.model.local.LocalDataSourceImp
+import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
+import com.example.e_commerce_iti.model.reposiatory.IReposiatory
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.navyBlue
 import com.example.e_commerce_iti.pastelBrush
-import com.example.e_commerce_iti.peachPuff
 import com.example.e_commerce_iti.transparentBrush
 import com.example.e_commerce_iti.ui.theme.ShimmerEffect
-import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.skydoves.landscapist.Shimmer
@@ -127,7 +129,8 @@ fun HomeScreen(
     couponViewModel: CouponViewModel,
     homeViewModel: HomeViewModel,
     controller: NavController = rememberNavController(),
-    networkObserver: NetworkObserver
+    networkObserver: NetworkObserver,
+    cartViewModel: CartViewModel
 ) {
 
     Scaffold(
@@ -270,10 +273,16 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopBar(
-    customTitle: String,
-    controller: NavController
-) {
+fun CustomTopBar(customTitle: String, controller: NavController) {
+    val repository: IReposiatory = ReposiatoryImpl(
+        RemoteDataSourceImp(), LocalDataSourceImp(
+            LocalContext.current.getSharedPreferences(
+                LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE
+            )
+        )
+    )
+    val cartViewModelFac= CartViewModelFac(repository)
+    val cartViewModel: CartViewModel = viewModel(factory = cartViewModelFac)
     TopAppBar(
         modifier = Modifier
             .padding(horizontal = 15.dp, vertical = 10.dp)
@@ -319,7 +328,10 @@ fun CustomTopBar(
         },
         actions = {
             // Favorite icon on the right
-            IconButton(onClick = { controller.navigate(Screens.Favorite.route) }) {
+            IconButton(onClick = {
+                currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
+                controller.navigate(Screens.Favorite.route)
+            }) {
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
                     imageVector = Icons.Default.FavoriteBorder,
@@ -507,6 +519,7 @@ fun CustomText(
         overflow = TextOverflow.Ellipsis
     )
 }
+
 
 
 @Composable

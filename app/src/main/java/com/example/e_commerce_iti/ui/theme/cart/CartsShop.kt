@@ -25,6 +25,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -49,10 +50,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
 @SuppressLint("StateFlowValueCalledInComposition")
+
 @Composable
-
 fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
-
     // Ensure these functions are called only once when the composable enters the composition
     LaunchedEffect(Unit) {
         viewModel.getCartDraftOrder(currentUser!!.cart)
@@ -63,65 +63,73 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
 
     val currency = viewModel.currentCurrency.collectAsState()
     val productState = viewModel.product.collectAsState()
-    val totalAmount = remember { mutableStateOf(0.0) }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(bottom = 50.dp)
     ) {
-        if (productState.value is UiState.Success) {
-            val products = (productState.value as? UiState.Success<MutableList<Product>>)?.data
-            val draftOrder = (viewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
-            val currency2 = (currency.value as? UiState.Success<Pair<String, Float>>)!!.data
+        when (val state = productState.value) {
+            is UiState.Success -> {
+                val products = state.data // Products fetched successfully
+                val draftOrder = (viewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
+                val currencyData = (currency.value as? UiState.Success<Pair<String, Float>>)?.data
 
-            if (products!!.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier.weight(25f),
-                    contentPadding = PaddingValues(14.dp)
-                ) {
-                    products.let { productList ->
-                        draftOrder?.let { order ->
-                            items(productList.size, key = { productList[it].body_html }) { index ->
-                                val product = productList[index]
-                                val variant = order.line_items
-                                    .flatMap { lineItem -> product.variants.filter { it.id == lineItem.variant_id } }
-                                    .firstOrNull()
-                                val changeQuantity = remember { mutableStateOf(0) }
-                                variant?.let {
-                                    CartItem(
-                                        currency2,
-                                        image = product.images[0].src,
-                                        name = product.title,
-                                        price = order.line_items[index].price!!.toDouble(),
-                                        numberOfItemsChosen = changeQuantity,
-                                        quantity = it.inventory_quantity,
-                                        totalAmount = totalAmount
-                                        , e = {viewModel.updateCart(order.line_items[index].id!!)}
-                                    )
-                                    Spacer(Modifier.height(10.dp))
-                                }
+                if (products.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier.weight(25f),
+                        contentPadding = PaddingValues(14.dp)
+                    ) {
+                        items(products.size, key = { index -> products[index].id }) { index ->
+                            val product = products[index]
+                            val variant = draftOrder?.line_items
+                                ?.flatMap { lineItem -> product.variants.filter { it.id == lineItem.variant_id } }
+                                ?.firstOrNull()
+                            variant?.let {
+                                CartItem(
+                                    draftOrder.line_items[index + 1],
+                                    currencyData!!,
+                                    image = product.images[0].src,
+                                    name = product.title,
+                                    price = it.price.toDouble(),
+                                    numberOfItemsChosen = remember { mutableStateOf(draftOrder.line_items[index + 1].quantity!!.toInt()) },
+                                    quantity = it.inventory_quantity,
+                                    totalAmount = viewModel,
+                                    e = { e -> viewModel.updateCart(product, e) }
+                                )
+                                Spacer(Modifier.height(10.dp))
                             }
                         }
                     }
-                }
 
-                Spacer(Modifier.height(10.dp))
-                TotalPriceText(totalAmount = totalAmount, currency2)
-                Spacer(Modifier.height(10.dp))
-                CheckoutButton()
-            } else {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    MyLottiAni(R.raw.emptycart)
+                    Spacer(Modifier.height(10.dp))
+                    TotalPriceText(viewModel, currencyData!!)
+                    Spacer(Modifier.height(10.dp))
+                    CheckoutButton(viewModel)
+                } else {
+                    // Handle empty product list
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        MyLottiAni(R.raw.emptycart)
+                    }
                 }
             }
-        } else if (productState.value is UiState.Loading) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                MyLottiAni(R.raw.loadingcart)
+            is UiState.Loading -> {
+                // Show loading animation
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    MyLottiAni(R.raw.loadingcart)
+                }
             }
+            is UiState.Error -> {
+                // Handle error state, perhaps show a message
+                Text("Error loading products", modifier = Modifier.padding(16.dp))
+            }
+
+            UiState.Non -> TODO()
+            is UiState.Failure -> TODO()
         }
     }
 }
+
 @Composable
 fun MyLottiAni(id: Int) {
     // Load the Lottie animation from the assets folder
@@ -134,21 +142,25 @@ fun MyLottiAni(id: Int) {
         iterations = LottieConstants.IterateForever // This will loop the animation
     )
 }
+
 @Composable
-fun TotalPriceText(totalAmount: MutableState<Double>,currency2: Pair<String, Float>) {
-    // Only this text recomposes when the total amount changes
+fun TotalPriceText(model: CartViewModel, currency2: Pair<String, Float>) {
+    // Collect the state from totalAmount and observe it
+    val totalAmount = model.totalAmount.collectAsState(initial = 0.0).value
+
     Text(
-        text = "Price ${(totalAmount.value * currency2.second).roundToTwoDecimalPlaces()} in ${currency2.first}",
+        text = model.gettotalValue(currency2.second, currency2.first),
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 60.dp)
     )
 }
 
+
 @Composable
-fun CheckoutButton() {
+fun CheckoutButton(viewModel: CartViewModel) {
     Button(
-        onClick = { /* Checkout Action */ },
+        onClick = { viewModel.submit() },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 50.dp)
