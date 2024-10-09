@@ -64,7 +64,7 @@ fun ProfileScreen(controller: NavController) {
                Text(text = "Email : ${currentUser?.email?:"N/A"}", fontSize = 17.sp, fontWeight = FontWeight.Bold)
            }
            ProfieItem(e = {controller.navigate(Screens.Orders.route)}, t = "Orders", id = R.drawable.ordersicon)
-           ProfieItem(e = {}, t = "Favorites", id = R.drawable.baseline_favorite_border_24)
+           ProfieItem(e = {controller.navigate(Screens.Favorite.route)}, t = "Favorites", id = R.drawable.baseline_favorite_border_24)
            ProfieItem(e = {controller.navigate(Screens.Setting.route)}, t = "Settings", id = R.drawable.accessory)
 
 

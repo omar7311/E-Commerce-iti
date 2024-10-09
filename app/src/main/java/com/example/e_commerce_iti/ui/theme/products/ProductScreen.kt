@@ -53,7 +53,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.room.util.query
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.coralColor
 import com.example.e_commerce_iti.crimson

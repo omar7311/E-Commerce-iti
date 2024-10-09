@@ -329,7 +329,6 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
         actions = {
             // Favorite icon on the right
             IconButton(onClick = {
-                currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
                 controller.navigate(Screens.Favorite.route)
             }) {
                 Icon(

@@ -60,6 +60,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -89,7 +90,6 @@ import kotlinx.coroutines.withContext
 @Composable
 fun SignupScreen(
     controller: NavController,
-    homeViewModel: HomeViewModel
 ) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }

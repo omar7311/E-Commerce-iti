@@ -39,94 +39,108 @@ import androidx.navigation.NavController
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
+import kotlinx.coroutines.flow.first
 
 
 @Composable
-fun Actions(product: Product,productInfoViewModel: ProductInfoViewModel,navController: NavController){
+fun Actions(
+    product: Product,
+    productInfoViewModel: ProductInfoViewModel,
+    navController: NavController
+) {
     val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
-    when(draftOrderState){
-        is UiState.Loading->{}
-        is UiState.Success->{
-            var draftOrder=(draftOrderState as UiState.Success).data
-            var flag=false
-            for (i in draftOrder.line_items){
-                if(i.product_id!=null && product.id==i.product_id){
-                    flag=true
-                }
-            }
-            if(flag==false) {
-                val lineItem = LineItems()
-                lineItem.title = product.title
-                lineItem.price = product.variants[0].price
-                lineItem.quantity = product.variants[0].inventory_quantity.toLong()
-                lineItem.variant_id = product.variants[0].id
-                lineItem.product_id = product.id
-                val arrayLineItems = ArrayList<LineItems>(draftOrder.line_items)
-                arrayLineItems.add(lineItem)
-                draftOrder.line_items = arrayLineItems.toList()
-                productInfoViewModel.updateDraftOrder(draftOrder)
-            }
-            }
-        is UiState.Failure->{ }
-        is UiState.Error -> {}
-        UiState.Non -> {}
-    }
-    Row(horizontalArrangement = Arrangement.SpaceEvenly,
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().height(50.dp)) {
-        Button( shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+    ) {
+        Button(
+            shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)),
             onClick = {
-                //currentUser?.fav?.let { productInfoViewModel.getDraftOrder(it) }
+                currentUser?.fav?.let {
+                    productInfoViewModel.getDraftOrder(it)
+                } ?: run {
+                    // Handle null cart case
+                    println("User not logged in or cart is null")
+                }
             }) {
-            Text(text = "add to favourite",color = Color.Black,fontSize = 16.sp)
+            Text(text = "Add to favorite", color = Color.Black, fontSize = 16.sp)
             Spacer(Modifier.width(8.dp))
-            Icon(imageVector = Icons.Filled.Favorite
-                ,contentDescription = null)
+            Icon(
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = null
+            )
         }
-        Button( shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)) ,
+
+        Button(
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)),
             onClick = {
-                // currentUser?.cart?.let { productInfoViewModel.getDraftOrder(it) }
+                currentUser?.cart?.let {
+                    productInfoViewModel.getDraftOrder(it)
+                } ?: run {
+                    // Handle null cart case
+                    println("User not logged in or cart is null")
+                }
             }) {
-            Text(text = "add to card", color = Color.Black, fontSize = 16.sp)
+            Text(text = "Add to cart", color = Color.Black, fontSize = 16.sp)
             Spacer(Modifier.width(8.dp))
-            Icon(imageVector = Icons.Filled.ShoppingCart
-                ,contentDescription = null)
+            Icon(
+                imageVector = Icons.Filled.ShoppingCart,
+                contentDescription = null
+            )
+        }
+    }
+
+    // Observe changes in draft order state
+    LaunchedEffect(draftOrderState) {
+        when (draftOrderState) {
+            is UiState.Success -> {
+                val draftOrder = (draftOrderState as UiState.Success).data
+                // Check if product is already in cart or add new product to cart
+                if (!draftOrder.line_items.any { it.product_id == product.id }) {
+                    addToCardOFavorite(productInfoViewModel, product, draftOrder)
+                }
+            }
+            is UiState.Error -> {
+                // Handle error, show message
+                println("Error fetching draft order")
+            }
+            else -> {}
         }
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun ActionsPreview(){
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-       // Actions(true)
-        Row(horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().height(50.dp)) {
-            Button( shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)),
-                onClick = {
-                //currentUser?.fav?.let { productInfoViewModel.getDraftOrder(it) }
-            }) {
-                Text(text = "add to favourite",color = Color.Black,fontSize = 16.sp)
-                Spacer(Modifier.width(8.dp))
-                Icon(imageVector = Icons.Filled.Favorite
-                    ,contentDescription = null)
-            }
-            Button( shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)) ,
-                onClick = {
-               // currentUser?.cart?.let { productInfoViewModel.getDraftOrder(it) }
-            }) {
-                Text(text = "add to card", color = Color.Black, fontSize = 16.sp)
-                Spacer(Modifier.width(8.dp))
-                Icon(imageVector = Icons.Filled.ShoppingCart
-                    ,contentDescription = null)
-            }
-        }
+
+
+
+
+fun addToCardOFavorite(
+    productInfoViewModel: ProductInfoViewModel,
+    product: Product,
+    draftOrder: DraftOrder
+) {
+    val lineItem = LineItems(
+        title = product.title,
+        price = product.variants[0].price,
+        quantity = product.variants[0].inventory_quantity.toLong(),
+        variant_id = product.variants[0].id,
+        product_id = product.id
+    )
+
+    val updatedLineItems = ArrayList<LineItems>(draftOrder.line_items).apply {
+        add(lineItem)
     }
+
+    draftOrder.line_items = updatedLineItems
+    productInfoViewModel.updateDraftOrder(draftOrder)
 }
+
+
