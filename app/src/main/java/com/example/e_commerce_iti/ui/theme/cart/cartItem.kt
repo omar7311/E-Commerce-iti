@@ -39,31 +39,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun CartItem(
+    lineItems: com.example.e_commerce_iti.model.pojos.draftorder.LineItems
+    ,
     currency: Pair<String, Float>
       ,
     numberOfItemsChosen:MutableState<Int>
     ,
-    e:()->Unit
+    e:(Linedata:com.example.e_commerce_iti.model.pojos.draftorder.LineItems)->Unit
     ,
     image: String = "",
     name: String = "",
     price: Double = 0.0,
     quantity: Int = 0,
-    totalAmount: MutableState<Double>
+    totalAmount: CartViewModel
 ) {
     Log.i("CartItem", "$image $name $price $quantity")
     val showDialog = rememberSaveable { mutableStateOf(false) }
     // Show confirmation dialog for item deletion
     if (showDialog.value) {
-        MyAlertDialog(e,
-             showDialog,
-            price * numberOfItemsChosen.value,totalAmount)
+        MyAlertDialog(order = lineItems,e, showDialog)
     }
 
     // Main Card for displaying the product item
@@ -121,33 +123,15 @@ fun CartItem(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Add button
-                    IconButton(
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            if (numberOfItemsChosen.value < quantity) {
-                                totalAmount.value += price
-                                numberOfItemsChosen.value++
-                            }
-                        }
-                    ) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = null)
-                    }
-
-                    // Display chosen item count
-                    Text(
-                        textAlign = TextAlign.Center,
-                        text = "${numberOfItemsChosen.value}",
-                        modifier = Modifier.weight(1f)
-                    )
 
                     // Remove button
                     IconButton(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            if (numberOfItemsChosen.value  > 0) {
-                                totalAmount.value -= price
+                            if (numberOfItemsChosen.value  > 1) {
+                                totalAmount.sub(price)
                                 numberOfItemsChosen.value--
+                                lineItems.quantity = numberOfItemsChosen.value.toLong()
                             }
                         }
                     ) {
@@ -156,6 +140,24 @@ fun CartItem(
                             painter = painterResource(id = R.drawable.baseline_minimize_24),
                             contentDescription = null
                         )
+                    }
+                    // Display chosen item count
+                    Text(textAlign = TextAlign.Center, text = "${numberOfItemsChosen.value}", modifier = Modifier.weight(1f))
+
+
+                    // Add button
+                    IconButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            if (numberOfItemsChosen.value < quantity) {
+                                numberOfItemsChosen.value++
+                                Log.i("CartItem", "add ${numberOfItemsChosen.value}")
+                                totalAmount.add(price)
+                                lineItems.quantity = numberOfItemsChosen.value.toLong()
+                            }
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = null)
                     }
                 }
             }
@@ -173,7 +175,7 @@ fun CartItem(
 }
 
 @Composable
-fun MyAlertDialog(e:()->Unit,shouldShowDialog: MutableState<Boolean>,price: Double,total:MutableState<Double>) {
+fun MyAlertDialog(order: com.example.e_commerce_iti.model.pojos.draftorder.LineItems,e:(Linedata:com.example.e_commerce_iti.model.pojos.draftorder.LineItems)->Unit,shouldShowDialog: MutableState<Boolean>) {
     if (shouldShowDialog.value) { // 2
         AlertDialog( // 3
             onDismissRequest = { // 4
@@ -185,9 +187,8 @@ fun MyAlertDialog(e:()->Unit,shouldShowDialog: MutableState<Boolean>,price: Doub
             confirmButton = { // 6
                 Button(
                     onClick = {
-                        total.value -= price
                         shouldShowDialog.value = false
-                        e()
+                        e(order)
                     }
                 ) {
                     Text(

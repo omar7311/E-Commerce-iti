@@ -1,9 +1,19 @@
 package com.example.e_commerce_iti.ui.theme.home
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.ColorRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -53,6 +64,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +75,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
@@ -86,16 +99,11 @@ import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.example.e_commerce_iti.LoadingIndicator
 import com.example.e_commerce_iti.NetworkErrorContent
-import com.example.e_commerce_iti.currentUser
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp
-import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
-import com.example.e_commerce_iti.model.reposiatory.IReposiatory
-import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
-import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
-import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.skydoves.landscapist.Shimmer
 
 /**
  *      don't forget navigation
@@ -114,8 +122,14 @@ fun HomeScreen(
 ) {
 
     Scaffold(
+        modifier = Modifier.background(transparentBrush),
         topBar = { CustomTopBar("Home", controller) },
-        bottomBar = { CustomButtonBar(controller,context) }, // give it the controller to navigate with it
+        bottomBar = {
+            CustomButtonBar(
+                controller,
+                context
+            )
+        }, // give it the controller to navigate with it
     ) { innerPadding ->
         val isConnected = networkObserver.isConnected.collectAsState()
         if (isConnected.value) {
@@ -145,9 +159,9 @@ fun HomeContent(
         /**
          *  here we put all content of home Screen
          */
-        CustomText("Coupons", Color.Transparent, padding = PaddingValues(5.dp))
+        CustomText("Coupons", transparentBrush, padding = PaddingValues(5.dp))
         CouponCarousel(couponViewModel)
-        CustomText("Brands", Color.Transparent, padding = PaddingValues(5.dp))
+        CustomText("Brands", transparentBrush, padding = PaddingValues(5.dp))
         FetchingBrandData(homeViewModel, controller)
     }
 }
@@ -164,11 +178,15 @@ fun CouponCarousel(viewModel: CouponViewModel) {
     viewModel.getCoupons()
     // Display the images in a carousel-like format
     LazyRow(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(10.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         itemsIndexed(couponImages) { index, coupon ->
+            if (couponsState is UiState.Loading){
+                ShimmerEffect()
+            }
             if (couponsState is UiState.Success) {
                 val cc = (couponsState as UiState.Success).data
                 Box(
@@ -255,14 +273,12 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
     val cartViewModel:CartViewModel= viewModel(factory = cartViewModelFac)
     TopAppBar(
         modifier = Modifier
-            .padding(horizontal = 10.dp, vertical = 5.dp)
-            .clip(RoundedCornerShape(30.dp))
+            .padding(horizontal = 15.dp, vertical = 10.dp)
+            .clip(RoundedCornerShape(35.dp))
             .fillMaxWidth()
             .shadow(8.dp, RoundedCornerShape(20.dp))
             .background(
-                brush = Brush.horizontalGradient( // Gradient background for a more stylish look
-                    colors = listOf(Color(0xFF76c7c0), Color(0xFF5ca9b9))
-                )
+                brush = earthyBrush
             ),
         title = {
             Box(
@@ -328,7 +344,9 @@ fun CustomButtonBar(controller: NavController, context: Context) {
         currentRoute.value = navBackStackEntry?.destination?.route ?: Screens.Home.route
     }
 
-    NavigationBar {
+    NavigationBar(
+        modifier = Modifier.background(brush = earthyBrush)
+    ) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home") },
@@ -358,8 +376,8 @@ fun CustomButtonBar(controller: NavController, context: Context) {
             label = { Text("Cart") },
             selected = currentRoute.value == Screens.Cart.route,
             onClick = {
-                if (Firebase.auth.currentUser!=null&&!Firebase.auth.currentUser!!.email.isNullOrBlank())
-                   controller.navigate(Screens.Cart.route)
+                if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank())
+                    controller.navigate(Screens.Cart.route)
                 else
                     Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show()
             }
@@ -389,7 +407,7 @@ fun BrandListItems(
             .height(470.dp) // Set a fixed height
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-       // contentPadding = PaddingValues(5.dp)
+        // contentPadding = PaddingValues(5.dp)
     ) {
         itemsIndexed(brands) { _, brand ->
             BrandItem(brand, controller) // Render each brand item
@@ -400,40 +418,56 @@ fun BrandListItems(
 
 @Composable
 fun BrandItem(brand: BrandData, controller: NavController) {
-    Card(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxSize()
-            .clickable {        // here navigate to product screen with brand id
-                controller.navigate(Screens.ProductSc.createRoute(brand.title))
-            },
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp), // Set elevation
-        shape = RoundedCornerShape(10.dp), // Rounded corners
-    ) {
-        Column(
-            modifier = Modifier
-                .background(Color.White)
-                .fillMaxSize()
-                //.wrapContentHeight()
-                .padding(8.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            brand.imageSrc?.let {
-                CustomImage(it)
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            // Text section
-            CustomText(brand.title, Color.Cyan)
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        visible = true
+    }
 
+    // Animation for the brand item
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(durationMillis = 250)) + // Reduced duration
+                scaleIn(initialScale = 0.9f, animationSpec = tween(durationMillis = 250)) +
+                slideInVertically(initialOffsetY = { -it }, animationSpec = tween(durationMillis = 250)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 200)) + // Reduced duration
+                scaleOut(targetScale = 0.8f, animationSpec = tween(durationMillis = 200)) +
+                slideOutVertically(targetOffsetY = { it }, animationSpec = tween(durationMillis = 200))
+    ) {
+        Card(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize()
+                .clickable { // Navigate to product screen with brand id
+                    controller.navigate(Screens.ProductSc.createRoute(brand.title))
+                },
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp), // Set elevation
+            shape = RoundedCornerShape(10.dp), // Rounded corners
+        ) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxSize()
+                    .wrapContentHeight()
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(10.dp)),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                brand.imageSrc?.let {
+                    CustomImage(it)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                // Text section
+                CustomText(brand.title, pastelBrush, textColor = navyBlue, fontSize = 18.sp)
+            }
         }
     }
 }
 
 @Composable
 fun CustomImage(url: String) {
-    val painter = rememberAsyncImagePainter(  // this function to load image instead of glide
+    val painter = rememberAsyncImagePainter(
+        // this function to load image instead of glide
         model = url,
     )
 
@@ -442,8 +476,8 @@ fun CustomImage(url: String) {
         contentDescription = null,
         modifier = Modifier
             .size(140.dp)
-        .clip(RoundedCornerShape(10.dp))
-        .padding(10.dp),
+            .clip(RoundedCornerShape(10.dp))
+            .padding(10.dp),
         contentScale = ContentScale.Fit
 
     )
@@ -452,10 +486,11 @@ fun CustomImage(url: String) {
 @Composable
 fun CustomText(
     textToUse: String,
-    backGroundColor: Color,
+    backGroundColor: Brush,
     textColor: Color = Color.Black,
-    fontSize: TextUnit = 20.sp, // Adjusted font size
+    fontSize: TextUnit = 20.sp,
     padding: PaddingValues = PaddingValues(),
+    modifier: Modifier= Modifier
 ) {
     Text(
         text = textToUse,
@@ -463,13 +498,13 @@ fun CustomText(
         fontSize = fontSize,
         fontWeight = FontWeight.Bold,
         modifier = Modifier
-            .wrapContentWidth()
+            .fillMaxWidth()
             .padding(padding)
-            .clip(RoundedCornerShape(15.dp)) // Rounded corners for the background
+            .clip(RoundedCornerShape(15.dp))
             .background(backGroundColor)
             .padding(8.dp), // Inner padding
         maxLines = 1, // Limit to one line
-        overflow = TextOverflow.Ellipsis // Add ellipsis if text overflows
+        overflow = TextOverflow.Ellipsis
     )
 }
 
@@ -492,16 +527,21 @@ fun SimpleText(simpleText: String) {
 }
 
 @Composable
-fun MyLottieAnimation() {
+fun MyLottieAnimation(
+    modifier: Modifier
+) {
     val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.network2))
-    val isAnimationPlaying = lottieComposition != null // Ensure the composition is loaded
+    val isAnimationPlaying = lottieComposition != null
 
     if (isAnimationPlaying) {
         LottieAnimation(
             composition = lottieComposition,
-            iterations = 1 // Or set a valid positive number
+            iterations = 1
         )
     } else {
-        // Optionally show a placeholder or an error message
+
     }
 }
+
+
+

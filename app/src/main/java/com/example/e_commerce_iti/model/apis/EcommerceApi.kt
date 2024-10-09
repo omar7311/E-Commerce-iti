@@ -24,9 +24,16 @@ import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.metadata.Metafield
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
+import com.example.e_commerce_iti.model.pojos.price_rules.FoundPriceRules
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.UMeatDataResponse
+import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import org.json.JSONObject
 import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
+import com.example.e_commerce_iti.model.remote.UReposeMeta
+import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.PUT
 
@@ -46,11 +53,11 @@ interface EcommerceApi {
     @GET("products.json")
     suspend fun getProductsByVendorID(@Query("vendor") vendorName: String): ProductResponse
     @POST("customers.json")
-    suspend fun createCustomer(@Body customer: Customer): Customer
+    suspend fun createCustomer(@Body customer: Customer): Response<Customer>
     @GET("customers/search.json")
     suspend fun searchCustomerByEmail(@Query("query") query: String): SearchedReslutCustomer
     @GET("customers/{customer_id}/metafields.json")
-    suspend fun getCustomerMetafields(@Path("customer_id") customerId: Long): MetaData
+    suspend fun getCustomerMetafields(@Path("customer_id") customerId: Long): FullMeatDataResponse
     // get the custom collections
     @GET("custom_collections.json")
     suspend fun getCustomCollections(): CustomCollectionsResponse
@@ -72,7 +79,7 @@ interface EcommerceApi {
     @GET("products.json")
     suspend fun getAllProduct(): AllProduct
     @POST("customers/{customer_id}/metafields.json")
-    suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData)
+    suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData): UMeatDataResponse
 
     /**
      *      function to get the orders by customer id
@@ -89,5 +96,14 @@ interface EcommerceApi {
 
     @PUT("draft_orders/{id}.json")
     suspend fun updateCartDraftOrder(@Path("id") id: Long, @Body draftOrder: SearchDraftOrder): Response<SearchDraftOrder>
-
-}
+    @GET("discount_codes/lookup.json")
+    suspend fun getDiscountCode(@Query("code") code: String): DiscountCode
+    @GET("price_rules/{priceId}.json")
+    suspend fun getPriceRulesByid( @Path("priceId") priceId: Long): FoundPriceRules
+    @PUT("customers/{customer_id}/metafields/{mid}.json")
+    suspend fun updateCustomerMetafield(@Path("customer_id") customerId: Long, @Path("mid") metafieldId: Long, @Body metafield: UReposeMeta): ResponseMetaData
+    @PUT("draft_orders/{id}/complete.json")
+    suspend fun completeDraftOrder(@Path("id") id: Long):Response<Any>
+    @PUT("draft_orders/{id}/send_invoice.json")
+    suspend fun sendInvoice(@Path("id") id: Long):Response<Any>
+  }

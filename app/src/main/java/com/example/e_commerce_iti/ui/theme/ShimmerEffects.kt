@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.skydoves.landscapist.Shimmer
 
 
 /**
@@ -152,4 +153,16 @@ fun ShimmerHorizontalGrid() {
             )
         }
     }
+}
+
+
+@Composable
+fun ShimmerEffect() {
+    val shimmer = shimmerBrush()
+    Box(
+        modifier = Modifier
+            .size(400.dp, 200.dp)
+            .background(shimmerBrush())
+
+    )
 }

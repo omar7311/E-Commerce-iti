@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,6 +52,7 @@ import com.example.e_commerce_iti.model.pojos.Customer
 import com.example.e_commerce_iti.model.pojos.LineItem
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
+import kotlinx.coroutines.flow.first
 
 
 @Composable
@@ -69,9 +71,8 @@ fun OrderDetailsScreen(
         val isConnected = networkObserver.isConnected.collectAsState()
         if (isConnected.value) {
 
-    /*       val products =  FetchProductsDetails(orderViewModel, order)  // to fetch products from details
-            OrderItemsRow(products, orderViewModel)*/
-            Log.i("Orddddrr", "OrderDetailsScreen:$order")
+
+            //Log.i("Productsssss", "OrderDetailsScreen:$products")
             ScreenContent(
                 order,
                 orderViewModel,
@@ -91,13 +92,19 @@ fun ScreenContent(order: Order, orderViewModel: OrdersViewModel, modifier: Modif
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
     ) {
+        item {
+            val products =
+                FetchProductsDetails(orderViewModel, order)  // to fetch products from details
+            OrderItemsRow(products, orderViewModel)
+        }
         item { OrderHeader(order) }
+
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { OrderSummary(order) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { CustomerInfo(order.customer, order.shippingAddress) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
-        item { OrderStatus(order) }
+        // item { OrderStatus(order) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { LineItemsList(order.lineItems) }
     }
@@ -117,12 +124,13 @@ fun OrderHeader(order: Order) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            InfoItem("Order #", order.orderNumber.toString())
+            InfoItem("Order Num ", "#${order.orderNumber.toString()}")
         }
         InfoItem("Date", order.createdAt.substringBefore('T'))
-        InfoItem("Name", order.name)
+        //InfoItem("Name", order.name)
     }
 }
+
 
 @Composable
 fun OrderSummary(order: Order) {
@@ -134,10 +142,10 @@ fun OrderSummary(order: Order) {
             Text("Order Summary", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(8.dp))
             InfoItem("Subtotal", "${order.currentSubtotalPrice} ${order.currency}")
-            InfoItem(
+            /*InfoItem(
                 "Shipping",
                 "${order.totalShippingPriceSet.shopMoney.amount} ${order.currency}"
-            )
+            )*/
             InfoItem("Tax", "${order.currentTotalTax} ${order.currency}")
             InfoItem("Discounts", "-${order.totalDiscounts} ${order.currency}")
             Divider(modifier = Modifier.padding(vertical = 8.dp))
@@ -153,15 +161,18 @@ fun CustomerInfo(customer: Customer, address: Address) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Customer Information", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("${customer.firstName} ${customer.lastName}")
-            Text(customer.email)
-            Text(customer.phone ?: "No phone provided")
+            /*   Text("Customer Information", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+               Spacer(modifier = Modifier.height(8.dp))
+               Text("${customer.firstName} ${customer.lastName}")
+               Text(customer.email)
+               Text(customer.phone ?: "No phone provided")*/
             Spacer(modifier = Modifier.height(8.dp))
             Text("Shipping Address", fontWeight = FontWeight.Bold)
-            Text(address.address1 ?: "N/A")
-            Text("${address.city}, ${address.country} ${address.zip ?: ""}")
+            Text(address.address1 ?: "N/A", fontWeight = FontWeight.Bold)
+            Text(
+                "${address.city}, ${address.country} ${address.zip ?: ""}",
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -207,9 +218,17 @@ fun LineItemRow(item: LineItem) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(item.name, fontWeight = FontWeight.Bold)
-            Text("Quantity: ${item.quantity}", fontSize = 14.sp)
-            if (item.sku != null) Text("SKU: ${item.sku}", fontSize = 14.sp)
-            if (item.vendor!!.isNotBlank()) Text("Vendor: ${item.vendor}", fontSize = 14.sp)
+            Text("Quantity: ${item.quantity}", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            if (item.sku != null) Text(
+                "SKU: ${item.sku}",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+            if (item.vendor!!.isNotBlank()) Text(
+                "Vendor: ${item.vendor}",
+                fontSize = 1.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(
@@ -229,7 +248,7 @@ fun LineItemRow(item: LineItem) {
 }
 
 @Composable
-fun InfoItem(label: String, value: String, fontWeight: FontWeight = FontWeight.Normal) {
+fun InfoItem(label: String, value: String, fontWeight: FontWeight = FontWeight.Bold) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -305,17 +324,20 @@ fun OrderItems(
 }
 
 fun getLineItemsProductsIds(order: Order): List<Long> {
-    val products = mutableListOf<Long>()
-    order.lineItems?.let { lineItems ->
-        Log.d("LineItems", "Processing line items: $lineItems")
-        for (item in lineItems) {
-            item.productId?.let {
-                products.add(it)
-                Log.d("ProductID", "Added product ID: $it")
-            } ?: Log.e("ProductID", "Product ID is null for item: $item")
+    return order.lineItems.mapNotNull { item ->
+        item.productId.takeIf { it != 0L }?.also { productId ->
+            Log.d("ProductID", "Added product ID: $productId")
+        } ?: run {
+            Log.e("ProductID", "Product ID is null or 0 for item: $item")
+            null
         }
-    } ?: Log.e("LineItems", "Line items are null or empty")
-    return products
+    }.also { productIds ->
+        if (productIds.isEmpty()) {
+            Log.e("LineItems", "No valid product IDs found in line items")
+        } else {
+            Log.d("LineItems", "Found ${productIds.size} valid product IDs")
+        }
+    }
 }
 
 /*fun getActualProductsFromApi(productIds:MutableList<Long>,orderViewModel:OrdersViewModel):List<Product>{
@@ -334,35 +356,45 @@ fun getActualProductsFromApi(
     productIds: List<Long>,
     orderViewModel: OrdersViewModel
 ): List<Product> {
-    val actualProducts =
-        remember { mutableStateListOf<Product>() } // State-backed list for recomposition
-    val scope = rememberCoroutineScope() // Use a coroutine scope for launching coroutines
+    val actualProducts = remember { mutableStateListOf<Product>() }
 
-    LaunchedEffect(productIds) { // Re-run when productIds changes
-        for (productId in productIds) {
-            // Check if the productId is not null and greater than 0
+    // Collect product flow using LaunchedEffect
+    LaunchedEffect(productIds) {
+        productIds.forEach { productId ->
             if (productId > 0) {
-                // Fetch product details
+                // Fetch product details from the ViewModel
                 orderViewModel.getProductById(productId)
-
-                // Collect the state safely
-                orderViewModel.singleProductFlow.collect { state ->
-                    when (state) {
-                        is UiState.Success -> actualProducts.add(state.data)
-                        is UiState.Error -> Log.e(
-                            "Product Error",
-                            state.message
-                        ) // Handle errors if necessary
-                        else -> {} // Handle loading state if needed
-                    }
-                }
             } else {
-                Log.e("Invalid Product ID", "Product ID is null or zero: $productId")
+                Log.e("Invalid Product ID", "Product ID is invalid: $productId")
             }
         }
     }
 
-    return actualProducts.toList() // Return a snapshot of the actual products
+    // Observe the product state
+    val productState by orderViewModel.singleProductFlow.collectAsState(initial = UiState.Loading)
+
+    // Handle the product result
+    when (productState) {
+        is UiState.Success -> {
+            val product = (productState as UiState.Success<Product>).data
+            if (!actualProducts.contains(product)) {
+                actualProducts.add(product)
+            }
+        }
+
+        is UiState.Error -> {
+            Log.e("Product Error", (productState as UiState.Error).message)
+        }
+
+        UiState.Loading -> {
+            // Loading state, handle it if needed
+        }
+
+        is UiState.Failure -> {}
+        UiState.Non -> {}
+    }
+
+    return actualProducts.toList() // Return the current list of actual products
 }
 
 

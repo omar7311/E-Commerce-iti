@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
+import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
+import com.example.e_commerce_iti.ui.theme.cart.roundToTwoDecimalPlaces
 import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,43 +24,72 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
     val cartState: StateFlow<UiState<DraftOrder>> = _cartState
     private val _product = MutableStateFlow<UiState<MutableList<Product>>>(UiState.Loading)
      val product :StateFlow<UiState<MutableList<Product>>> = _product
-
+     private var _totalAmount = MutableStateFlow(0.0)
+     val totalAmount: StateFlow<Double> = _totalAmount
       fun getCartDraftOrder(id: Long){
      viewModelScope.launch {
+         getCurrency()
          val cart = cartRepository.getCart(id).first()
          _cartState.value = UiState.Success(cart)
          _product.value = UiState.Loading
          val product = mutableListOf<Product>()
          for (i in cart.line_items) {
-             if (i.product_id != null) {
+             if (i.title != "Dummy") {
                  product.add(cartRepository.getProductByID(i.product_id!!.toLong()).first())
+                 _totalAmount.value +=(i.price!!.toDouble() * i.quantity!!).roundToTwoDecimalPlaces()
              }
          }
          Log.i("CartViewModel", "Product: $product")
          _product.value = UiState.Success(product)
      }
     }
-
+    fun add(price:Double){
+        _totalAmount.value+=price
+    }
+    fun gettotalValue(amount:Float,currency:String):String{
+        Log.i("fffffffffffffffffffffffff", "${(_totalAmount.value * amount).roundToTwoDecimalPlaces()} ${currency}")
+       return "${(_totalAmount.value * amount).roundToTwoDecimalPlaces()} ${currency}"
+    }
+    fun sub(price:Double){
+        _totalAmount.value-=price
+    }
     private var _currentCurrency = MutableStateFlow<UiState<Pair<String, Float>>>(UiState.Loading)
     val currentCurrency: StateFlow<UiState<Pair<String, Float>>> = _currentCurrency
 
-     fun updateCart(id: Long){
-        val cart=_cartState.value as UiState.Success<DraftOrder>
-         val dd=cart.data.line_items.find { it.id==id }
-        val c= cart.data.line_items.filter {  id!=it.id }
-         cart.data.line_items=c
+    fun updateCart(productToRemove: Product, lineItem: LineItems) {
         viewModelScope.launch {
-            cartRepository.updateCart(cart.data)
-            val data=(_product.value as UiState.Success<MutableList<Product>>).data.filter { it.id==dd!!.product_id }
-            _product.value=UiState.Loading
-             Log.i("CartViewModel", "Product: $data")
-            _product.value=UiState.Success(data.toMutableList())
+            val currentCartState = _cartState.value as? UiState.Success<DraftOrder>
+            currentCartState?.let { cart ->
+                _totalAmount.value-=(lineItem.price!!.toDouble() * lineItem.quantity!!)
+                val updatedLineItems = cart.data.line_items.filterNot { it.id == lineItem.id }
+                val updatedDraftOrder = cart.data.copy(line_items = updatedLineItems)
+                for (i in updatedDraftOrder.line_items) {
+                    if (i.quantity==0L){
+                        i.quantity=1L
+                    }
+                }
+                // Update the cart in the repository
+                cartRepository.updateCart(updatedDraftOrder)
+
+                // Now update the product list
+                val updatedProducts = (product.value as? UiState.Success<MutableList<Product>>)?.data?.toMutableList()
+                updatedProducts?.remove(productToRemove)
+
+                // Emit updated state for products
+                _product.value = UiState.Success(updatedProducts ?: mutableListOf())
+                Log.i("CartViewModel", "Updated product list: ${updatedProducts?.size}")
+            }
         }
     }
-
     fun getCurrency(){
         viewModelScope.launch {
             _currentCurrency.value=UiState.Success(cartRepository.getChoosedCurrency().first())
+        }
+    }
+    fun submit() {
+        val currentCartState = _cartState.value as? UiState.Success<DraftOrder>
+        viewModelScope.launch {
+            cartRepository.updateCart(cart = currentCartState!!.data)
         }
     }
 }

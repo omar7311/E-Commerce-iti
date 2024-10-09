@@ -1,6 +1,10 @@
 package com.example.e_commerce_iti.ui.theme.authentication
 
 
+import androidx.activity.ComponentActivity
+import androidx.compose.runtime.Composable
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
@@ -43,7 +47,7 @@ object FirebaseAuthManager {
             }
     }
 
-    fun signUp(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
+    fun signUp(email: String, password: String, onResult:  (Boolean, String?) -> Unit) {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
