@@ -9,6 +9,7 @@ import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
@@ -34,14 +35,18 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
         }
     }
 
-    fun getProductById(productId: Long){
-        viewModelScope.launch(Dispatchers.IO) {
+    fun getProductById(productId: Long) {
+        viewModelScope.launch {
             repository.getProductById(productId)
+                .catch { e ->
+                    _singleProductFlow.value = UiState.Error(e.message ?: "Unknown Error")
+                }
                 .collect { product ->
                     _singleProductFlow.value = UiState.Success(product)
                 }
         }
     }
+
 }
 
 

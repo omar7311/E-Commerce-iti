@@ -155,11 +155,28 @@ class RemoteDataSourceImp : IRemoteDataSource {
      *      get Product By id
      */
     override suspend fun getProductById(productId: Long): Flow<Product> {
-        // Make the network call to fetch the product by ID
-        val response = RetrofitHelper.service.getProduct(productId)
-        Log.e("API Error", "Error fetching product: $response")
-        return flow { response.product }
+        return flow {
+            try {
+                val response = RetrofitHelper.service.getProductById(productId)
+
+                // Log the response status if needed
+                if (response.isSuccessful && response.body() != null) {
+                    emit(response.body()!!.product) // Emit the product
+                } else {
+                    // Log the error if the response failed
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("API Error", "Error fetching product: $errorBody")
+                    throw Exception("Error fetching product: $errorBody")
+                }
+            } catch (e: Exception) {
+                // Log the exception
+                Log.e("API Error", "Network or API error: ${e.message}", e)
+                throw e // Rethrow the exception for upstream handling
+            }
+        }
     }
+
+
 
 
     // to get the custom collections

@@ -73,7 +73,6 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3") // Use latest version directly
     implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
 
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
@@ -105,9 +104,6 @@ dependencies {
     // Google Fonts
     implementation("com.google.android.material:compose-theme-adapter:1.2.1")
 
-    // Pager used to show coupons randomly
-    implementation("com.google.accompanist:accompanist-pager:0.23.1")
-
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
@@ -122,5 +118,8 @@ dependencies {
 
     // lotii animation
     implementation ("com.airbnb.android:lottie-compose:5.0.3")
+
+    implementation ("androidx.compose.ui:ui:$2024.1.0")
+
 
 }
