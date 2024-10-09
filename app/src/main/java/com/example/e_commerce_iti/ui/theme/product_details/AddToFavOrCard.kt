@@ -79,7 +79,7 @@ fun Actions(product: Product,productInfoViewModel: ProductInfoViewModel,navContr
         Button( shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)),
             onClick = {
-                //currentUser?.fav?.let { productInfoViewModel.getDraftOrder(it) }
+                currentUser?.fav?.let { productInfoViewModel.getDraftOrder(it) }
             }) {
             Text(text = "add to favourite",color = Color.Black,fontSize = 16.sp)
             Spacer(Modifier.width(8.dp))
@@ -89,7 +89,7 @@ fun Actions(product: Product,productInfoViewModel: ProductInfoViewModel,navContr
         Button( shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)) ,
             onClick = {
-                // currentUser?.cart?.let { productInfoViewModel.getDraftOrder(it) }
+                 currentUser?.cart?.let { productInfoViewModel.getDraftOrder(it) }
             }) {
             Text(text = "add to card", color = Color.Black, fontSize = 16.sp)
             Spacer(Modifier.width(8.dp))

@@ -108,7 +108,7 @@ fun SignupScreen(
     val scope = rememberCoroutineScope()
     val flag= rememberSaveable{ mutableStateOf(false) }
     val emailRegex = remember { Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$") }
-    val passwordRegex = remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
+    val passwordRegex = remember { Regex("^(?=.[0-9])(?=.[a-z])(?=.[A-Z])(?=.[@#$%^&+=])(?=\\S+$).{8,}\$") }
     val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
 
     Column(
@@ -269,14 +269,14 @@ fun SignupScreen(
 
                             GlobalScope.launch(Dispatchers.IO){
 
-                                    RemoteDataSourceImp().createCustomer(
-                                        createCustomer(
-                                            email,
-                                            fullName,
-                                            fullName,
-                                            phoneNumber
-                                        )
+                                RemoteDataSourceImp().createCustomer(
+                                    createCustomer(
+                                        email,
+                                        fullName,
+                                        fullName,
+                                        phoneNumber
                                     )
+                                )
                                 isLoading = true
                                 delay(7000) // 3 seconds delay
                             }
@@ -306,6 +306,7 @@ fun SignupScreen(
                 Text("SIGN UP", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
             }
         }
+
         // "Already have an account?" button can be added here...
 
         // Display error message if exists
@@ -313,14 +314,15 @@ fun SignupScreen(
             Text(it, color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
+
 // ... (keep the existing "Already have an account?" button)
 
-        AnimatedVisibility(visible = errorMessage != null) {
-            errorMessage?.let {
-                Text(text = it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
-            }
+    AnimatedVisibility(visible = errorMessage != null) {
+        errorMessage?.let {
+            Text(text = it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
         }
     }
+}
 
 /*@Composable
 fun SignupAnimation(modifier: Modifier) {

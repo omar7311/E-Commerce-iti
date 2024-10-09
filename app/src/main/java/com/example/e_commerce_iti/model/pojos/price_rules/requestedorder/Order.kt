@@ -25,7 +25,6 @@ data class Order(
     var current_total_discounts_set: com.example.e_commerce_iti.model.pojos.price_rules.requestedorder.CurrentTotalDiscountsSet?,
     var current_total_duties_set: Any?,
     var current_total_price: String?,
-    var current_total_price_set: com.example.e_commerce_iti.model.pojos.price_rules.requestedorder.CurrentTotalPriceSet?,
     var current_total_tax: String?,
     var current_total_tax_set: com.example.e_commerce_iti.model.pojos.price_rules.requestedorder.CurrentTotalTaxSet?,
     var customer: Any?,

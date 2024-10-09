@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
     // save args for navigation
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.gms.google-services")
@@ -92,10 +91,6 @@ dependencies {
     // Gson
     implementation("com.google.code.gson:gson:2.11.0")
 
-    // Room
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0") // Use with caution as it's deprecated
