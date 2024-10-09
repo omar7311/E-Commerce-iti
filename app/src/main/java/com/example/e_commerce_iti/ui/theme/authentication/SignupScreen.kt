@@ -266,35 +266,17 @@ fun SignupScreen(
                     isLoading = true
                     FirebaseAuthManager.signUp(email, password) { success, error ->
                         if (success) {
-                            // Use viewModelScope for proper coroutine scope
-                            homeViewModel.viewModelScope.launch(Dispatchers.IO) {
-                                try {
-                                    // Create customer
-                                     createCustomer(email, fullName, fullName, phoneNumber)
-                                    // Collect the result of the createCustomer flow
-                                    val customer = RemoteDataSourceImp().createCustomer(createCustomer(email,fullName,fullName,phoneNumber))
-                                    customer.collect { result ->
-                                        // Assuming result is of a type that indicates success/failure
-                                        if (result.customer?.email!=null) {
-                                            // Customer created successfully, navigate to Login
-                                            withContext(Dispatchers.Main) {
-                                                isLoading = false
-                                                controller.navigate(Screens.Login.route) // Navigate to Login
-                                            }
-                                        } else {
-                                            // Handle failure case
-                                            withContext(Dispatchers.Main) {
-                                                isLoading = false
-                                                errorMessage = "Failed to create customer. Please try again."
-                                            }
-                                        }
-                                    }
-                                } catch (e: Exception) {
-                                    withContext(Dispatchers.Main) {
-                                        isLoading = false
-                                        errorMessage = "An error occurred: ${e.message}"
-                                    }
-                                }
+                            // Call createAccount function to handle customer creation
+                            GlobalScope.launch(Dispatchers.IO){
+                                RemoteDataSourceImp().createCustomer(createCustomer(email,fullName,fullName,phoneNumber))
+                                delay(3000) // 3 seconds delay
+                                isLoading = true
+                            }
+
+                            // Start a new coroutine for the delay
+                            scope.launch {
+                                isLoading = false
+                                controller.navigate(Screens.Home.route)
                             }
                         } else {
                             isLoading = false
@@ -316,7 +298,6 @@ fun SignupScreen(
                 Text("SIGN UP", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
             }
         }
-
         // "Already have an account?" button can be added here...
 
         // Display error message if exists
