@@ -125,6 +125,7 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
             }
 
             UiState.Non -> TODO()
+            is UiState.Failure -> TODO()
         }
     }
 }

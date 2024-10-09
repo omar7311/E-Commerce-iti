@@ -23,6 +23,7 @@ import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.FoundPriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
+import com.example.e_commerce_iti.model.pojos.repsonemetadata.UMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
@@ -47,7 +48,7 @@ interface EcommerceApi {
     @GET("products.json")
     suspend fun getProductsByVendorID(@Query("vendor") vendorName: String): ProductResponse
     @POST("customers.json")
-    suspend fun createCustomer(@Body customer: Customer): Customer
+    suspend fun createCustomer(@Body customer: Customer): Response<Customer>
     @GET("customers/search.json")
     suspend fun searchCustomerByEmail(@Query("query") query: String): SearchedReslutCustomer
     @GET("customers/{customer_id}/metafields.json")
@@ -71,7 +72,7 @@ interface EcommerceApi {
     @GET("products/{id}.json")
     suspend fun getProduct(@Path("id") id: Long): SearchedProductResponse
     @POST("customers/{customer_id}/metafields.json")
-    suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData)
+    suspend fun createCustomerMetafields(@Path("customer_id") customerId: Long, @Body metafields: ReMetaData): UMeatDataResponse
 
     /**
      *      function to get the orders by customer id

@@ -26,7 +26,8 @@ suspend fun  getCurrent(email: String?,cartRepository:IReposiatory):CurrentUser?
                  fav= cartRepository.getCart(i.value!!.toLong()).first().id
             }
         }
-        currentUser= CurrentUser(address = user.addresses?.get(0)?.address1?:"N/A",id=user.id!!,email=email,fav = fav!!, cart = cart!!, name = user.first_name?:"N/A", phone = user.phone?:"N/A", lname = user.last_name?:"N/A")
+        Log.i("fffffffffffffffffffff", "$cart ${user.id}  $email  $fav")
+        currentUser= CurrentUser(id=user.id!!,email=email,fav = fav!!, cart = cart!!, address = "medaerde")
     }
     return currentUser
 }

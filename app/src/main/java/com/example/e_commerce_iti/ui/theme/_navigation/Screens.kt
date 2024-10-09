@@ -26,7 +26,6 @@ import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.network.NetworkObserver
-import com.example.e_commerce_iti.ui.theme.PaymentScreen
 import com.example.e_commerce_iti.ui.theme.cart.CartScreen
 import com.example.e_commerce_iti.ui.theme.category.CategoryScreen
 import com.example.e_commerce_iti.ui.theme.changeuserinfo.ChangeUserDataScreen
@@ -41,7 +40,6 @@ import com.example.e_commerce_iti.ui.theme.search.SearchScreen
 import com.example.e_commerce_iti.ui.theme.settings.SettingScreen
 import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModel
-import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModelFactory
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModel
@@ -150,10 +148,10 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
                 viewModel(factory = changeUserDataFactory)
             ChangeUserDataScreen(viewModel = changeUserDataViewModel, navController = navController)
         }
-        composable(route = Screens.Payment.route) {
-            val paymentViewModel: PaymentViewModel = viewModel(factory = paymentViewModelFactory)
-            PaymentScreen(navController,paymentViewModel)
-        }
+//        composable(route = Screens.Payment.route) {
+//            val paymentViewModel: PaymentViewModel = viewModel(factory = paymentViewModelFactory)
+//            PaymentScreen(navController,paymentViewModel)
+//        }
         composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
         composable(route = Screens.Search.route) { SearchScreen(navController, context) }
     /*    composable(route = Screens.Signup.route) { SignupScreen(navController) }

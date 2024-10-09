@@ -68,7 +68,6 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         return remote.updateCart(cart)
     }
 
-    override suspend fun createCustomer(customer: Customer)=remote.createCustomer(customer)
     override suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse> {
         return remote.getMetaFields(customerId)
     }
