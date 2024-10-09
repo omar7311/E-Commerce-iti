@@ -67,6 +67,7 @@ import kotlinx.coroutines.launch
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.play.integrity.internal.al
 
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -177,12 +178,8 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 //            val paymentViewModel: PaymentViewModel = viewModel(factory = paymentViewModelFactory)
 //            PaymentScreen(navController,paymentViewModel)
 //        }
-        composable(route = Screens.Favorite.route) { FavoriteScreen(navController) }
-        composable(route = Screens.Search.route) { SearchScreen(navController, context) }
-    /*    composable(route = Screens.Signup.route) { SignupScreen(navController) }
-        composable(route = Screens.Favorite.route) {
-            val cartViewModel:CartViewModel= viewModel(factory = cartFactory)
-            FavoriteScreen(cartViewModel,navController) }
+        composable(route = Screens.Signup.route) { SignupScreen(navController) }
+
         composable(route = Screens.Login.route) {
             LoginScreen(navController, context, googleSignInClient) {
                 navController.navigate(Screens.Home.route)
@@ -193,15 +190,12 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             FavoriteScreen(cartViewModel,navController) }
         composable(route = Screens.Search.route) {
             val searchViewModel:SearchViewModel= viewModel(factory = searchFactory)
-            SearchScreen(navController,context,searchViewModel) }
-        composable(route = Screens.Signup.route) { SignupScreen(navController, context) }
+            val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
+            SearchScreen(navController,context,searchViewModel,currencyViewModel ) }
+        composable(route = Screens.Signup.route) { SignupScreen(navController) }
 
-        }*/
-        composable(route = Screens.Search.route) { SearchScreen(navController,context) }
-        composable(route = Screens.Signup.route) {
-            val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
-            SignupScreen(navController,homeViewModel)
         }
+
         composable(route = Screens.Login.route) {
             LoginScreen(navController, context, googleSignInClient) {
                 navController.navigate(Screens.Home.route)

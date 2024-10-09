@@ -41,17 +41,7 @@ import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
-import com.google.android.play.integrity.internal.i
-import com.example.e_commerce_iti.R
-import com.example.e_commerce_iti.currentUser
-import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
-import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
-import com.example.e_commerce_iti.ui.theme._navigation.Screens
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+
 
 @Composable
 fun Actions(product: Product,productInfoViewModel: ProductInfoViewModel,navController: NavController){

@@ -90,7 +90,6 @@ import kotlinx.coroutines.withContext
 @Composable
 fun SignupScreen(
     controller: NavController,
-    homeViewModel: HomeViewModel
 ) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }

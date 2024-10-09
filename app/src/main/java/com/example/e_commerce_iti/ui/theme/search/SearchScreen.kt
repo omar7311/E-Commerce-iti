@@ -45,12 +45,13 @@ import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.SimpleText
 import com.example.e_commerce_iti.ui.theme.products.ProductsList
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.searchViewModel.SearchViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(controller: NavController,context: Context,searchViewModel: SearchViewModel) {
+fun SearchScreen(controller: NavController,context: Context,searchViewModel: SearchViewModel,currencyViewModel: CurrencyViewModel) {
     LaunchedEffect(Unit) {
         searchViewModel.getAllProduct()
     }
@@ -93,7 +94,7 @@ fun SearchScreen(controller: NavController,context: Context,searchViewModel: Sea
                             filterProducts.add(i)
                         }
                     }
-                   ProductsList(filterProducts,controller)
+                   ProductsList(filterProducts,controller,currencyViewModel)
 
                 }
 

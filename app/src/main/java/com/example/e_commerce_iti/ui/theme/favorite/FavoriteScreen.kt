@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.transparentBrush
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
@@ -124,7 +125,7 @@ fun FavouriteItem(product: Product){
                 ) {
                     CustomText(
                         product.title,
-                        Color.White,
+                        transparentBrush,
                         textColor = Color.Black,
                         fontSize = 16.sp
                     )

@@ -101,6 +101,18 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.coupn_viewmodel.CouponView
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.e_commerce_iti.LoadingIndicator
 import com.example.e_commerce_iti.NetworkErrorContent
+import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.earthyBrush
+import com.example.e_commerce_iti.model.local.LocalDataSourceImp
+import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
+import com.example.e_commerce_iti.model.reposiatory.IReposiatory
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
+import com.example.e_commerce_iti.navyBlue
+import com.example.e_commerce_iti.pastelBrush
+import com.example.e_commerce_iti.transparentBrush
+import com.example.e_commerce_iti.ui.theme.ShimmerEffect
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.skydoves.landscapist.Shimmer
@@ -269,8 +281,8 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
             )
         )
     )
-    val cartViewModelFac=CartViewModelFac(repository)
-    val cartViewModel:CartViewModel= viewModel(factory = cartViewModelFac)
+    val cartViewModelFac= CartViewModelFac(repository)
+    val cartViewModel: CartViewModel = viewModel(factory = cartViewModelFac)
     TopAppBar(
         modifier = Modifier
             .padding(horizontal = 15.dp, vertical = 10.dp)

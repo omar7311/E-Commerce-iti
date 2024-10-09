@@ -22,7 +22,6 @@ import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.metadata.Metafield
-import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.FoundPriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
@@ -30,7 +29,6 @@ import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.UMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
-import org.json.JSONObject
 import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
 import com.example.e_commerce_iti.model.remote.UReposeMeta
 import org.json.JSONObject

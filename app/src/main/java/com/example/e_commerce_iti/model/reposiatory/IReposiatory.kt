@@ -15,7 +15,6 @@ import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
-import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
@@ -39,7 +38,7 @@ interface IReposiatory {
     suspend fun updateCart(cart:DraftOrder):Flow<DraftOrder>
     suspend fun getPrice_rules(id: Long): Flow<PriceRule>
     suspend fun updateMetaData(id: Long, metaData: ResponseMetaData): Flow<ResponseMetaData>
-    suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
+   // suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
     suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
     suspend fun getProductById(productId: Long):Flow<Product>
     fun getAllProduct():Flow<AllProduct>

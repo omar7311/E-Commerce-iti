@@ -84,19 +84,9 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         return remote.getProductByID(id)
     }
 
-    /**
-     *      get orders by customer id
-     */
-    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
-        return remote.getOrdersByCustomerId(customer_id)
-    }
 
-    /**
-     *  get Product by id
-     */
-    override suspend fun getProductById(productId: Long): Flow<Product> {
-        return remote.getProductById(productId)
-    }
+
+
 
     override fun getAllProduct(): Flow<AllProduct> {
         return remote.getAllProduct()
@@ -126,8 +116,8 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         return remote.updateMetaData(id,metaData)
     }
 
-    override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
-    }
+//    override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
+//    }
 
     override suspend fun getDiscountCode(code: String): Flow<DiscountCodeX> {
         return remote.getDiscountCode(code)
