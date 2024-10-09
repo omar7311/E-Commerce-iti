@@ -126,14 +126,14 @@ fun SettingScreen(viewModel: CurrencyViewModel, navController: NavController? = 
                             // Logout Button
                             Button(
                                 onClick = {
-                                    Firebase.auth.signOut()
-                                    deleteCurrentUser()
                                     navController?.navigate(Screens.Login.route) {
                                         popUpTo(navController.graph.startDestinationId) {
                                             inclusive = true
                                         }
                                         launchSingleTop = true
                                     }
+                                    Firebase.auth.signOut()
+                                    deleteCurrentUser()
                                 },
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
                                 shape = RoundedCornerShape(8.dp),
