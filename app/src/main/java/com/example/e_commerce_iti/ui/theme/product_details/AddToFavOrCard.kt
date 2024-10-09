@@ -40,6 +40,7 @@ import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
+import com.google.android.play.integrity.internal.i
 
 @Composable
 fun Actions(product: Product,productInfoViewModel: ProductInfoViewModel,navController: NavController){
@@ -48,16 +49,24 @@ fun Actions(product: Product,productInfoViewModel: ProductInfoViewModel,navContr
         is UiState.Loading->{}
         is UiState.Success->{
             var draftOrder=(draftOrderState as UiState.Success).data
-             val lineItem= LineItems()
-            lineItem.title=product.title
-            lineItem.price=product.variants[0].price
-            lineItem.quantity=product.variants[0].inventory_quantity.toLong()
-            lineItem.variant_id=product.variants[0].id
-            lineItem.product_id=product.id
-            val arrayLineItems=ArrayList<LineItems>(draftOrder.line_items)
-            arrayLineItems.add(lineItem)
-            draftOrder.line_items=arrayLineItems.toList()
-            productInfoViewModel.updateDraftOrder(draftOrder)
+            var flag=false
+            for (i in draftOrder.line_items){
+                if(i.product_id!=null && product.id==i.product_id){
+                    flag=true
+                }
+            }
+            if(flag==false) {
+                val lineItem = LineItems()
+                lineItem.title = product.title
+                lineItem.price = product.variants[0].price
+                lineItem.quantity = product.variants[0].inventory_quantity.toLong()
+                lineItem.variant_id = product.variants[0].id
+                lineItem.product_id = product.id
+                val arrayLineItems = ArrayList<LineItems>(draftOrder.line_items)
+                arrayLineItems.add(lineItem)
+                draftOrder.line_items = arrayLineItems.toList()
+                productInfoViewModel.updateDraftOrder(draftOrder)
+            }
             }
         is UiState.Failure->{ }
         is UiState.Error -> {}

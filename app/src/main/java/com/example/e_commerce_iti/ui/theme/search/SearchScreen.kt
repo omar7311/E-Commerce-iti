@@ -89,7 +89,7 @@ fun SearchScreen(controller: NavController,context: Context,searchViewModel: Sea
                     val filterProducts= mutableListOf<Product>()
                     val allProducts=(searchList as UiState.Success).data
                     for (i in allProducts){
-                        if(i.title.contains(searchQuery)){
+                        if(i.title.contains(searchQuery,true)){
                             filterProducts.add(i)
                         }
                     }

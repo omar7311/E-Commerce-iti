@@ -47,7 +47,7 @@ fun ProductDetails(productInfoViewModel: ProductInfoViewModel, product: Product,
             }
             val description = product.body_html.replace("+", " ")
             ImageCarousel(images)
-            ProductInfo(product.title, product.variants[0].price, "EG", 3)
+            ProductInfo(product.title.replace("+"," "), product.variants[0].price, "EG", 3)
             ProductDescription(description)
             if (!FirebaseAuth.getInstance().currentUser?.isAnonymous!!) {
                 Actions(product, productInfoViewModel, controller)
