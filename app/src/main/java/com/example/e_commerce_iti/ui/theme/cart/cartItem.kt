@@ -182,8 +182,8 @@ fun MyAlertDialog(order: com.example.e_commerce_iti.model.pojos.draftorder.LineI
                 shouldShowDialog.value = false
             },
             // 5
-            title = { Text(text = "Alert Dialog") },
-            text = { Text(text = "Jetpack Compose Alert Dialog") },
+            title = { Text(text = "Delete Product Item") },
+            text = { Text(text = "Are you sure from deleting this product from card?") },
             confirmButton = { // 6
                 Button(
                     onClick = {

@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductInfo(name:String, price:String, currency:String, rating: Int){
+fun ProductInfo(name:String, price:String, rating: Int){
     // State for controlling bottom sheet visibility
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true // Only fully expanded or hidden state
@@ -86,7 +86,7 @@ fun ProductInfo(name:String, price:String, currency:String, rating: Int){
         }
         Row(modifier = Modifier.fillMaxWidth().height(40.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                text = "$price $currency",
+                text = "$price",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(start = 12.dp, top = 4.dp)
             )
@@ -98,7 +98,7 @@ fun ProductInfo(name:String, price:String, currency:String, rating: Int){
 @Composable
 fun ProductInfoPreview(){
     Column(modifier = Modifier.fillMaxSize(),Arrangement.Center) {
-        ProductInfo("T-shirt kfsdkkjhgg321f;sdlkf;cvnvb", "200", "EG",3)
+        ProductInfo("T-shirt kfsdkkjhgg321f;sdlkf;cvnvb", "200",3)
     }
 }
 
