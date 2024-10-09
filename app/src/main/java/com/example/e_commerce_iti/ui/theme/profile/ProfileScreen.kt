@@ -1,17 +1,13 @@
 package com.example.e_commerce_iti.ui.theme.profile
 
-import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,14 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,27 +31,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
-import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
-import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
-import com.example.e_commerce_iti.ui.theme.home.SimpleText
-import com.example.e_commerce_iti.ui.theme.settings.ItemsSettingScreen
-import com.example.e_commerce_iti.ui.theme.settings.SettingScreen
-import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserDataViewModel
-import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.skydoves.landscapist.glide.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,7 +63,7 @@ fun ProfileScreen(controller: NavController) {
            Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),Arrangement.Center) {
                Text(text = "Email : ${currentUser?.email?:"N/A"}", fontSize = 17.sp, fontWeight = FontWeight.Bold)
            }
-           ProfieItem(e = {}, t = "Orders", id = R.drawable.ordersicon)
+           ProfieItem(e = {controller.navigate(Screens.Orders.route)}, t = "Orders", id = R.drawable.ordersicon)
            ProfieItem(e = {}, t = "Favorites", id = R.drawable.baseline_favorite_border_24)
            ProfieItem(e = {controller.navigate(Screens.Setting.route)}, t = "Settings", id = R.drawable.accessory)
 

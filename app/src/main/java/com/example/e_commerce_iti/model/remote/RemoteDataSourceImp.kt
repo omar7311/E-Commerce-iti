@@ -6,9 +6,9 @@ import com.example.e_commerce_iti.metadata
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
+import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
-import com.example.e_commerce_iti.model.pojos.ProductResponse
-import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
+
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
@@ -29,8 +29,6 @@ import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import org.json.JSONObject
 import retrofit2.HttpException
 
 class RemoteDataSourceImp : IRemoteDataSource {
@@ -56,7 +54,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
      *      get Products by vendor name
      */
     override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {
-       // val response = RetrofitHelper.service.getProductsByVendorID(vendorName)
+        // val response = RetrofitHelper.service.getProductsByVendorID(vendorName)
         return flow {
             try {
                 val response = RetrofitHelper.service.getProductsByVendorID(vendorName)
@@ -70,30 +68,31 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
     override suspend fun getCustomer(email: String): Flow<CustomerX> {
 
-        val data=RetrofitHelper.service.searchCustomerByEmail("email:${email}")
-       return flow { emit(data.customers!!.get(0)) }
+        val data = RetrofitHelper.service.searchCustomerByEmail("email:${email}")
+        return flow { emit(data.customers!!.get(0)) }
     }
 
     override suspend fun createCustomer(customer: Customer): Flow<Customer> {
-        Log.e("1231232131231adasdadad3213",  "${customer} ------------ ")
-         val helper=RetrofitHelper.service
-            val response = helper.createCustomer(customer)
-            val cart=createDumpDraft(response.customer!!)
-            val fav=createDumpDraft(response.customer!!)
-            println("cart        ${cart}")
-            println("fav        ${fav}")
-            var data=Gson().fromJson(Gson().toJson(cart),RDraftOrderRequest::class.java)
-            println("asdasdsad  ${Gson().toJson(cart)}")
-            val cartDraft=helper.createDraftOrder(data)
-              data=Gson().fromJson(Gson().toJson(fav),RDraftOrderRequest::class.java)
-            val  favDraft=helper.createDraftOrder(data)
-            println("eeeeeeeeeeeeeeeee   ${cartDraft.errorBody()?.string()}")
-            val cartmeta=createDummyMetafield("cart_id",cartDraft.body()!!.draft_order!!.id.toString())
-            println("55555555555555555  ${Gson().toJson(cartmeta)}")
-            val favmeta=createDummyMetafield("fav_id",favDraft.body()!!.draft_order!!.id.toString())
-            helper.createCustomerMetafields(response.customer!!.id!!,cartmeta)
-            helper.createCustomerMetafields(response.customer!!.id!!,favmeta)
-            return flow { emit(response) }
+        Log.e("1231232131231adasdadad3213", "${customer} ------------ ")
+        val helper = RetrofitHelper.service
+        val response = helper.createCustomer(customer)
+        val cart = createDumpDraft(response.customer!!)
+        val fav = createDumpDraft(response.customer!!)
+        println("cart        ${cart}")
+        println("fav        ${fav}")
+        var data = Gson().fromJson(Gson().toJson(cart), RDraftOrderRequest::class.java)
+        println("asdasdsad  ${Gson().toJson(cart)}")
+        val cartDraft = helper.createDraftOrder(data)
+        data = Gson().fromJson(Gson().toJson(fav), RDraftOrderRequest::class.java)
+        val favDraft = helper.createDraftOrder(data)
+        println("eeeeeeeeeeeeeeeee   ${cartDraft.errorBody()?.string()}")
+        val cartmeta =
+            createDummyMetafield("cart_id", cartDraft.body()!!.draft_order!!.id.toString())
+        println("55555555555555555  ${Gson().toJson(cartmeta)}")
+        val favmeta = createDummyMetafield("fav_id", favDraft.body()!!.draft_order!!.id.toString())
+        helper.createCustomerMetafields(response.customer!!.id!!, cartmeta)
+        helper.createCustomerMetafields(response.customer!!.id!!, favmeta)
+        return flow { emit(response) }
     }
     fun createDummyMetafield(key: String, value: String) = ReMetaData(Metafield(namespace = "namespace", key = key, value = value, value_type = "string"))
     private fun createDumpDraft(customerx: CustomerX):SearchDraftOrder{
@@ -110,11 +109,11 @@ class RemoteDataSourceImp : IRemoteDataSource {
         return searchDraftOrder
     }
 
-    override suspend fun updateCustomer(id:Long,customer: String): Flow<Customer> {
-        val ucustomer= Gson().fromJson(customer, UpdateCustomer::class.java)
-        val req=RetrofitHelper.service.updateCustomer(id, ucustomer)
-        Log.e("12312321312313213",  "${req.errorBody()?.string()}")
-       return flow { emit(Customer(req.body()?.customer)) }
+    override suspend fun updateCustomer(id: Long, customer: String): Flow<Customer> {
+        val ucustomer = Gson().fromJson(customer, UpdateCustomer::class.java)
+        val req = RetrofitHelper.service.updateCustomer(id, ucustomer)
+        Log.e("12312321312313213", "${req.errorBody()?.string()}")
+        return flow { emit(Customer(req.body()?.customer)) }
     }
 
 
@@ -126,21 +125,21 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
-        val data=RetrofitHelper.service.updateCartDraftOrder(cart.id!!,SearchDraftOrder(cart))
+        val data = RetrofitHelper.service.updateCartDraftOrder(cart.id!!, SearchDraftOrder(cart))
         println(cart)
         println(data.errorBody()?.string())
         return flow { emit(data.body()!!.draft_order!!) }
     }
 
     override suspend fun getCart(id: Long): Flow<DraftOrder> {
-        val data=RetrofitHelper.service.getCart(id)
-        Log.e("12312321312313213",  "${data} ------------ $id")
+        val data = RetrofitHelper.service.getCart(id)
+        Log.e("12312321312313213", "${data} ------------ $id")
         return flow { emit(data.draft_order!!) }
     }
 
     override suspend fun getProductByID(id: Long): Flow<Product> {
-        val data=RetrofitHelper.service.getProduct(id)
-        Log.e("12312321312313213",  "${data} ------------ $id")
+        val data = RetrofitHelper.service.getProduct(id)
+        Log.e("12312321312313213", "${data} ------------ $id")
         return flow { emit(data.product) }
     }
 
@@ -184,6 +183,37 @@ class RemoteDataSourceImp : IRemoteDataSource {
         }
     }
 
+    /**
+     *      get orders by customer id
+     */
+    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
+        return flow { emit(RetrofitHelper.service.getOrdersByCustomerId(customer_id).orders) }
+    }
+
+    /**
+     *      get Product By id
+     */
+    override suspend fun getProductById(productId: Long): Flow<Product> {
+        return flow {
+            try {
+                val response = RetrofitHelper.service.getProductById(productId)
+
+                // Log the response status if needed
+                if (response.isSuccessful && response.body() != null) {
+                    emit(response.body()!!.product) // Emit the product
+                } else {
+                    // Log the error if the response failed
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("API Error", "Error fetching product: $errorBody")
+                    throw Exception("Error fetching product: $errorBody")
+                }
+            } catch (e: Exception) {
+                // Log the exception
+                Log.e("API Error", "Network or API error: ${e.message}", e)
+                throw e // Rethrow the exception for upstream handling
+            }
+        }
+    }
 
     // to get the custom collections
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> = flow {
@@ -198,24 +228,28 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     // get Products by custom collection id
-    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> = flow {
-        try {
-            val response = RetrofitHelper.service.getProductsByCustomCollection(collectionId)
-            emit(response.products)
-        } catch (e: Exception) {
-            // Handle the exception (e.g., log it, show a message)
-            Log.e("API_ERROR", "Failed to fetch products for collection ID $collectionId: ${e.message}")
-            emit(emptyList()) // Emit an empty list or handle error state accordingly
+    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> =
+        flow {
+            try {
+                val response = RetrofitHelper.service.getProductsByCustomCollection(collectionId)
+                emit(response.products)
+            } catch (e: Exception) {
+                // Handle the exception (e.g., log it, show a message)
+                Log.e(
+                    "API_ERROR",
+                    "Failed to fetch products for collection ID $collectionId: ${e.message}"
+                )
+                emit(emptyList()) // Emit an empty list or handle error state accordingly
+            }
         }
-    }
 
     override suspend fun getPriceRules(): Flow<PriceRules> {
-        return flow {emit(RetrofitHelper.service.getPriceRules())}
+        return flow { emit(RetrofitHelper.service.getPriceRules()) }
     }
 
     override suspend fun getCopuons(priceId: Long): Flow<DiscountCode> {
-        val data= RetrofitHelper.service.getCopuons(priceId)
-        return flow {emit(data)}
+        val data = RetrofitHelper.service.getCopuons(priceId)
+        return flow { emit(data) }
     }
 }
 

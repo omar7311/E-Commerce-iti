@@ -8,6 +8,10 @@ import java.io.Serializable
 data class ProductResponse(
     val products: List<Product>
 )
+
+data class ProductWrapper(
+    val product: Product
+)
 data class SearchedProductResponse(
     val product: Product
 )

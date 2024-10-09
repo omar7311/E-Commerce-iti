@@ -105,9 +105,6 @@ dependencies {
     // Google Fonts
     implementation("com.google.android.material:compose-theme-adapter:1.2.1")
 
-    // Pager used to show coupons randomly
-    implementation("com.google.accompanist:accompanist-pager:0.23.1")
-
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
@@ -122,6 +119,9 @@ dependencies {
 
     // lotii animation
     implementation ("com.airbnb.android:lottie-compose:5.0.3")
+
+    implementation ("androidx.compose.ui:ui:$2024.1.0")
+
 
     implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
 }

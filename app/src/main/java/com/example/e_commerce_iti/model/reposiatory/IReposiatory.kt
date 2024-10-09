@@ -2,6 +2,7 @@ package com.example.e_commerce_iti.model.reposiatory
 
 import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
+import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
@@ -34,12 +35,13 @@ interface IReposiatory {
     suspend fun updateCurrency(currency: String):Flow<Pair<String, Float>>
     suspend fun updateCart(cart:DraftOrder):Flow<DraftOrder>
      suspend fun createCustomer(customer: Customer): Flow<Customer>
+    suspend fun getPrice_rules(id: Long): Flow<PriceRule>
+    suspend fun updateMetaData(id: Long, metaData: ResponseMetaData): Flow<ResponseMetaData>
+    suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
+    suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
+    suspend fun getProductById(productId: Long):Flow<Product>
 
     suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse>
     suspend fun getCart(id:Long): Flow<DraftOrder>
      suspend fun getProductByID(id: Long): Flow<Product>
-     suspend fun getPrice_rules(id: Long): Flow<PriceRule>
-    suspend fun updateMetaData(id: Long, metaData: ResponseMetaData): Flow<ResponseMetaData>
-    suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
-
 }
