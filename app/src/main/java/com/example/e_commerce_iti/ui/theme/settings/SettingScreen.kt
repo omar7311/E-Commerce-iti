@@ -65,7 +65,6 @@ import com.google.accompanist.flowlayout.FlowRow
 fun SettingScreen(viewModel: CurrencyViewModel, navController: NavController? = null) {
 
 
-
     if (currentUser?.email != null) {
         viewModel.getCustomerData(currentUser!!.email)
         viewModel.getCurrency()

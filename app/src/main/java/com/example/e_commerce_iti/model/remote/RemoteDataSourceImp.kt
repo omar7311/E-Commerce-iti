@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.model.remote
 
 import android.util.Log
+import com.example.e_commerce_iti.CurrentUser
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.metadata
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
