@@ -39,6 +39,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
@@ -76,6 +77,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
@@ -114,6 +116,7 @@ import com.example.e_commerce_iti.ui.theme.ShimmerEffect
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.skydoves.landscapist.Shimmer
 
@@ -274,15 +277,6 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopBar(customTitle: String, controller: NavController) {
-    val repository: IReposiatory = ReposiatoryImpl(
-        RemoteDataSourceImp(), LocalDataSourceImp(
-            LocalContext.current.getSharedPreferences(
-                LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE
-            )
-        )
-    )
-    val cartViewModelFac= CartViewModelFac(repository)
-    val cartViewModel: CartViewModel = viewModel(factory = cartViewModelFac)
     TopAppBar(
         modifier = Modifier
             .padding(horizontal = 15.dp, vertical = 10.dp)
@@ -322,23 +316,21 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                     contentDescription = "Search",
                     tint = Color.White
                 )
-
-
             }
         },
         actions = {
             // Favorite icon on the right
-            IconButton(onClick = {
-                controller.navigate(Screens.Favorite.route)
-            }) {
+            //if(!FirebaseAuth.getInstance().currentUser?.isAnonymous!!){
+            IconButton(onClick = { controller.navigate(Screens.Favorite.route) }) {
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
                     imageVector = Icons.Default.FavoriteBorder,
                     tint = Color.White,
                     contentDescription = "Favorite"
                 )
-            }
-        },
+           // }
+        }
+                  },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color.Transparent // Transparent to let gradient shine
         ),
@@ -501,7 +493,8 @@ fun CustomText(
     textColor: Color = Color.Black,
     fontSize: TextUnit = 20.sp,
     padding: PaddingValues = PaddingValues(),
-    modifier: Modifier= Modifier
+    modifier: Modifier= Modifier,
+    style: FontWeight = FontWeight.Normal
 ) {
     Text(
         text = textToUse,
@@ -509,7 +502,6 @@ fun CustomText(
         fontSize = fontSize,
         fontWeight = FontWeight.Bold,
         modifier = Modifier
-            .fillMaxWidth()
             .padding(padding)
             .clip(RoundedCornerShape(15.dp))
             .background(backGroundColor)
