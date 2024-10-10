@@ -106,7 +106,10 @@ class RemoteDataSourceImp : IRemoteDataSource {
            val b= helper.createCustomerMetafields(response.customer!!.id!!, favmeta)
             Log.i("deeeeeeeeeee fav" , "${b}")
             Log.i("resopne from raeteunseadsa" , "email = ${customer.customer?.email},id=${response.customer?.id},name = ${response.customer?.first_name}, cart = ${a.body()!!.metafield.id},fav= ${b.body()!!.metafield.id}")
-              }catch (e:Exception){
+             metadata=b.body()!!.metafield
+             currentUser= CurrentUser(id = response.customer!!.id!!, cart = a.body()!!.metafield.id!!,fav=b.body()!!.metafield.id!!,name = response.customer!!.first_name!!,lname = response.customer!!.last_name!!,email = response.customer!!.email!!)
+            Log.i("mostfa gaal user","${currentUser}")
+        }catch (e:Exception){
         Log.e("vvvvvvvvvvvvvvvvvvvvvvvvvvvvv","data error is ${e}")
         }
     }
@@ -186,6 +189,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
         Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder.id} ------------ ")
+        draftOrder.line_items= draftOrder.line_items.filter { it.product_id !=null }
         updateCart(draftOrder)
         draftOrder.email= currentUser?.email
       //  RetrofitHelper.service.sendInvoice(draftOrder.id!!,)

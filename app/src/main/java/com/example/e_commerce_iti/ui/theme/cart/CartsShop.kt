@@ -61,7 +61,7 @@ fun Carts(navController: NavController,modifier: Modifier = Modifier, viewModel:
         viewModel.getCartDraftOrder(currentUser!!.cart)
         viewModel.getCurrency()
     }
-    if (viewModel.navigateto.collectAsState().value==true) {
+    if (viewModel.navigateto.collectAsState().value) {
        navController.navigate(Screens.Payment.route)
         viewModel.endnav()
     }

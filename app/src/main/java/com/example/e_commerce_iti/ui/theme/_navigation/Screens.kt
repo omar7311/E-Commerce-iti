@@ -139,12 +139,6 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            LaunchedEffect(Unit) {
-                if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
-                    val e = Firebase.auth.currentUser
-                    getCurrent(e!!.email!!, repository)
-                }
-            }
             HomeScreen(context, CopuonsViewModel, homeViewModel, navController, networkObserver, cartViewModel)
         }
 

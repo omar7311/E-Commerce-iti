@@ -32,33 +32,33 @@ class LocalDataSourceImp(val sharedPreferences: SharedPreferences): IlocalDataSo
     }
 
     override fun getChoosedCurrency(): Flow<Pair<String, Float>> {
-        val name=sharedPreferences.getString("cname","USD")
+        val name=sharedPreferences.getString("cname","EGP")
         val rate=sharedPreferences.getFloat("crate",1.0f)
         return flowOf(Pair(name!!,rate))
     }
 
-    override fun setChoosedCurrency(cname: String):Flow<Pair<String, Float>> {
+    override fun setChoosedCurrency(adddd: String):Flow<Pair<String, Float>> {
         val currenceis=sharedPreferences.getString(currencies,null)
         val gson=Gson().fromJson(currenceis,CurrencyExc::class.java)
-       return when(cname){
+       return when(adddd){
          "USD"->{
              sharedPreferences.edit().putString("cname","USD").putFloat("crate",gson.conversion_rates!!.USD.toFloat()).apply()
-            flowOf(Pair(cname,gson.conversion_rates!!.USD.toFloat()))
+            flowOf(Pair(adddd,gson.conversion_rates!!.USD.toFloat()))
          }
           "EGP"->{
               sharedPreferences.edit().putString("cname","EGP").putFloat("crate",gson.conversion_rates!!.EGP.toFloat()).apply()
-              flowOf(Pair(cname,gson.conversion_rates!!.EGP.toFloat()))
+              flowOf(Pair(adddd,gson.conversion_rates!!.EGP.toFloat()))
           }
             "SAR"->{
                 sharedPreferences.edit().putString("cname","SAR").putFloat("crate",gson.conversion_rates!!.SAR.toFloat()).apply()
-                flowOf(Pair(cname,gson.conversion_rates!!.SAR.toFloat()))
+                flowOf(Pair(adddd,gson.conversion_rates!!.SAR.toFloat()))
             }
             "EUR"->{
                 sharedPreferences.edit().putString("cname","EUR").putFloat("crate",gson.conversion_rates!!.EUR.toFloat()).apply()
-                flowOf(Pair(cname,gson.conversion_rates!!.EUR.toFloat()))
+                flowOf(Pair(adddd,gson.conversion_rates!!.EUR.toFloat()))
             }
 
-           else -> {flowOf(Pair("USD",1.0f))}
+           else -> {flowOf(Pair("EGP",1.0f))}
        }
     }
 
