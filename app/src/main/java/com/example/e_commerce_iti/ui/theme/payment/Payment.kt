@@ -64,7 +64,7 @@ fun PaymentScreen(paymentViewModel: PaymentViewModel,navController: NavControlle
     var cop by remember { mutableStateOf("") }
     paymentViewModel.currency.collectAsState()
     LaunchedEffect(Unit) {
-        paymentViewModel.getCart(metadata!!.value!!.toLong())
+        paymentViewModel.getCart(currentUser!!.cart)
         paymentViewModel.getusercurrency()
     }
     if (paymentViewModel.oderstate.collectAsState().value is UiState.Error){

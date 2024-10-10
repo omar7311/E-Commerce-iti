@@ -33,8 +33,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOf
+import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.HttpException
+import retrofit2.Response
 
 class RemoteDataSourceImp : IRemoteDataSource {
     override suspend fun getBrands(): Flow<List<BrandData>> {
@@ -103,7 +105,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
             Log.i("deeeeeeeeeee cart" , "${a}")
            val b= helper.createCustomerMetafields(response.customer!!.id!!, favmeta)
             Log.i("deeeeeeeeeee fav" , "${b}")
-            Log.i("resopne from raeteunseadsa" , "email = ${customer.customer?.email},id=${response.customer?.id},name = ${response.customer?.first_name}, cart = ${a.metafield.id},fav= ${b.metafield.id}")
+            Log.i("resopne from raeteunseadsa" , "email = ${customer.customer?.email},id=${response.customer?.id},name = ${response.customer?.first_name}, cart = ${a.body()!!.metafield.id},fav= ${b.body()!!.metafield.id}")
               }catch (e:Exception){
         Log.e("vvvvvvvvvvvvvvvvvvvvvvvvvvvvv","data error is ${e}")
         }
@@ -179,33 +181,46 @@ class RemoteDataSourceImp : IRemoteDataSource {
         id: Long,
         metaData: ResponseMetaData
     ): Flow<ResponseMetaData> {
-        return flow { emit(RetrofitHelper.service.updateCustomerMetafield(id,metaData.id!!,UReposeMeta(metaData)))}
+        return flow { emit(RetrofitHelper.service.updateCustomerMetafield(id,metaData.id!!,UReposeMeta(metaData)).body()!!.metafield)}
     }
 
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
         Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder.id} ------------ ")
+        updateCart(draftOrder)
         draftOrder.email= currentUser?.email
       //  RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
        val f= RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
-        Log.e("nnnnnnnnnnnnnnnnnnnnnnnnnnn",f.string())
-            val draft1 = createDumpDraft(
-                CustomerX(
-                    id = currentUser!!.id,
-                    email = currentUser!!.email,
-                    first_name = currentUser!!.name,
-                    last_name = currentUser!!.lname
-                )
-            )
-            val draft = Gson().fromJson(Gson().toJson(draft1), RDraftOrderRequest::class.java)
-            val data = RetrofitHelper.service.createDraftOrder(draft)
-            metadata?.value=data.body()!!.draft_order!!.id.toString()
-        Log.i("ddddddddddddddddddddddddd","nnnnnnnnnnnnnnnnnnnnnnnnn")
+        val data = create_draftorder(f)
+        Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","create draft  -> ${data.errorBody()}")
+        metadata?.value=data.body()!!.draft_order!!.id.toString()
+            val tmp=RetrofitHelper.service.updateCustomerMetafield(currentUser!!.id, metadata!!.id!!,UReposeMeta(metadata!!))
+             Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update meta draft  -> ${tmp.errorBody()}")
+        Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update meta draft  -> ${tmp.body()}")
 
-            metadata=RetrofitHelper.service.updateCustomerMetafield(currentUser!!.id, metadata!!.id!!,UReposeMeta(metadata!!))
-            currentUser!!.cart =data.body()!!.draft_order!!.id!!
+                  metadata=tmp.body()!!.metafield
+              Log.e("dasdsasdsadsadsad","$metadata")
+            currentUser!!.cart = metadata!!.value!!.toLong()
+
             Log.i("ddddddddddddddddddddddddd","${metadata}")
             return flowOf(true)
 
+    }
+
+    private suspend fun create_draftorder(f: ResponseBody): Response<SearchDraftOrder> {
+        Log.e("nnnnnnnnnnnnnnnnnnnnnnnnnnn", f.string())
+        Log.e("nnnnnnnnnnnnnnnnnnnnnnnnnnn", f.string())
+
+        val draft1 = createDumpDraft(
+            CustomerX(
+                id = currentUser!!.id,
+                email = currentUser!!.email,
+                first_name = currentUser!!.name,
+                last_name = currentUser!!.lname
+            )
+        )
+        val draft = Gson().fromJson(Gson().toJson(draft1), RDraftOrderRequest::class.java)
+        val data = RetrofitHelper.service.createDraftOrder(draft)
+        return data
     }
 
     /**
