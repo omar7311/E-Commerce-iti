@@ -111,7 +111,7 @@ fun Actions(
             is UiState.Success -> {
                 val draftOrder = (draftOrderState as UiState.Success).data
                 // Check if product is already in cart or add new product to cart
-                if (product.variants[0].inventory_quantity!=0 && !draftOrder.line_items.any { it.product_id == product.id }) {
+                if ( !draftOrder.line_items.any { it.product_id == product.id }) {
                     addToCardOFavorite(productInfoViewModel, product, draftOrder)
                     Toast.makeText(context,"the product is adding successfully",Toast.LENGTH_LONG).show()
                 } else{
@@ -127,9 +127,6 @@ fun Actions(
         }
     }
 }
-
-
-
 
 
 fun addToCardOFavorite(
