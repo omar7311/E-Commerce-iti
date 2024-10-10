@@ -1,19 +1,19 @@
 package com.example.e_commerce_iti.model.pojos.draftorder
 
 data class ShippingAddress(
-    var address1: String?,
-    var address2: String?,
-    var city: String?,
-    var company: Any?,
-    var country: String?,
-    var country_code: String?,
-    var first_name: String?,
-    var last_name: String?,
-    var latitude: String?,
-    var longitude: String?,
-    var name: String?,
-    var phone: String?,
-    var province: String?,
-    var province_code: String?,
-    var zip: String?
+    var address1: String?=null,
+    var address2: String?=null,
+    var city: String?=null,
+    var company: Any?=null,
+    var country: String?=null,
+    var country_code: String?=null,
+    var first_name: String?=null,
+    var last_name: String?=null,
+    var latitude: String?=null,
+    var longitude: String?=null,
+    var name: String?=null,
+    var phone: String?=null,
+    var province: String?=null,
+    var province_code: String?=null,
+    var zip: String?=null
 )

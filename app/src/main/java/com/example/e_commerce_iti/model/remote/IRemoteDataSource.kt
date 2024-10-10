@@ -32,7 +32,7 @@ interface IRemoteDataSource {
     suspend fun getBrands() : Flow<List<BrandData>>
     suspend fun getProductsByVendor(vendorName: String) : Flow<List<Product>>
     suspend fun getCustomer(email: String) : Flow<CustomerX>
-    suspend fun createCustomer(customer: Customer) : Flow<Customer>
+    suspend fun createCustomer(customer: Customer)
     suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
     suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
     suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse>
@@ -46,4 +46,6 @@ interface IRemoteDataSource {
     suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
     suspend fun getProductById(productId: Long):Flow<Product>
     fun getAllProduct():Flow<AllProduct>
+    suspend fun getAllDrafts(): Flow<List<DraftOrder>>
+
 }

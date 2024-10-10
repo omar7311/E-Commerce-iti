@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -43,6 +44,7 @@ import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
+import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -52,18 +54,22 @@ import kotlinx.coroutines.flow.SharedFlow
 @SuppressLint("StateFlowValueCalledInComposition")
 
 @Composable
-fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
+fun Carts(navController: NavController,modifier: Modifier = Modifier, viewModel: CartViewModel) {
     // Ensure these functions are called only once when the composable enters the composition
     LaunchedEffect(Unit) {
+        Log.i("CartScreen", "LaunchedEffect called ${currentUser!!.cart}")
         viewModel.getCartDraftOrder(currentUser!!.cart)
         viewModel.getCurrency()
+    }
+    if (viewModel.navigateto.collectAsState().value==true) {
+       navController.navigate(Screens.Payment.route)
+        viewModel.endnav()
     }
 
     Log.i("CartScreen", "Screen Rebuild")
 
     val currency = viewModel.currentCurrency.collectAsState()
     val productState = viewModel.product.collectAsState()
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -160,7 +166,11 @@ fun TotalPriceText(model: CartViewModel, currency2: Pair<String, Float>) {
 @Composable
 fun CheckoutButton(viewModel: CartViewModel) {
     Button(
-        onClick = { viewModel.submit() },
+        onClick = {
+
+            viewModel.submit()
+
+                  },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 50.dp)
@@ -181,7 +191,7 @@ fun CartsPreview() {
             )
         )
         currentUser= CurrentUser(id = 7494620905649, cart = 1003013144753L)
-        Carts(viewModel = viewModel)
+        Carts(viewModel = viewModel,navController = NavController(context))
     }
 }
 
