@@ -5,13 +5,23 @@ import androidx.compose.ui.graphics.Color
 
 const val   VENDOR_NAME = "vendorName"
 const val  DEFAULT_CUSTOM_COLLECTION_ID = 320359989425
-// Define gradient for reuse
+
+/**
+ *
+ */
  val  gradientBrush = Brush.horizontalGradient(
     colors = listOf(Color(0xFF76c7c0), Color(0xFF5ca9b9))
 )
+val ingredientColor1 = Color(0xFF76c7c0) // A soft te
 
-val ingredientColor1 = Color(0xFF76c7c0) // A soft teal
+
+///
+
+
 val ingredientColor2 = Color(0xFF5ca9b9) // A deeper teal
+
+
+
 val whiteBrush = Brush.horizontalGradient(
     colors = listOf(Color.White, Color.White)
 )

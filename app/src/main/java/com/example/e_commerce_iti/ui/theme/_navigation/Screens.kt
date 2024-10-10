@@ -168,7 +168,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Favorite.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            FavoriteScreen(cartViewModel, navController)
+            FavoriteScreen(cartViewModel, navController,networkObserver)
         }
 
         composable(route = Screens.Search.route) {
@@ -199,7 +199,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Setting.route) {
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
-            SettingScreen(currencyViewModel, navController)
+            SettingScreen(networkObserver,currencyViewModel, navController)
         }
 
         composable(
