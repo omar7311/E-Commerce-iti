@@ -110,7 +110,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
             Log.i("deeeeeeeeeee fav" , "${b}")
             Log.i("resopne from raeteunseadsa" , "email = ${customer.customer?.email},id=${response.customer?.id},name = ${response.customer?.first_name}, cart = ${a.body()!!.metafield.id},fav= ${b.body()!!.metafield.id}")
              metadata=b.body()!!.metafield
-             currentUser= CurrentUser(id = response.customer!!.id!!, cart = a.body()!!.metafield.id!!,fav=b.body()!!.metafield.id!!,name = response.customer!!.first_name!!,lname = response.customer!!.last_name!!,email = response.customer!!.email!!)
+             currentUser= CurrentUser(id = response.customer!!.id!!, cart = a.body()!!.metafield.value!!.toLong(),fav=b.body()!!.metafield.value!!.toLong(),name = response.customer!!.first_name!!,lname = response.customer!!.last_name!!,email = response.customer!!.email!!)
             Log.i("mostfa gaal user","${currentUser}")
         }catch (e:Exception){
         Log.e("vvvvvvvvvvvvvvvvvvvvvvvvvvvvv","data error is ${e}")
