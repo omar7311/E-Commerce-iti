@@ -27,7 +27,6 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val _oderstate= MutableStateFlow<UiState<Int>>(UiState.Loading)
     val oderstate: StateFlow<UiState<Int>> = _oderstate
     private var _discountCode = MutableStateFlow<UiState<DiscountCodeX>>(UiState.Loading)
-    val discountCodeX: StateFlow<UiState<DiscountCodeX>> = _discountCode
     private var _priceRules = MutableStateFlow<UiState<PriceRule>>(UiState.Non)
     val priceRules: StateFlow<UiState<PriceRule>> = _priceRules
     private var _cart = MutableStateFlow<UiState<DraftOrder>>(UiState.Loading)
@@ -35,8 +34,6 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     private var totalamount= MutableStateFlow<Double>(0.0)
     val total: StateFlow<Double> = totalamount
     var tax= MutableStateFlow<Double>(0.0)
-    var discountvale= MutableStateFlow<Double>(0.0)
-    val discountCode= MutableStateFlow<String>("")
     val paymentMethod= MutableStateFlow("")
 
     val discount= MutableStateFlow<Double>(0.0)
@@ -77,7 +74,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val expiryMonth= MutableStateFlow("")
     val expiryYear= MutableStateFlow<String>("")
 
-    fun submitOrder(id:Long) {
+    fun submitOrder() {
         _oderstate.value=UiState.Loading
 
         viewModelScope.launch {
@@ -90,16 +87,19 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                 if (paymentMethod.value.isBlank()){
                     message+="Payment method is required \n"
                 }
-                if(paymentMethod.value=="paid"&&isValidCreditCard( CreditCard(cardNumber.value.toString(),expiryMonth.value.toInt(),expiryYear.value.toInt(),cvv.value))){
-                     message+= "Wrong Card Info"
+                try {
+                    if(paymentMethod.value=="paid"&&isValidCreditCard( CreditCard(cardNumber.value.toString(),expiryMonth.value.toInt(),expiryYear.value.toInt(),cvv.value))){
+                        message+= "Wrong Card Info"
+                    }
+                }catch (e:Exception){
+                    message+="Invalid Card Info"
                 }
-
                 if (message.isNotBlank()){
                     _oderstate.value=UiState.Error(message)
                     return@launch
                 }
+
             e.email= currentUser?.email
-            val ex= (_cart.value as UiState.Success)
             val sh= ShippingAddress()
             sh.address1=address.value
             sh.address2=address.value
@@ -122,6 +122,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
 
             }catch (e:Exception){
                 discount.value=0.0
+                Log.e("create odere eriirdssad","${_cart.value}")
                 totalamount.value=(_cart.value as UiState.Success<DraftOrder>).data.total_price?.toDouble() ?:0.0
                 _discountCode.value=UiState.Error(e.message.toString())
             }
@@ -143,7 +144,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
 
     fun apply_discount(priceRule: PriceRule) {
         val cart = (cart.value as UiState.Success<DraftOrder>).data
-        _cart.value = UiState.Loading
+
         viewModelScope.launch {
             try {
                 if (priceRule.value_type == "fixed_amount") {
@@ -155,15 +156,21 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                 }
                 cart.applied_discount = AppliedDiscount(
                     amount = priceRule.value,
-                    description = "Discount Code ${(_discountCode.value as UiState.Success<DiscountCodeX>).data.code.toString()}",
+                    description = "Discount Code ${(_discountCode.value as UiState.Success<DiscountCodeX>).data.code}",
                     title = priceRule.title,
                     value = priceRule.value,
                     value_type = priceRule.value_type
                 )
+                _cart.value= UiState.Success(repository.updateCart(cart).first())
+                Log.e("create odere eriirdssad","${cart} ")
+                Log.e("create odere discount","${priceRule} ")
+                _cart.value = UiState.Success(cart)
+                Log.e("create odere eriirdssad","${_cart.value as UiState.Success<DraftOrder>}")
             } catch (e: Exception) {
                 _priceRules.value = UiState.Error(e.message.toString())
                 discount.value=0.0
                 totalamount.value=(_cart.value as UiState.Success<DraftOrder>).data.total_price?.toDouble() ?:0.0
+                (_cart.value as UiState.Success<DraftOrder>).data.applied_discount=null
             }
         }
     }

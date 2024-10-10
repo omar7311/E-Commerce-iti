@@ -31,6 +31,7 @@ import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOf
@@ -190,11 +191,12 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
-        Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder.id} ------------ ")
+        Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder} ------------ ")
         draftOrder.line_items= draftOrder.line_items.filter { it.product_id !=null }
-        updateCart(draftOrder)
+        val cart=updateCart(draftOrder).first()
+        Log.e("eeeeeeeeeeeeeeeeeeeeeeeee444444","update cart  -> ${cart}")
         draftOrder.email= currentUser?.email
-      //  RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
+       RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
        val f= RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
         val data = create_draftorder(f)
         Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","create draft  -> ${data.errorBody()}")
