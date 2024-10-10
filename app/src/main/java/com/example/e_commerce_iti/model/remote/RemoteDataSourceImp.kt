@@ -196,8 +196,17 @@ class RemoteDataSourceImp : IRemoteDataSource {
         val cart=updateCart(draftOrder).first()
         Log.e("eeeeeeeeeeeeeeeeeeeeeeeee444444","update cart  -> ${cart}")
         draftOrder.email= currentUser?.email
-       RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
+        try {
+            RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
+        }catch (e:Exception){
+            Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update cart  -> ${e.message}")
+        }
        val f= RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
+        try {
+           // RetrofitHelper.service.sendInvoice(f.)
+        }catch (e:Exception){
+            Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update cart  -> ${e.message}")
+        }
         val data = create_draftorder(f)
         Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","create draft  -> ${data.errorBody()}")
         metadata?.value=data.body()!!.draft_order!!.id.toString()
