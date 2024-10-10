@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.ui.theme.cart
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -73,6 +75,7 @@ fun CartItem(
     quantity: Int = 0,
     totalAmount: CartViewModel
 ) {
+    val context = LocalContext.current
     Log.i("CartItem", "$image $name $price $quantity")
     val showDialog = rememberSaveable { mutableStateOf(false) }
     // Show confirmation dialog for item deletion
@@ -150,7 +153,7 @@ fun CartItem(
                     Icon(
                         imageVector = Icons.Filled.Delete,
                         contentDescription = null,
-                        tint = Color.Red
+                        tint = Color.Black
                     )
                 }
 
@@ -161,30 +164,6 @@ fun CartItem(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-
-                    IconButton(
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            if (numberOfItemsChosen.value < quantity) {
-                                numberOfItemsChosen.value++
-                                totalAmount.add(price)
-                                lineItems.quantity = numberOfItemsChosen.value.toLong()
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = null
-                        )
-                    }
-                    Text(
-                        textAlign = TextAlign.Center,
-                        text = "${numberOfItemsChosen.value}",
-                        modifier = Modifier.weight(1f),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-
                     IconButton(
                         modifier = Modifier.weight(1f),
                         onClick = {
@@ -199,6 +178,35 @@ fun CartItem(
                             painter = painterResource(id = R.drawable.baseline_minimize_24),
                             contentDescription = null,
                             modifier = Modifier.padding(bottom = 5.dp)
+                        )
+                    }
+
+
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = "${numberOfItemsChosen.value}",
+                        modifier = Modifier.weight(1f),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    IconButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            if (totalAmount.totalAmount.value < 1000.0) {
+                                if (numberOfItemsChosen.value < quantity) {
+                                    numberOfItemsChosen.value++
+                                    totalAmount.add(price)
+                                    lineItems.quantity = numberOfItemsChosen.value.toLong()
+                                }
+                            }else{
+                                Toast.makeText(context, "You can't add more!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = null
                         )
                     }
 
