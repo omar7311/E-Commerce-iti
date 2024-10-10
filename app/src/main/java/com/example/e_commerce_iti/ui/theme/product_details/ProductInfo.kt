@@ -36,13 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductInfo(name:String, price:String, currency:String, rating: Int){
+fun ProductInfo(name:String, price:String, rating: Int){
     // State for controlling bottom sheet visibility
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true // Only fully expanded or hidden state
@@ -55,9 +56,10 @@ fun ProductInfo(name:String, price:String, currency:String, rating: Int){
         Row(modifier = Modifier.fillMaxWidth().height(70.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = name, fontSize = 20.sp, modifier = Modifier.padding(start = 12.dp,top=4.dp).width(250.dp))
             Text(
-                text = "Review",
-                color = Color.Red,
-                fontSize = 20.sp,
+                text = "Show Reviews",
+                color = Color.Blue,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(end = 12.dp,top=4.dp).clickable {
                     isSheetVisible = true          // view all review
                 }
@@ -69,24 +71,14 @@ fun ProductInfo(name:String, price:String, currency:String, rating: Int){
                 sheetState = sheetState
             ) {
                 // Content of the bottom sheet
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(text = "This is the bottom sheet", style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "This is the bottom sheet", style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "This is the bottom sheet", style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "This is the bottom sheet", style = MaterialTheme.typography.bodyLarge)
+                Column {
+                    Reviews()
                 }
             }
         }
         Row(modifier = Modifier.fillMaxWidth().height(40.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                text = "$price $currency",
+                text = "$price",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(start = 12.dp, top = 4.dp)
             )
@@ -98,7 +90,7 @@ fun ProductInfo(name:String, price:String, currency:String, rating: Int){
 @Composable
 fun ProductInfoPreview(){
     Column(modifier = Modifier.fillMaxSize(),Arrangement.Center) {
-        ProductInfo("T-shirt kfsdkkjhgg321f;sdlkf;cvnvb", "200", "EG",3)
+        ProductInfo("T-shirt kfsdkkjhgg321f;sdlkf;cvnvb", "200",3)
     }
 }
 

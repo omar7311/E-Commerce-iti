@@ -48,7 +48,9 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.ui.text.style.TextOverflow
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginScreen(
@@ -57,6 +59,23 @@ fun LoginScreen(
     googleSignInClient: GoogleSignInClient,
     onSignInSuccess: () -> Unit
 ) {
+
+    /**
+     *
+     *          check if youser  is signed in
+     */
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val currentUser = firebaseAuth.currentUser
+
+/*    if (currentUser != null) {
+        LaunchedEffect(Unit) {
+            controller.navigate(Screens.Home.route) {
+                popUpTo(Screens.Login.route) {
+                    inclusive = true
+                } // Remove the login screen from back stack
+            }
+        }
+    }*/
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -85,46 +104,31 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp).verticalScroll(rememberScrollState()),
+            .padding(10.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(5.dp))
 
-        Row(
+
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(16.dp), // Added padding for better spacing around the Row
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .wrapContentSize()
+                .clip(RoundedCornerShape(12.dp))
+                .size(250.dp)
+                .align(Alignment.CenterHorizontally)
         ) {
-            // Text part
-            Text(
-                text = "Already have an account?\n Sign in now ",
-                fontSize = 20.sp, // Use sp for font size
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth(0.5f) // Restrict width to half the screen to allow text to wrap
-                    .align(Alignment.CenterVertically),
-                maxLines = 3, // Allow the text to wrap into multiple lines
-                overflow = TextOverflow.Ellipsis // Handle overflow gracefully
-            )
-
-            // Lottie animation in a Box for clipping and size control
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp)) // Apply rounding to the box and the animation
-                    .size(180.dp) // Size of the box and animation
-                    .align(Alignment.CenterVertically) // Aligning animation with text vertically
-            ) {
-                LoginAnimation(modifier = Modifier.size(180.dp)) // Animation now fills the entire box
-            }
-
+            LoginAnimation(modifier = Modifier.size(250.dp))
         }
 
-
-        Text("Login", style = MaterialTheme.typography.headlineMedium)
+        CustomText(
+            "Login",
+            transparentBrush,
+            textColor = Color.Black,
+            fontSize = 28.sp,
+            style = FontWeight.Bold
+        )
 
         OutlinedTextField(
             value = email,
@@ -177,106 +181,112 @@ fun LoginScreen(
             isError = !passwordRegex.matches(password) && password.isNotEmpty(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
-
-        Button(
-            onClick = {
-                if (emailRegex.matches(email) && passwordRegex.matches(password)) {
-                    scope.launch {
-                        isLoading = true
-                        FirebaseAuthManager.login(email, password) { success, error ->
-                            isLoading = false
-                            if (success) {
-                                controller.navigate(Screens.Home.route)
-                            } else {
-                                errorMessage = error
-                            }
-                        }
-                    }
-                } else {
-                    errorMessage = "Please enter a valid email and password"
-                }
-            },
-            modifier = Modifier
-                //.fillMaxWidth()
-                .wrapContentSize()
-            //.height(50.dp),
-            ,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = turquoise,
-                contentColor = mediumVioletRed // Set text color inside the button
-            ),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            if (isLoading) {
-                LoadingIndicator()
-            } else {
-                Text("LOGIN ", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
-            }
-        }
-        var isLoading by remember { mutableStateOf(false) }
-
-        // Google Sign-In button
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight() // Ensures the column wraps its content
-                .padding(top = 16.dp), // Add top padding if needed
-            horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(50.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "Sign in with Google",
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clickable {
-                            isLoading = true
-                            // Launch Google sign-in flow
-                            signInWithGoogle(googleSignInClient, launcher)
-                            isLoading = false
-                        }
-                )
-            }
-
-            // You can add more components here, if needed
-        }
-
         Row(
             modifier = Modifier
-                .fillMaxWidth() // Make the row fill the available width
-                .padding(horizontal = 16.dp), // Optional: Add horizontal padding
-            horizontalArrangement = Arrangement.SpaceBetween // Add space between the buttons
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
+            Button(
+                onClick = {
+                    if (emailRegex.matches(email) && passwordRegex.matches(password)) {
+                        scope.launch {
+                            isLoading = true
+                            FirebaseAuthManager.login(email, password) { success, error ->
+                                isLoading = false
+                                if (success) {
+                                    controller.navigate(Screens.Home.route)
+                                } else {
+                                    errorMessage = error
+                                }
+                            }
+                        }
+                    } else {
+                        errorMessage = "Please enter a valid email and password"
+                    }
+                },
+                modifier = Modifier
+                    .wrapContentSize(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ingredientColor1,
+                    contentColor = mediumVioletRed
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                if (isLoading) {
+                    LoadingIndicator()
+                } else {
+                    Text("LOGIN ", color = Color.Black, fontWeight = FontWeight.Bold)
+                }
+            }
+
+            var isLoading by remember { mutableStateOf(false) }
+
+          //
             Button(
                 onClick = {
                     FirebaseAuthManager.loginAnonymously { success, error ->
                         if (success) {
-                            controller.navigate(Screens.Home.route)
+                            controller.navigate(Screens.Home.route) {
+                                popUpTo(controller.graph.startDestinationId) { inclusive = true }
+                                launchSingleTop = true
+                            }
                         } else {
                             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                         }
                     }
                 },
                 modifier = Modifier
-                    .wrapContentSize(), // Keep button size based on content
+                    .wrapContentSize(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = turquoise,
-                    contentColor = indigo // Set text color inside the button
+                    containerColor = ingredientColor1,
+                    contentColor = indigo
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Login as Guest")
+                Text("Go Guest", color = Color.Black, fontWeight = FontWeight.Bold)
             }
 
-            Spacer(modifier = Modifier.width(16.dp)) // Add space between the buttons
+        }
+
+        // You can add more components here, if needed
+
+
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(), // Make the row fill the available width
+            horizontalArrangement = Arrangement.SpaceAround // Add space between the buttons
+        ) {
+
+            // Google Sign-In button
+
+                Box(
+                    modifier = Modifier
+                        .size(50.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.google),
+                        contentDescription = "Sign in with Google",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clickable {
+                                isLoading = true
+                                // Launch Google sign-in flow
+                                signInWithGoogle(googleSignInClient, launcher)
+                                isLoading = false
+                            }
+                    )
+                }
+
+
+            Spacer(modifier = Modifier.width(16.dp))
 
             TextButton(
-                onClick = { controller.navigate(Screens.Signup.route)  },
-                modifier = Modifier.align(Alignment.CenterVertically) // Align text button vertically in the center
+
+            onClick = { controller.navigate(Screens.Signup.route) },
+                modifier = Modifier.align(Alignment.CenterVertically)
+                    .padding(  20.dp),
             ) {
                 Text("New user? Register Now", color = royalBlue)
             }
@@ -299,20 +309,17 @@ fun signInWithGoogle(
     val signInIntent = googleSignInClient.signInIntent
     launcher.launch(signInIntent)
 }
-
 @Composable
 fun LoginAnimation(
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
-    val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login))
-    val isAnimationPlaying = lottieComposition != null
+    val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loginperson))
 
-    if (isAnimationPlaying) {
+    if (lottieComposition != null) {
         LottieAnimation(
             composition = lottieComposition,
-            iterations = 1
+            iterations = LottieConstants.IterateForever, // Set to repeat indefinitely
+            modifier = modifier
         )
-    } else {
-
     }
 }
