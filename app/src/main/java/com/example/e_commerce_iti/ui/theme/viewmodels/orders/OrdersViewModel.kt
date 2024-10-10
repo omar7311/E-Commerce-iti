@@ -46,10 +46,17 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
                 }
                 .collect { product ->
                     _singleProductFlow.value = UiState.Success(product)
+
                 }
         }
     }
 
+    suspend fun getTempProductById(productId:Long):Product{
+        var product :Product?= null
+          product =  repository.getTempProductById(productId)
+            Log.i("ProductsFetched", "Fetched ViewModel: $product")
+       return product
+    }
 }
 
 

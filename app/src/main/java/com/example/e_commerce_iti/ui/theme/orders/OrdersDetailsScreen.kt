@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -29,8 +30,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -92,12 +95,13 @@ fun ScreenContent(order: Order, orderViewModel: OrdersViewModel, modifier: Modif
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
     ) {
+        item { OrderHeader(order) }
         item {
             val products =
                 FetchProductsDetails(orderViewModel, order)  // to fetch products from details
+            Log.i("holakolaholakola", "ScreenContent: $products")
             OrderItemsRow(products, orderViewModel)
         }
-        item { OrderHeader(order) }
 
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { OrderSummary(order) }
@@ -271,6 +275,7 @@ fun FetchProductsDetails(orderViewModel: OrdersViewModel, order: Order): List<Pr
         productsIds.toMutableList(),
         orderViewModel
     ) // then get Actuall products
+    Log.i("ProductsFetchedFetchProductsDetailsFunction", "FetchProductsDetails: $ActualProducts")
     return ActualProducts
 }
 
@@ -285,11 +290,12 @@ fun OrderItemsRow(
     LazyRow(
         modifier = Modifier
             .padding(7.dp)
-            .fillMaxWidth(),
+            .fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(products) { actualProduct ->
             OrderItems(actualProduct)
+            Log.i("Productsssss", "OrderItemsRow: $actualProduct")
         }
     }
 }
@@ -302,24 +308,26 @@ fun OrderItems(
     Column(
         modifier = Modifier
             .padding(4.dp)
+            .size(145.dp),
     ) {
         Image(
             painter = rememberAsyncImagePainter(product.images[0].src),
             contentDescription = null,
             modifier = Modifier
-                .size(100.dp)
+                .size(80.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surface),
             contentScale = ContentScale.FillBounds
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
+            maxLines = 3,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = product.title,
+            textAlign = TextAlign.Start,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
-            textAlign = TextAlign.Center
         )
     }
 }
@@ -341,63 +349,38 @@ fun getLineItemsProductsIds(order: Order): List<Long> {
     }
 }
 
-/*fun getActualProductsFromApi(productIds:MutableList<Long>,orderViewModel:OrdersViewModel):List<Product>{
-    val ActualProducts :MutableList<Product> = mutableListOf()
-    for (i in 0 until productIds.size){
-        orderViewModel.getProductById(productIds[i])
-        val state = orderViewModel.singleProductFlow.value
-        if (state is UiState.Success){
-            ActualProducts.add(state.data)
-        }
-    }
-    return ActualProducts
-}*/
 @Composable
 fun getActualProductsFromApi(
     productIds: List<Long>,
     orderViewModel: OrdersViewModel
 ): List<Product> {
+    // Mutable state list to store fetched products
     val actualProducts = remember { mutableStateListOf<Product>() }
+    var isLoading by remember { mutableStateOf(true) }
 
-    // Collect product flow using LaunchedEffect
+    // Launch effect to fetch products asynchronously
     LaunchedEffect(productIds) {
+        isLoading = true
         productIds.forEach { productId ->
             if (productId > 0) {
-                // Fetch product details from the ViewModel
-                orderViewModel.getProductById(productId)
+                try {
+                    // Fetch the product from the ViewModel
+                    val product = orderViewModel.getTempProductById(productId)
+                    actualProducts.add(product)  // Add product to the state list
+                } catch (e: Exception) {
+                    Log.e("Product Error", "Failed to fetch product $productId: ${e.message}")
+                }
             } else {
                 Log.e("Invalid Product ID", "Product ID is invalid: $productId")
             }
         }
+        isLoading = false
+        Log.i("ProductsFetched", "Fetched Products: $actualProducts")
     }
 
-    // Observe the product state
-    val productState by orderViewModel.singleProductFlow.collectAsState(initial = UiState.Loading)
-
-    // Handle the product result
-    when (productState) {
-        is UiState.Success -> {
-            val product = (productState as UiState.Success<Product>).data
-            if (!actualProducts.contains(product)) {
-                actualProducts.add(product)
-            }
-        }
-
-        is UiState.Error -> {
-            Log.e("Product Error", (productState as UiState.Error).message)
-        }
-
-        UiState.Loading -> {
-            // Loading state, handle it if needed
-        }
-
-        is UiState.Failure -> {}
-        UiState.Non -> {}
-    }
-
-    return actualProducts.toList() // Return the current list of actual products
+    // Return the actual products list (this will trigger recomposition when updated)
+    return actualProducts.toList()
 }
-
 
 /**
  *      this for product images and titles

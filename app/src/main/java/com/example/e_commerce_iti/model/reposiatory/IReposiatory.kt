@@ -48,5 +48,7 @@ interface IReposiatory {
     suspend fun getCart(id:Long): Flow<DraftOrder>
      suspend fun getProductByID(id: Long): Flow<Product>
     suspend fun getAllDrafts(): Flow<List<DraftOrder>>
+    suspend fun getTempProductById(ProductId:Long):Product
+
 
 }

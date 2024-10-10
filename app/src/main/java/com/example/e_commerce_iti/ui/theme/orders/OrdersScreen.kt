@@ -151,12 +151,12 @@ fun OrdersList(orders: List<Order>, controller: NavController, orderViewModel: O
     ) {
         var products: List<Product> = emptyList()
         itemsIndexed(orders) {index, order ->
-            if (order.lineItems[index] != null) {
+          /*  if (order.lineItems[index] != null) {
                     products =
                         FetchProductsDetails(orderViewModel, order)  // Fetch products from details
                     Log.d("OrderProducts", "Products for Order: $products")
-            }
-            OrderItem(order, controller, orderViewModel, products)
+            }*/
+            OrderItem(order, controller, orderViewModel)
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -228,7 +228,7 @@ fun OrderItem(
     order: Order,
     controller: NavController,
     orderViewModel: OrdersViewModel,
-    products: List<Product>
+   // products: List<Product>
 ) {
     val gson = Gson()
     val orderJson = gson.toJson(order)
@@ -254,10 +254,10 @@ fun OrderItem(
         ) {
 
 
-            if (products.size != 0) {
+           /* if (products.size != 0) {
                 OrderItemColumn(products)
             }
-
+*/
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)

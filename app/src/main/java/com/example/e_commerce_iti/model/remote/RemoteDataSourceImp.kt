@@ -1,7 +1,6 @@
 package com.example.e_commerce_iti.model.remote
 
 import android.util.Log
-import com.example.e_commerce_iti.CurrentUser
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.metadata
 import com.example.e_commerce_iti.model.apis.RetrofitHelper
@@ -10,6 +9,7 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.Producut
 
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
@@ -18,23 +18,18 @@ import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCodeX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
 import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
-import com.example.e_commerce_iti.model.pojos.invoice.DraftOrderInvoice
-import com.example.e_commerce_iti.model.pojos.metadata.MetaData
 import com.example.e_commerce_iti.model.pojos.metadata.Metafield
 import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
-import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.flowOf
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
 
@@ -106,14 +101,21 @@ class RemoteDataSourceImp : IRemoteDataSource {
             Log.i("DraftOrder", "Cart draft error: ${cartDraftResponse.errorBody()?.string()}")
 
             // Create metafields for cart and favorites
-            val cartMeta = createDummyMetafield("cart_id", cartDraftResponse.body()!!.draft_order!!.id.toString())
+            val cartMeta = createDummyMetafield(
+                "cart_id",
+                cartDraftResponse.body()!!.draft_order!!.id.toString()
+            )
             Log.i("DraftOrder", "Cart metafield: ${Gson().toJson(cartMeta)}")
 
-            val favMeta = createDummyMetafield("fav_id", favDraftResponse.body()!!.draft_order!!.id.toString())
+            val favMeta = createDummyMetafield(
+                "fav_id",
+                favDraftResponse.body()!!.draft_order!!.id.toString()
+            )
             Log.i("DraftOrder", "Favorite metafield: $favMeta")
 
             // Associate metafields with customer
-            val cartMetaResponse = helper.createCustomerMetafields(response.customer!!.id!!, cartMeta)
+            val cartMetaResponse =
+                helper.createCustomerMetafields(response.customer!!.id!!, cartMeta)
             Log.i("MetafieldCreation", "Cart metafield response: $cartMetaResponse")
 
             val favMetaResponse = helper.createCustomerMetafields(response.customer!!.id!!, favMeta)
@@ -298,6 +300,12 @@ class RemoteDataSourceImp : IRemoteDataSource {
                 throw e // Rethrow the exception for upstream handling
             }
         }
+    }
+
+    override suspend fun getTempProductById(id: Long): Product {
+        val response = RetrofitHelper.service.getProduct(id).product
+        Log.i("ProductsFetched", "FetchProductsDetails: $response")
+        return response
     }
 
     override fun getAllProduct(): Flow<AllProduct> = flow {
