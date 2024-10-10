@@ -44,6 +44,8 @@ import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.darkSlateGray
 import com.example.e_commerce_iti.deleteCurrentUser
 import com.example.e_commerce_iti.lavender
+import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
@@ -51,6 +53,8 @@ import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

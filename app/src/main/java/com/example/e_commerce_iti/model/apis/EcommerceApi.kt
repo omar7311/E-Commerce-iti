@@ -33,6 +33,7 @@ import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
 import com.example.e_commerce_iti.model.remote.UReposeMeta
 import org.json.JSONObject
 import retrofit2.Response
+import retrofit2.http.DELETE
 import retrofit2.http.PUT
 
 /**
@@ -104,4 +105,17 @@ interface EcommerceApi {
     suspend fun completeDraftOrder(@Path("id") id: Long):Response<Any>
     @PUT("draft_orders/{id}/send_invoice.json")
     suspend fun sendInvoice(@Path("id") id: Long):Response<Any>
-  }
+
+
+    /**
+     *
+     */
+
+    // Get all customers
+    @GET("customers.json")
+    suspend fun getAllCustomers(): Response<List<Customer>>
+
+    // Delete a customer by ID
+    @DELETE("customers/{customer_id}.json")
+    suspend fun deleteCustomer(@Path("customer_id") customerId: Long): Response<Unit>
+}

@@ -67,7 +67,7 @@ fun LoginScreen(
     val firebaseAuth = FirebaseAuth.getInstance()
     val currentUser = firebaseAuth.currentUser
 
-    if (currentUser != null) {
+/*    if (currentUser != null) {
         LaunchedEffect(Unit) {
             controller.navigate(Screens.Home.route) {
                 popUpTo(Screens.Login.route) {
@@ -75,7 +75,7 @@ fun LoginScreen(
                 } // Remove the login screen from back stack
             }
         }
-    }
+    }*/
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
