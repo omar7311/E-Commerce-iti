@@ -103,6 +103,7 @@ fun ScreenContent(order: Order, orderViewModel: OrdersViewModel, modifier: Modif
         item { OrderSummary(order) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { CustomerInfo(order.customer, order.shippingAddress) }
+        Log.d("custome and address", "CustomerInfo: ${order.customer} ${order.shippingAddress}")
         item { Spacer(modifier = Modifier.height(16.dp)) }
         // item { OrderStatus(order) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -170,7 +171,7 @@ fun CustomerInfo(customer: Customer, address: Address) {
             Text("Shipping Address", fontWeight = FontWeight.Bold)
             Text(address.address1 ?: "N/A", fontWeight = FontWeight.Bold)
             Text(
-                "${address.city}, ${address.country} ${address.zip ?: ""}",
+                "${address.city}, ${address.country} ",
                 fontWeight = FontWeight.Bold
             )
         }

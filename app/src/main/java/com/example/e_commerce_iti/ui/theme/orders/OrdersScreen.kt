@@ -151,7 +151,7 @@ fun OrdersList(orders: List<Order>, controller: NavController, orderViewModel: O
     ) {
         var products: List<Product> = emptyList()
         itemsIndexed(orders) {index, order ->
-            if (order.lineItems.isNotEmpty()) {
+            if (order.lineItems[index] != null) {
                     products =
                         FetchProductsDetails(orderViewModel, order)  // Fetch products from details
                     Log.d("OrderProducts", "Products for Order: $products")
