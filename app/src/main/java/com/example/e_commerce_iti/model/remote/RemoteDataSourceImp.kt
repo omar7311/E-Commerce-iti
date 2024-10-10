@@ -10,6 +10,7 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.Producut
 
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
@@ -82,6 +83,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
     override suspend fun createCustomer(customer: Customer){
         Log.e("qweqwewqeeeeeeeeeee", "${customer} ------------ ")
         val helper = RetrofitHelper.service
+
         try {
             val response1 = helper.createCustomer(customer)
             Log.i("eoorradasdesadasd","${response1.errorBody()?.string()} ------------ ")
@@ -259,7 +261,13 @@ class RemoteDataSourceImp : IRemoteDataSource {
         }
     }
 
-    override  fun getAllProduct(): Flow<AllProduct> = flow{
+    override suspend fun getTempProductById(id: Long): Product {
+        val response = RetrofitHelper.service.getProduct(id).product
+        Log.i("ProductsFetched", "FetchProductsDetails: $response")
+        return response
+    }
+
+    override fun getAllProduct(): Flow<AllProduct> = flow {
         emit(RetrofitHelper.service.getAllProduct())
     }
 
