@@ -99,6 +99,13 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                     return@launch
                 }
             e.email= currentUser?.email
+           val ex= (_cart.value as UiState.Success)
+            val sh= ShippingAddress()
+           sh.address1=address.value
+           sh.address2=address.value
+           sh.city="Cairo"
+            sh.country="Egypt"
+            e.shipping_address=sh
             repository.compeleteDraftOrder(e)
             _oderstate.value=UiState.Success(1)
             }catch (e:Exception){
