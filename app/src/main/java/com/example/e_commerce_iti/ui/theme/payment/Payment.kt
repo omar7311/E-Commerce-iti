@@ -69,7 +69,7 @@ fun PaymentScreen(paymentViewModel: PaymentViewModel,navController: NavControlle
         paymentViewModel.getusercurrency()
     }
     if (paymentViewModel.oderstate.collectAsState().value is UiState.Error){
-        Log.e("ttttttttttttttttttttttttttttttaaa", (paymentViewModel.oderstate.collectAsState().value as UiState.Error).message)
+       Toast.makeText(navController.context, (paymentViewModel.oderstate.collectAsState().value as UiState.Error).message, Toast.LENGTH_SHORT).show()
     }
     if (paymentViewModel.oderstate.collectAsState().value is UiState.Success){
         Toast.makeText(navController.context, "Order Placed Successfully", Toast.LENGTH_SHORT).show()
@@ -363,7 +363,7 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel) {
         // Confirm Button
         Button(
             onClick = {
-                paymentViewModel.submitOrder(currentUser!!.cart)
+                paymentViewModel.submitOrder()
             },
             modifier = Modifier
                 .fillMaxWidth()
