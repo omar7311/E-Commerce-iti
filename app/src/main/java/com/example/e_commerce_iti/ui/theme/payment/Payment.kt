@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -175,11 +176,25 @@ fun PaymentScreen(paymentViewModel: PaymentViewModel,navController: NavControlle
                     label = { Text("Coupon") }
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                Button(
-                    modifier = Modifier.wrapContentWidth(), // Ensure button fits its content
-                    onClick = { if (cop.isNotBlank()) paymentViewModel.get_discount_details(cop)}
-                ) {
-                    Text(text = "Apply")
+                if (paymentViewModel.priceRules.collectAsState().value!=UiState.Loading) {
+                    Button(
+                        modifier = Modifier.wrapContentWidth(), // Ensure button fits its content
+                        onClick = {
+                            if (cop.isNotBlank()) {
+                                paymentViewModel.get_discount_details(cop)
+                            } else {
+                                Toast.makeText(
+                                    navController.context,
+                                    "Please Enter Coupon",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    ) {
+                        Text(text = "Apply")
+                    }
+                }else{
+                    CircularProgressIndicator()
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -269,7 +284,7 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel) {
                     ) {
                         OutlinedTextField(
                             value = paymentViewModel.cardNumber.collectAsState().value.toString(),
-                            onValueChange = {paymentViewModel.cardNumber.value=it.toInt()},
+                            onValueChange = {paymentViewModel.cardNumber.value=it},
                             label = { Text("Card Number") },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth()
@@ -277,7 +292,7 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel) {
 
                         OutlinedTextField(
                             value = paymentViewModel.expiryMonth.collectAsState().value.toString(),
-                            onValueChange = {paymentViewModel.expiryMonth.value=it.toInt()},
+                            onValueChange = {paymentViewModel.expiryMonth.value=it},
                             label = { Text("Expiry Date (MM/YY)") },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier

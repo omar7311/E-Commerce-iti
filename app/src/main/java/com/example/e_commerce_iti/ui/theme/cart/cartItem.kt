@@ -231,7 +231,7 @@ fun MyAlertDialog(
             text = {
                 Column {
                     Icon(
-                        painter = painterResource(id = R.drawable.trash), // Replace with your trash icon resource
+                        painter = painterResource(id = R.drawable.baseline_settings_24), // Replace with your trash icon resource
                         contentDescription = "Delete Item",
                         modifier = Modifier
                             .size(40.dp)
