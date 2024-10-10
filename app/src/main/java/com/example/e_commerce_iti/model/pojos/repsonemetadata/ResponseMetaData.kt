@@ -12,3 +12,6 @@ data class ResponseMetaData(
     var updated_at: String? = null,
     var value: String? = null
 )
+data class RMeta(
+    var metafield:ResponseMetaData
+)

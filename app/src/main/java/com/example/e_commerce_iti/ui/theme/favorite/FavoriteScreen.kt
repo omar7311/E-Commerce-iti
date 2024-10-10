@@ -56,6 +56,7 @@ import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
+import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.transparentBrush
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
@@ -74,15 +75,12 @@ import java.nio.file.WatchEvent
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
+fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController,networkObserver: NetworkObserver) {
 
     LaunchedEffect(Unit) {
         currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
     }
     val product by cartViewModel.product.collectAsState()
-
-
-
     Scaffold(
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller,LocalContext.current) },     // Keep the navigation controller for buttons
@@ -109,7 +107,7 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
                            }
                        }else{
                            Column(modifier = Modifier.fillMaxWidth()) {
-                               MyLottiAni(R.raw.empty_fav)
+                               MyLottiAni(R.raw.animation_no_data)
                            }
                        }
                     }
@@ -124,13 +122,13 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
     }
 
 
-@Preview(showSystemUi = true)
+/*@Preview(showSystemUi = true)
 @Composable
 fun FavouriteScreenPreview(){
     val controller= rememberNavController()
     //FavoriteScreen(controller)
 
-}
+}*/
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun FavouriteItem(controller: NavController,cartViewModel: CartViewModel,product: Product,index:Int){

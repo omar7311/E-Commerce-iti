@@ -5,20 +5,17 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
-import com.example.e_commerce_iti.model.pojos.ProductResponse
+import com.example.e_commerce_iti.model.pojos.Producut
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCodeX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
-import com.example.e_commerce_iti.model.pojos.metadata.MetaData
-import com.example.e_commerce_iti.model.pojos.metadata.ReMetaData
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
-import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -32,7 +29,7 @@ interface IRemoteDataSource {
     suspend fun getBrands() : Flow<List<BrandData>>
     suspend fun getProductsByVendor(vendorName: String) : Flow<List<Product>>
     suspend fun getCustomer(email: String) : Flow<CustomerX>
-    suspend fun createCustomer(customer: Customer) : Flow<Customer>
+    suspend fun createCustomer(customer: Customer)
     suspend fun updateCustomer(id:Long,customer: String):Flow<Customer>
     suspend fun getCurrency(currency: String) : Flow<CurrencyExc>
     suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse>
@@ -46,4 +43,7 @@ interface IRemoteDataSource {
     suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
     suspend fun getProductById(productId: Long):Flow<Product>
     fun getAllProduct():Flow<AllProduct>
+    suspend fun getAllDrafts(): Flow<List<DraftOrder>>
+    suspend fun getTempProductById(id: Long): Product
+
 }

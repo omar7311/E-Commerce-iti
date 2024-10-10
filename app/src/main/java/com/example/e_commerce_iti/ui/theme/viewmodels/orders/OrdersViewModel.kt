@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.viewmodels.orders
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -30,7 +31,9 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getOrdersByCustomerId(customerId)
                 .collect { orders ->
+                    Log.d("ViewMOdelOrders", "Orders: $orders")
                     _ordersFlowState.value = UiState.Success(orders)
+
                 }
         }
     }
@@ -43,10 +46,17 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
                 }
                 .collect { product ->
                     _singleProductFlow.value = UiState.Success(product)
+
                 }
         }
     }
 
+    suspend fun getTempProductById(productId:Long):Product{
+        var product :Product?= null
+          product =  repository.getTempProductById(productId)
+            Log.i("ProductsFetched", "Fetched ViewModel: $product")
+       return product
+    }
 }
 
 

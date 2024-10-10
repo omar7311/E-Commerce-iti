@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.model.reposiatory
 
+import android.util.Log
 import com.example.e_commerce_iti.model.local.IlocalDataSource
 import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
@@ -84,12 +85,24 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         return remote.getProductByID(id)
     }
 
+    override suspend fun getAllDrafts(): Flow<List<DraftOrder>> {
+        return remote.getAllDrafts()
+    }
 
+    override suspend fun getTempProductById(ProductId:Long): Product {
+        val product = remote.getTempProductById(ProductId)
+        Log.i("ProductsFetched", "FetchProductsDetailsReposiatory: $product")
 
+        return remote.getTempProductById(ProductId)
+    }
 
 
     override fun getAllProduct(): Flow<AllProduct> {
         return remote.getAllProduct()
+    }
+
+    override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
+        return remote.compeleteDraftOrder(draftOrder)
     }
 
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
@@ -133,4 +146,7 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         val result  = remote.getProductById(productId)
         return result
     }
+
+
+
 }

@@ -42,8 +42,13 @@ interface IReposiatory {
     suspend fun getOrdersByCustomerId(customer_id:Long):Flow<List<Order>>
     suspend fun getProductById(productId: Long):Flow<Product>
     fun getAllProduct():Flow<AllProduct>
+    suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean>
 
     suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse>
     suspend fun getCart(id:Long): Flow<DraftOrder>
      suspend fun getProductByID(id: Long): Flow<Product>
+    suspend fun getAllDrafts(): Flow<List<DraftOrder>>
+    suspend fun getTempProductById(ProductId:Long):Product
+
+
 }

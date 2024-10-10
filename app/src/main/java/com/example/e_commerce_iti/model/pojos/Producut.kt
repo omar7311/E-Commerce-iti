@@ -1,11 +1,9 @@
 package com.example.e_commerce_iti.model.pojos
 
-import java.io.Serializable
-
 /**
  *      below class is the actuall one used to catch products
  */
-data class ProductResponse(
+data class Producut(
     val products: List<Product>
 )
 

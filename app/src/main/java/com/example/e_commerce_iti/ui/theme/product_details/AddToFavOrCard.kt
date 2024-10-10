@@ -144,7 +144,7 @@ fun addToCardOFavorite(
     val lineItem = LineItems(
         title = product.title,
         price = product.variants[0].price,
-        quantity = product.variants[0].inventory_quantity.toLong(),
+        quantity = 1,
         variant_id = product.variants[0].id,
         product_id = product.id
     )

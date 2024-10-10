@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme._navigation
 
+import PaymentScreen
 import android.app.Activity
 import android.content.Context
 import android.util.Log
@@ -132,18 +133,12 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
     val productInfoViewModelFac = ProductInfoViewModelFac(repository)
     val changeUserDataFactory = ChangeUserDataViewModelFactory(repository)
 
-    NavHost(navController = navController, startDestination = Screens.Login.route) {
+    NavHost(navController = navController, startDestination = if (Firebase.auth.currentUser == null) Screens.Login.route else Screens.Home.route) {
 
         composable(route = Screens.Home.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val CopuonsViewModel: CouponViewModel = viewModel(factory = couponFactory)
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            LaunchedEffect(Unit) {
-                if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
-                    val e = Firebase.auth.currentUser
-                    getCurrent(e!!.email!!, repository)
-                }
-            }
             HomeScreen(context, CopuonsViewModel, homeViewModel, navController, networkObserver, cartViewModel)
         }
 
@@ -155,7 +150,11 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            CartScreen(cartViewModel, navController, context)
+            CartScreen(cartViewModel, navController, context,networkObserver)
+        }
+        composable(route = Screens.Payment.route) {
+            val paymentViewModel: PaymentViewModel = viewModel(factory = paymentViewModelFactory)
+            PaymentScreen(paymentViewModel,navController)
         }
 
         composable(route = Screens.Profile.route) {
@@ -169,7 +168,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Favorite.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            FavoriteScreen(cartViewModel, navController)
+            FavoriteScreen(cartViewModel, navController,networkObserver)
         }
 
         composable(route = Screens.Search.route) {
@@ -200,7 +199,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Setting.route) {
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
-            SettingScreen(currencyViewModel, navController)
+            SettingScreen(networkObserver,currencyViewModel, navController)
         }
 
         composable(

@@ -60,6 +60,7 @@ fun NetworkErrorContent() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
+            modifier = Modifier.padding(top = 60.dp),
             text = "No Internet Connection",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.error

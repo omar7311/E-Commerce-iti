@@ -56,6 +56,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.e_commerce_iti.DEFAULT_CUSTOM_COLLECTION_ID
 import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.gradientBrush
+import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.CustomCollectionStates
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
 import com.example.e_commerce_iti.model.pojos.CustomCollection
@@ -99,11 +101,10 @@ fun CategoryScreen(
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
-
                     .fillMaxSize() // Fill the entire screen
             ) {
                 Column(
-                    modifier = Modifier.padding(15.dp)
+                    modifier = Modifier.padding(7.dp)
                 ) {
                     FetchCustomCollections(homeViewModel) { selectedCollection ->
                         if (selectedCollection.id != collectionId) {
@@ -115,7 +116,6 @@ fun CategoryScreen(
                     FilterButtonWithSlider(minPrice, maxPrice) { price ->
                         selectedPrice = price
                     }
-
                     if (collectionId != 0L) {
                         FetchProductsByCustomCollection(
                             homeViewModel,
@@ -318,7 +318,7 @@ fun ProductGrid(products: List<Product>, controller: NavController,currencyViewM
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.padding(1.dp),
-        contentPadding = PaddingValues(8.dp)
+        contentPadding = PaddingValues(5.dp)
     ) {
         items(products) { product ->
             ProductItem(product , controller,currencyViewModel ) // to navigate when press on it
@@ -346,11 +346,15 @@ fun ExpandableFab(
 
     ) {
         // Expandable Buttons
-        AnimatedVisibility(visible = expanded) {
+        AnimatedVisibility(
+                    visible = expanded
+        ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    containerColor = ingredientColor1,
+                    onClick = {
                     onFilterClothes()
                     expanded = false // Close the FAB
                 }) {
@@ -359,7 +363,9 @@ fun ExpandableFab(
                         contentDescription = "Filter by Clothes"
                     )
                 }
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    containerColor = ingredientColor1,
+                    onClick = {
                     onFilterShoes()
                     expanded = false // Close the FAB
                 }) {
@@ -369,7 +375,9 @@ fun ExpandableFab(
                     )
                 }
 
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    containerColor = ingredientColor1,
+                    onClick = {
                     expanded = false // Close the FAB
 
                     onFilterAccessories()
@@ -383,7 +391,9 @@ fun ExpandableFab(
         }
 
         // Main Floating Action Button
-        FloatingActionButton(onClick = {
+        FloatingActionButton(
+            containerColor = ingredientColor1,
+          onClick = {
             expanded = !expanded
             if (expanded) {
                 onFabClose()

@@ -77,6 +77,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
@@ -319,7 +320,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
         },
         actions = {
             // Favorite icon on the right
-            if(!FirebaseAuth.getInstance().currentUser?.isAnonymous!!){
+            //if(!FirebaseAuth.getInstance().currentUser?.isAnonymous!!){
             IconButton(onClick = { controller.navigate(Screens.Favorite.route) }) {
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
@@ -327,7 +328,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                     tint = Color.White,
                     contentDescription = "Favorite"
                 )
-            }
+           // }
         }
                   },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -492,7 +493,8 @@ fun CustomText(
     textColor: Color = Color.Black,
     fontSize: TextUnit = 20.sp,
     padding: PaddingValues = PaddingValues(),
-    modifier: Modifier= Modifier
+    modifier: Modifier= Modifier,
+    style: FontWeight = FontWeight.Normal
 ) {
     Text(
         text = textToUse,
@@ -500,7 +502,6 @@ fun CustomText(
         fontSize = fontSize,
         fontWeight = FontWeight.Bold,
         modifier = Modifier
-            .fillMaxWidth()
             .padding(padding)
             .clip(RoundedCornerShape(15.dp))
             .background(backGroundColor)

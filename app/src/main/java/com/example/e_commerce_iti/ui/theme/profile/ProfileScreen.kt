@@ -15,12 +15,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,11 +41,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.darkSlateGray
+import com.example.e_commerce_iti.deleteCurrentUser
+import com.example.e_commerce_iti.lavender
+import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,27 +66,60 @@ fun ProfileScreen(controller: NavController) {
     ) { innerPadding ->                                // Use padding for the content
        Column(modifier = Modifier
            .fillMaxSize().verticalScroll(rememberScrollState()).
-           padding(innerPadding),Arrangement.SpaceEvenly,) {
+           padding(innerPadding),Arrangement.SpaceAround,) {
            Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),Arrangement.Center) {
            GlideImage(imageModel = R.drawable.avatar ,Modifier.size(100.dp))
            }
-           Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),Arrangement.Center) {
+           Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(top = 2.dp, start = 20.dp,end = 20.dp),Arrangement.Center) {
                Text(text = "Name : ${currentUser?.name?:"N/A"}", fontSize = 17.sp, fontWeight = FontWeight.Bold)
            }
-           Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),Arrangement.Center) {
+           Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(top = 2.dp, start = 20.dp,end = 20.dp),Arrangement.Center) {
                Text(text = "Email : ${currentUser?.email?:"N/A"}", fontSize = 17.sp, fontWeight = FontWeight.Bold)
            }
            ProfieItem(e = {controller.navigate(Screens.Orders.route)}, t = "Orders", id = R.drawable.ordersicon)
            ProfieItem(e = {controller.navigate(Screens.Favorite.route)}, t = "Favorites", id = R.drawable.baseline_favorite_border_24)
-           ProfieItem(e = {controller.navigate(Screens.Setting.route)}, t = "Settings", id = R.drawable.accessory)
-
+           ProfieItem(e = {controller.navigate(Screens.Setting.route)}, t = "Settings", id = R.drawable.settings)
+           // Logout Button
+           LogoutButton(controller)
 
        }
     }
     }
+@Composable
+fun LogoutButton(controller: NavController) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(), // Fill the entire screen
+        contentAlignment = Alignment.Center // Center the content (button)
+    ) {
+        Button(
+            onClick = {
+                controller.navigate(Screens.Login.route) {
+                    popUpTo(controller.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+                Firebase.auth.signOut()
+                deleteCurrentUser()
+            },
+            modifier = Modifier
+                .wrapContentWidth()
+                .padding(vertical = 12.dp), // Add vertical padding if needed
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+        ) {
+            Text(
+                text = "Logout",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+}
 
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true
+    , showSystemUi = true)
 @Composable
 fun SettingScreenPreview() {
     ECommerceITITheme {
@@ -83,16 +129,19 @@ fun SettingScreenPreview() {
 }
 @Composable
 fun ProfieItem(e:()->Unit,t:String,id:Int,){
-    Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),Arrangement.Center) {
+    Row( modifier = Modifier.wrapContentWidth().wrapContentHeight().padding(20.dp),Arrangement.Center) {
 
-        Card(elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        Card(
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(30.dp)).clickable { e() }
                 .animateContentSize(),
             border = BorderStroke(2.dp, Color.Black),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(
+                containerColor = lavender // Set background color
+            )
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().height(60.dp)

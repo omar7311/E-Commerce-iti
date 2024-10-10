@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
@@ -92,6 +93,8 @@ fun OrdersScreen(
 
 @Composable
 fun OrdersContent(orderViewModel: OrdersViewModel, controller: NavController) {
+
+    val customerId = currentUser?.id
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "Orders History",
@@ -101,9 +104,15 @@ fun OrdersContent(orderViewModel: OrdersViewModel, controller: NavController) {
                 .padding(16.dp)
                 .align(Alignment.CenterHorizontally)
         )
-        FetchOrdersByCustomerId(7491636658353, orderViewModel, controller,orderViewModel)
+        if (customerId != null) {
+            FetchOrdersByCustomerId(customerId, orderViewModel, controller, orderViewModel)
+        }
     }
 }
+
+/*
+7491636658353
+*/
 
 @Composable
 fun FetchOrdersByCustomerId(
@@ -123,7 +132,7 @@ fun FetchOrdersByCustomerId(
             is UiState.Success -> {
                 val orders = (ordersState as UiState.Success<List<Order>>).data
                 Log.d("Orrrrrrders", "Orders: $orders")
-                OrdersList(orders, controller,orderViewModel)
+                OrdersList(orders, controller, orderViewModel)
             }
 
             is UiState.Loading -> LoadingIndicator()
@@ -140,25 +149,18 @@ fun OrdersList(orders: List<Order>, controller: NavController, orderViewModel: O
         contentPadding = PaddingValues(16.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        // Pass the actual list of orders
-        var products :List<Product> = emptyList()
-        items(orders) { order ->
-            // Check if the order has any lineItems
-            if (order.lineItems.isNotEmpty()) {
-                // Assuming you want to check the first lineItem
-                val firstLineItem = order.lineItems.firstOrNull()
-                if (firstLineItem != null && firstLineItem.productId != null && firstLineItem.productId != 0L) {
-                    products = FetchProductsDetails(orderViewModel, order)  // Fetch products from details
+        var products: List<Product> = emptyList()
+        itemsIndexed(orders) {index, order ->
+          /*  if (order.lineItems[index] != null) {
+                    products =
+                        FetchProductsDetails(orderViewModel, order)  // Fetch products from details
                     Log.d("OrderProducts", "Products for Order: $products")
-                    OrderItem(order, controller, orderViewModel, products)
-                }
-            }
-
+            }*/
+            OrderItem(order, controller, orderViewModel)
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
-
 
 
 @Composable
@@ -222,7 +224,12 @@ fun NetworkErrorContent() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderItem(order: Order, controller: NavController,orderViewModel: OrdersViewModel,products:List<Product> ) {
+fun OrderItem(
+    order: Order,
+    controller: NavController,
+    orderViewModel: OrdersViewModel,
+   // products: List<Product>
+) {
     val gson = Gson()
     val orderJson = gson.toJson(order)
 
@@ -234,7 +241,7 @@ fun OrderItem(order: Order, controller: NavController,orderViewModel: OrdersView
             .padding(horizontal = 10.dp, vertical = 8.dp)
             .animateContentSize()
             .clickable { controller.navigate(Screens.OrderDetails.createRoute(orderJson)) },
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
@@ -247,10 +254,10 @@ fun OrderItem(order: Order, controller: NavController,orderViewModel: OrdersView
         ) {
 
 
-            if(products.size != 0){
+           /* if (products.size != 0) {
                 OrderItemColumn(products)
             }
-
+*/
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -258,7 +265,7 @@ fun OrderItem(order: Order, controller: NavController,orderViewModel: OrdersView
                 OrderInfoRow("Order ID", order.id.toString())
                 OrderInfoRow("Date", order.createdAt.substringBefore('T'))  // for date  built in
                 OrderInfoRow("Total", "${order.currentTotalPrice} ${order.currency}")
-               // OrderStatusChip(order.orderStatus ?: "Order Status UnDefined Yet")
+                // OrderStatusChip(order.orderStatus ?: "Order Status UnDefined Yet")
             }
         }
     }
@@ -272,8 +279,8 @@ fun OrderImage(url: String) {
         contentDescription = "Order Image",
         modifier = Modifier
             .size(80.dp)
-           // .clip(CircleShape),
-                ,
+        // .clip(CircleShape),
+        ,
         contentScale = ContentScale.Fit
     )
 }
@@ -357,8 +364,10 @@ fun OrderText(
 
 @Composable
 fun OrderItemColumn(products: List<Product>) {
-    Box(Modifier.wrapContentWidth()
-        .height(150.dp)
+    Box(
+        Modifier
+            .wrapContentWidth()
+            .height(150.dp)
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp)

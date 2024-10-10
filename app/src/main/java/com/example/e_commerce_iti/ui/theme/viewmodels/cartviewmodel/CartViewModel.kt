@@ -26,25 +26,38 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
      val product :StateFlow<UiState<MutableList<Product>>> = _product
      private var _totalAmount = MutableStateFlow(0.0)
      val totalAmount: StateFlow<Double> = _totalAmount
+    private var _navigateto:MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val navigateto:StateFlow<Boolean> = _navigateto
       fun getCartDraftOrder(id: Long){
+          _cartState.value=UiState.Loading
      viewModelScope.launch {
-         getCurrency()
-         val cart = cartRepository.getCart(id).first()
-         _cartState.value = UiState.Success(cart)
-         _product.value = UiState.Loading
-         val product = mutableListOf<Product>()
-         for (i in cart.line_items) {
-             if (i.title != "Dummy") {
-                 product.add(cartRepository.getProductByID(i.product_id!!.toLong()).first())
-                 _totalAmount.value +=(i.price!!.toDouble() * i.quantity!!).roundToTwoDecimalPlaces()
+         try {
+             val f = "gg"
+             val cart = cartRepository.getCart(id).first()
+             _cartState.value = UiState.Success(cart)
+             _product.value = UiState.Loading
+             val product = mutableListOf<Product>()
+             _totalAmount.value = 0.0
+             for (i in cart.line_items) {
+                 if (i.title != "Dummy") {
+                     product.add(cartRepository.getProductByID(i.product_id!!.toLong()).first())
+                     _totalAmount.value += (i.price!!.toDouble() * i.quantity!!).roundToTwoDecimalPlaces()
+                 }
              }
+
+             Log.i("CartViewModel", "Product: $product")
+             _product.value = UiState.Success(product)
+         } catch (e: Exception) {
+            Log.i("CartViewModel", "Error fetching cart: ${e.message}")
          }
-         Log.i("CartViewModel", "Product: $product")
-         _product.value = UiState.Success(product)
      }
+    }
+    fun endnav(){
+        _navigateto.value=false
     }
     fun add(price:Double){
         _totalAmount.value+=price
+
     }
     fun gettotalValue(amount:Float,currency:String):String{
         Log.i("fffffffffffffffffffffffff", "${(_totalAmount.value * amount).roundToTwoDecimalPlaces()} ${currency}")
@@ -87,9 +100,11 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
         }
     }
     fun submit() {
+        Log.i("eeeeeeeeeeeeeeeeeeeeeeeee",(_cartState.value as UiState.Success).data.line_items.toString())
         val currentCartState = _cartState.value as? UiState.Success<DraftOrder>
         viewModelScope.launch {
             cartRepository.updateCart(cart = currentCartState!!.data)
+            _navigateto.value=true
         }
     }
 }

@@ -7,7 +7,8 @@ import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import kotlinx.coroutines.flow.first
 
-data class CurrentUser(var address:String="N/A",var email:String="N/A",var id:Long,var fav:Long=-1,val cart:Long=-1,var name:String="N/A",var lname:String="N/A",var phone:String="N/A")
+data class CurrentUser(var address:String="N/A", var email:String="N/A", var id:Long, var fav:Long=-1,
+                       var cart:Long=-1, var name:String="N/A", var lname:String="N/A", var phone:String="N/A")
  var currentUser : CurrentUser?=null
  var metadata: ResponseMetaData?=null
 suspend fun  getCurrent(email: String?,cartRepository:IReposiatory):CurrentUser?{

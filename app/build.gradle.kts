@@ -99,6 +99,7 @@ dependencies {
 
     // Google Fonts
     implementation("com.google.android.material:compose-theme-adapter:1.2.1")
+   // implementation("androidx.media3:media3-common-ktx:1.4.1")
 
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")
@@ -116,7 +117,7 @@ dependencies {
     implementation ("com.airbnb.android:lottie-compose:5.0.3")
 
     implementation ("androidx.compose.ui:ui:$2024.1.0")
-
+    implementation ("androidx.compose.material3:material3:1.1.0")
 
     implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
 }
