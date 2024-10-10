@@ -77,7 +77,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
         return flow { emit(data.customers!!.get(0)) }
     }
 
-    override suspend fun createCustomer(customer: Customer): Flow<Customer> {
+    override suspend fun createCustomer(customer: Customer){
         Log.e("qweqwewqeeeeeeeeeee", "${customer} ------------ ")
         val helper = RetrofitHelper.service
         try {
@@ -97,66 +97,49 @@ class RemoteDataSourceImp : IRemoteDataSource {
             val cartmeta =
                 createDummyMetafield("cart_id", cartDraft.body()!!.draft_order!!.id.toString())
 
-            Log.i("55555555555555555draftfav", "${Gson().toJson(cartmeta)}")
-            val favmeta =
-                createDummyMetafield("fav_id", favDraft.body()!!.draft_order!!.id.toString())
-            Log.i("55555555555555555draftfav", "${favmeta}")
-            val a = helper.createCustomerMetafields(response.customer!!.id!!, cartmeta)
-            Log.i("deeeeeeeeeee cart", "${a}")
-            val b = helper.createCustomerMetafields(response.customer!!.id!!, favmeta)
-            Log.i("deeeeeeeeeee fav", "${b}")
-            Log.i(
-                "resopne from raeteunseadsa",
-                "email = ${customer.customer?.email},id=${response.customer?.id},name = ${response.customer?.first_name}, cart = ${a.metafield.id},fav= ${b.metafield.id}"
-            )
-            currentUser = CurrentUser(
-                email = customer.customer!!.email!!,
-                id = response.customer!!.id!!,
-                name = response.customer!!.first_name!!,
-                cart = a.metafield.id!!,
-                fav = b.metafield.id!!
-            )
-            return flow { emit(response) }
-        } catch (e: Exception) {
-            Log.e("c", "data error is ${e}")
+            Log.i("55555555555555555draftfav" , Gson().toJson(cartmeta))
+            val favmeta = createDummyMetafield("fav_id", favDraft.body()!!.draft_order!!.id.toString())
+            Log.i("55555555555555555draftfav" , "${favmeta}")
+           val a= helper.createCustomerMetafields(response.customer!!.id!!, cartmeta)
+            Log.i("deeeeeeeeeee cart" , "${a}")
+           val b= helper.createCustomerMetafields(response.customer!!.id!!, favmeta)
+            Log.i("deeeeeeeeeee fav" , "${b}")
+            Log.i("resopne from raeteunseadsa" , "email = ${customer.customer?.email},id=${response.customer?.id},name = ${response.customer?.first_name}, cart = ${a.metafield.id},fav= ${b.metafield.id}")
+              }catch (e:Exception){
+        Log.e("vvvvvvvvvvvvvvvvvvvvvvvvvvvvv","data error is ${e}")
         }
-        return flow { emit(Customer()) }
+    return flow { emit(Customer()) }
     }
-
-    fun createDummyMetafield(key: String, value: String) = ReMetaData(
-        Metafield(
-            namespace = "namespace",
-            key = key,
-            value = value,
-            value_type = "string"
-        )
-    )
-
-    private fun createDumpDraft(customerx: CustomerX): SearchDraftOrder {
-        val searchDraftOrder = SearchDraftOrder()
-        val lineItems = LineItems()
-        lineItems.quantity = 1
-        lineItems.taxable = false
-        lineItems.price = "0.00"
-        lineItems.title = "Dummy"
-        val customer = com.example.e_commerce_iti.model.pojos.draftorder.Customer(id = customerx.id)
-        val lineItem = listOf(lineItems)
-        val draftOrder = DraftOrder(line_items = lineItem, customer = customer,)
-        searchDraftOrder.draft_order = draftOrder
+    fun createDummyMetafield(key: String, value: String) = ReMetaData(Metafield(namespace = "namespace", key = key, value = value, value_type = "string"))
+    private fun createDumpDraft(customerx: CustomerX):SearchDraftOrder{
+        val searchDraftOrder=SearchDraftOrder()
+        val lineItems=LineItems()
+        lineItems.quantity=1
+        lineItems.taxable=false
+        lineItems.price="0.00"
+        lineItems.title="Dummy"
+        val customer= com.example.e_commerce_iti.model.pojos.draftorder.Customer(id =customerx.id)
+        val lineItem= listOf(lineItems)
+        val draftOrder=DraftOrder(line_items = lineItem, customer = customer,)
+        searchDraftOrder.draft_order=draftOrder
         return searchDraftOrder
     }
 
     override suspend fun updateCustomer(id: Long, customer: String): Flow<Customer> {
         val ucustomer = Gson().fromJson(customer, UpdateCustomer::class.java)
         val req = RetrofitHelper.service.updateCustomer(id, ucustomer)
+            currentUser!!.email=ucustomer!!.customer!!.email!!
+            currentUser!!.name=ucustomer.customer!!.first_name!!
+            currentUser!!.lname=ucustomer.customer!!.last_name!!
+            currentUser!!.id=ucustomer.customer!!.id!!
+            currentUser?.address = (req.body()?.customer?.addresses?.get(0)?.address1?:currentUser!!.address)
         Log.e("12312321312313213", "${req.errorBody()?.string()}")
         return flow { emit(Customer(req.body()?.customer)) }
     }
 
 
-    override suspend fun getCurrency(currency: String) =
-        flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
 
+    override suspend fun getCurrency(currency: String)=flow { emit(RetrofitHelper.currencyService.getCurrencies()) }
     override suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse> {
 
         return flow { emit(RetrofitHelper.service.getCustomerMetafields(customerId)) }
@@ -165,14 +148,16 @@ class RemoteDataSourceImp : IRemoteDataSource {
     override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
         val data = RetrofitHelper.service.updateCartDraftOrder(cart.id!!, SearchDraftOrder(cart))
         println(cart)
+        Log.e("12312321312313213", "${data} ------------ ")
+        Log.e("12312321312313213", "${data.errorBody()?.string()} ------------ ")
         println(data.errorBody()?.string())
         return flow { emit(data.body()!!.draft_order!!) }
     }
 
     override suspend fun getCart(id: Long): Flow<DraftOrder> {
         val data = RetrofitHelper.service.getCart(id)
-        Log.e("12312321312313213", "${data} ------------ $id")
-        return flow { emit(data.draft_order!!) }
+        Log.e("12312321312313213", "${data.errorBody()?.string()} ----${data.message()}--- $id")
+        return flow { emit(data.body()?.draft_order!!) }
     }
 
     override suspend fun getProductByID(id: Long): Flow<Product> {
@@ -182,7 +167,10 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun getDiscountCode(code: String): Flow<DiscountCodeX> {
-        return flow { emit(RetrofitHelper.service.getDiscountCode(code).discount_codes.get(0)) }
+        Log.e("12312321312313213", "${code} ------------ ")
+        val data=RetrofitHelper.service.getDiscountCode(code)
+        Log.e("12312321312313213", "${data} ------------ ")
+        return flow { emit(data.discount_code) }
     }
 
     override suspend fun getPriceRulesByid(priceId: Long): Flow<PriceRule> {
@@ -193,19 +181,15 @@ class RemoteDataSourceImp : IRemoteDataSource {
         id: Long,
         metaData: ResponseMetaData
     ): Flow<ResponseMetaData> {
-        return flow {
-            emit(
-                RetrofitHelper.service.updateCustomerMetafield(
-                    id,
-                    metaData.id!!,
-                    UReposeMeta(metaData)
-                )
-            )
-        }
+        return flow { emit(RetrofitHelper.service.updateCustomerMetafield(id,metaData.id!!,UReposeMeta(metaData)))}
     }
 
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
-        try {
+        Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder.id} ------------ ")
+        draftOrder.email= currentUser?.email
+      //  RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
+       val f= RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
+        Log.e("nnnnnnnnnnnnnnnnnnnnnnnnnnn",f.string())
             val draft1 = createDumpDraft(
                 CustomerX(
                     id = currentUser!!.id,
@@ -216,21 +200,14 @@ class RemoteDataSourceImp : IRemoteDataSource {
             )
             val draft = Gson().fromJson(Gson().toJson(draft1), RDraftOrderRequest::class.java)
             val data = RetrofitHelper.service.createDraftOrder(draft)
-            metadata?.value = data.body()!!.draft_order!!.id.toString()
-            metadata = RetrofitHelper.service.updateCustomerMetafield(
-                currentUser!!.id,
-                metadata!!.id!!,
-                UReposeMeta(metadata!!)
-            )
-//            val invoice= DraftOrderInvoice()
-//            RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
-            RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
+            metadata?.value=data.body()!!.draft_order!!.id.toString()
+        Log.i("ddddddddddddddddddddddddd","nnnnnnnnnnnnnnnnnnnnnnnnn")
+
+            metadata=RetrofitHelper.service.updateCustomerMetafield(currentUser!!.id, metadata!!.id!!,UReposeMeta(metadata!!))
+            currentUser!!.cart =data.body()!!.draft_order!!.id!!
+            Log.i("ddddddddddddddddddddddddd","${metadata}")
             return flowOf(true)
-        } catch (e: Exception) {
-            println(e.message.toString())
-            Log.e("12312321312313213", "${e} ------------ ")
-            return flowOf(false)
-        }
+
     }
 
     /**
@@ -267,6 +244,10 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
     override fun getAllProduct(): Flow<AllProduct> = flow {
         emit(RetrofitHelper.service.getAllProduct())
+    }
+
+    override suspend fun getAllDrafts(): Flow<List<DraftOrder>> {
+        return flow { emit(RetrofitHelper.service.getAllDrafts().draft_orders!!) }
     }
 
 
@@ -306,13 +287,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
         val data = RetrofitHelper.service.getCopuons(priceId)
         return flow { emit(data) }
     }
-
-
-
-
-
 }
-
 
 data class RDraftOrderRequest(
     val draft_order: RDraftOrder

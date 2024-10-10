@@ -2,6 +2,7 @@ package com.example.e_commerce_iti
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,10 +28,16 @@ import androidx.compose.material.DropdownMenu
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.IconButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,15 +49,29 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
+
 import com.example.e_commerce_iti.ui.theme.createCustomer
+
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.TextButton
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager
 import com.example.e_commerce_iti.ui.theme.home.CustomText
@@ -60,6 +81,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterialApi::class, DelicateCoroutinesApi::class)
 @Composable
@@ -86,7 +108,7 @@ fun SignupScreen(
     val passwordRegex =
         remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
     val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
-
+    var falg=true
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -272,21 +294,22 @@ fun SignupScreen(
                     isLoading = true
                     FirebaseAuthManager.signUp(email, password) { success, error ->
                         if (success) {
-
-                            GlobalScope.launch(Dispatchers.IO) {
-
-                                RemoteDataSourceImp().createCustomer(
-                                    createCustomer(
-                                        email,
-                                        fullName,
-                                        fullName,
-                                        phoneNumber
+                            if (falg){
+                                falg=false
+                                GlobalScope.launch(Dispatchers.IO) {
+                                    Log.i("dasdsddsdsad", "adsdasdasd321443")
+                                    RemoteDataSourceImp().createCustomer(
+                                        createCustomer(
+                                            email,
+                                            fullName,
+                                            fullName,
+                                            phoneNumber
+                                        )
                                     )
-                                )
-                                isLoading = true
-                                delay(7000) // 3 seconds delay
-                            }
-
+                                    isLoading = true
+                                    delay(7000) // 3 seconds delay
+                                }
+                        }
                             // Start a new coroutine for the delay
                             scope.launch {
                                 isLoading = false

@@ -18,6 +18,8 @@ import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.OrdersResponse
 import com.example.e_commerce_iti.model.pojos.ProductWrapper
 import com.example.e_commerce_iti.model.pojos.SearchedProductResponse
+import com.example.e_commerce_iti.model.pojos.discountcode.FoundedDiscountCode
+import com.example.e_commerce_iti.model.pojos.draftorder.AllDraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.SearchDraftOrder
 import com.example.e_commerce_iti.model.pojos.metadata.MetaData
@@ -27,10 +29,12 @@ import com.example.e_commerce_iti.model.pojos.price_rules.FoundPriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.UMeatDataResponse
+import com.example.e_commerce_iti.model.pojos.responsedorder.Responsed_order
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UCustomer
 import com.example.e_commerce_iti.model.pojos.updatecustomer.UpdateCustomer
 import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
 import com.example.e_commerce_iti.model.remote.UReposeMeta
+import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.DELETE
@@ -96,26 +100,18 @@ interface EcommerceApi {
     @PUT("draft_orders/{id}.json")
     suspend fun updateCartDraftOrder(@Path("id") id: Long, @Body draftOrder: SearchDraftOrder): Response<SearchDraftOrder>
     @GET("discount_codes/lookup.json")
-    suspend fun getDiscountCode(@Query("code") code: String): DiscountCode
+    suspend fun getDiscountCode(@Query("code") code: String): FoundedDiscountCode
     @GET("price_rules/{priceId}.json")
     suspend fun getPriceRulesByid( @Path("priceId") priceId: Long): FoundPriceRules
     @PUT("customers/{customer_id}/metafields/{mid}.json")
     suspend fun updateCustomerMetafield(@Path("customer_id") customerId: Long, @Path("mid") metafieldId: Long, @Body metafield: UReposeMeta): ResponseMetaData
     @PUT("draft_orders/{id}/complete.json")
-    suspend fun completeDraftOrder(@Path("id") id: Long):Response<Any>
+    suspend fun completeDraftOrder(@Path("id") id: Long): ResponseBody
     @PUT("draft_orders/{id}/send_invoice.json")
-    suspend fun sendInvoice(@Path("id") id: Long):Response<Any>
+    suspend fun sendInvoice(@Path("id") id: Long)
+    @GET("draft_orders.json")
+    suspend fun getAllDrafts(): AllDraftOrder
+    @PUT("customers/{customer_id}/metafields/{mid}.json")
+    suspend fun updateCustomerMetafield2(@Path("customer_id") customerId: Long, @Path("mid") metafieldId: Long, @Body metafield: UReposeMeta): ResponseBody
 
-
-    /**
-     *
-     */
-
-    // Get all customers
-    @GET("customers.json")
-    suspend fun getAllCustomers(): Response<List<Customer>>
-
-    // Delete a customer by ID
-    @DELETE("customers/{customer_id}.json")
-    suspend fun deleteCustomer(@Path("customer_id") customerId: Long): Response<Unit>
 }

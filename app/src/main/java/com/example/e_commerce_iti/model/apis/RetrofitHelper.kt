@@ -64,4 +64,5 @@ object RetrofitHelper {
     val currencyService: CurrencyApi by lazy {
         retrofitCurrencyInstance.create(CurrencyApi::class.java)
     }
+
 }

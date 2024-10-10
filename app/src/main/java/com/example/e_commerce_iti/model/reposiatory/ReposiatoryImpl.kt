@@ -84,12 +84,17 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
         return remote.getProductByID(id)
     }
 
-
-
+    override suspend fun getAllDrafts(): Flow<List<DraftOrder>> {
+        return remote.getAllDrafts()
+    }
 
 
     override fun getAllProduct(): Flow<AllProduct> {
         return remote.getAllProduct()
+    }
+
+    override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
+        return remote.compeleteDraftOrder(draftOrder)
     }
 
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
