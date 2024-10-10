@@ -33,6 +33,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewMod
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlin.random.Random
 
 @Composable
 fun ProductDetails(currencyViewModel: CurrencyViewModel, productInfoViewModel: ProductInfoViewModel, product: Product, controller: NavController, context:Context) {
@@ -51,11 +52,11 @@ fun ProductDetails(currencyViewModel: CurrencyViewModel, productInfoViewModel: P
             ImageCarousel(images)
             getCurrencyAndPrice(product.variants[0].price,currencyViewModel)?.let {
                 ProductInfo(product.title.replace("+"," "),
-                    it, 3)
+                    it, Random.nextInt(1, 6))
             }
             ProductDescription(description)
             if (!FirebaseAuth.getInstance().currentUser?.isAnonymous!!) {
-                Actions(product, productInfoViewModel, controller)
+                Actions(product, productInfoViewModel)
             }
         }
     }

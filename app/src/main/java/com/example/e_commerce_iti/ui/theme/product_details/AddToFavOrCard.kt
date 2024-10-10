@@ -12,10 +12,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
+import androidx.compose.material.Snackbar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,13 +46,13 @@ import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
 import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun Actions(
     product: Product,
     productInfoViewModel: ProductInfoViewModel,
-    navController: NavController
 ) {
     val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
 
@@ -98,7 +101,8 @@ fun Actions(
             )
         }
     }
-
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     // Observe changes in draft order state
     LaunchedEffect(draftOrderState) {
         when (draftOrderState) {
@@ -107,6 +111,11 @@ fun Actions(
                 // Check if product is already in cart or add new product to cart
                 if (!draftOrder.line_items.any { it.product_id == product.id }) {
                     addToCardOFavorite(productInfoViewModel, product, draftOrder)
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "The Product is Adding Successfully"
+                        )
+                    }
                 }
             }
             is UiState.Error -> {

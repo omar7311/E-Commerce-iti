@@ -69,19 +69,7 @@ fun ProductInfo(name:String, price:String, rating: Int){
                 sheetState = sheetState
             ) {
                 // Content of the bottom sheet
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(text = "This is the bottom sheet", style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "This is the bottom sheet", style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "This is the bottom sheet", style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "This is the bottom sheet", style = MaterialTheme.typography.bodyLarge)
-                }
+                Reviews()
             }
         }
         Row(modifier = Modifier.fillMaxWidth().height(40.dp), horizontalArrangement = Arrangement.SpaceBetween) {
