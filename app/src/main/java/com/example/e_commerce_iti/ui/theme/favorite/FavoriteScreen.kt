@@ -66,6 +66,7 @@ import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.SimpleText
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.google.gson.Gson
 import java.nio.file.WatchEvent
 
 
@@ -100,7 +101,7 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
                                 .fillMaxSize()
                         ) {
                             itemsIndexed(productList) { index, product ->
-                                FavouriteItem(cartViewModel,product,index)
+                                FavouriteItem(controller,cartViewModel,product,index)
                             }
                         }
                     }
@@ -124,7 +125,7 @@ fun FavouriteScreenPreview(){
 }
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavouriteItem(cartViewModel: CartViewModel,product: Product,index:Int){
+fun FavouriteItem(controller: NavController,cartViewModel: CartViewModel,product: Product,index:Int){
     val draftOrder = (cartViewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
     val showDialog = rememberSaveable { mutableStateOf(false) }
     if (showDialog.value) {
@@ -134,7 +135,9 @@ fun FavouriteItem(cartViewModel: CartViewModel,product: Product,index:Int){
     }
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Card(
-            modifier = Modifier.padding(8.dp), // Padding around the card
+            modifier = Modifier.padding(8.dp).clickable {
+                controller.navigate(Screens.ProductDetails.createDetailRoute(Gson().toJson(product)))
+            }, // Padding around the card
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Set elevation
             shape = RoundedCornerShape(10.dp), // Rounded corners
         ) {
