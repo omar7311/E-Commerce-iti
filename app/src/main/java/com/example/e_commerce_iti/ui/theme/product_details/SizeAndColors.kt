@@ -36,5 +36,5 @@ fun SizeAndColors(colors:List<String>,sizes:List<String>){
 
 @Composable
 fun SizeAndColorsPreview(){
-    var colors= listOf("red","yellow","white","black","blue","orange",)
+    var colors= listOf("red","yellow","white","black","blue","orange")
 }

@@ -215,8 +215,9 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val gsonProduct = backStackEntry.arguments?.getString("product")
             val gson = Gson()
             val product = gson.fromJson(gsonProduct, Product::class.java)
+            val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
             val productInfoViewModel: ProductInfoViewModel = viewModel(factory = productInfoViewModelFac)
-            ProductDetails(productInfoViewModel,product = product, controller = navController, context)
+            ProductDetails(currencyViewModel,productInfoViewModel,product = product, controller = navController, context =  context)
         }
 
         composable(route = Screens.Orders.route) {

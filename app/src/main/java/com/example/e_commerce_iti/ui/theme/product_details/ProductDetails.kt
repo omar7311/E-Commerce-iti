@@ -26,14 +26,17 @@ import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.SimpleText
+import com.example.e_commerce_iti.ui.theme.products.getCurrencyAndPrice
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlin.random.Random
 
 @Composable
-fun ProductDetails(productInfoViewModel: ProductInfoViewModel, product: Product, controller: NavController, context:Context) {
+fun ProductDetails(currencyViewModel: CurrencyViewModel, productInfoViewModel: ProductInfoViewModel, product: Product, controller: NavController, context:Context) {
 
     Scaffold(
         topBar = { CustomTopBar("Product Details", controller) },  // Update title to "Cart"
@@ -47,10 +50,13 @@ fun ProductDetails(productInfoViewModel: ProductInfoViewModel, product: Product,
             }
             val description = product.body_html.replace("+", " ")
             ImageCarousel(images)
-            ProductInfo(product.title.replace("+"," "), product.variants[0].price, "EG", 3)
+            getCurrencyAndPrice(product.variants[0].price,currencyViewModel)?.let {
+                ProductInfo(product.title.replace("+"," "),
+                    it, Random.nextInt(1, 6))
+            }
             ProductDescription(description)
             if (!FirebaseAuth.getInstance().currentUser?.isAnonymous!!) {
-                Actions(product, productInfoViewModel, controller)
+                Actions(context,product, productInfoViewModel)
             }
         }
     }
