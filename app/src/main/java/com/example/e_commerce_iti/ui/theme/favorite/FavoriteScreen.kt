@@ -109,7 +109,7 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
                            }
                        }else{
                            Column(modifier = Modifier.fillMaxWidth()) {
-                               MyLottiAni(R.raw.empty_fav)
+                               MyLottiAni(R.raw.animation_no_data)
                            }
                        }
                     }

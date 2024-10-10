@@ -23,7 +23,7 @@ fun CartScreen(cartViewModel: CartViewModel, controller: NavController,context: 
     ) { innerPadding ->
         val isConnected = netWorkObserver.isConnected.collectAsState()
         if (isConnected.value) {// Use padding for the content
-        Carts(Modifier.padding(innerPadding), viewModel = cartViewModel)}
+        Carts(controller,Modifier.padding(innerPadding), viewModel = cartViewModel)}
         else{
             NetworkErrorContent()
         }

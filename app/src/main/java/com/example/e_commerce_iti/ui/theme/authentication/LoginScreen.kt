@@ -226,17 +226,20 @@ fun LoginScreen(
                 onClick = {
                     FirebaseAuthManager.loginAnonymously { success, error ->
                         if (success) {
-                            controller.navigate(Screens.Home.route)
+                            controller.navigate(Screens.Home.route) {
+                                popUpTo(controller.graph.startDestinationId) { inclusive = true }
+                                launchSingleTop = true
+                            }
                         } else {
                             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                         }
                     }
                 },
                 modifier = Modifier
-                    .wrapContentSize(), // Keep button size based on content
+                    .wrapContentSize(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = ingredientColor1,
-                    contentColor = indigo // Set text color inside the button
+                    contentColor = indigo
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {

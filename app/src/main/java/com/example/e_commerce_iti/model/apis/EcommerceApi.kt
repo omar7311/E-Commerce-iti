@@ -76,7 +76,7 @@ interface EcommerceApi {
     @PUT("customers/{customer_id}.json")
     suspend fun updateCustomer(@Path("customer_id") customerId: Long, @Body customer: UpdateCustomer): Response<Customer>
     @GET("draft_orders/{id}.json")
-    suspend fun getCart(@Path("id") id: Long): SearchDraftOrder
+    suspend fun getCart(@Path("id") id: Long): Response<SearchDraftOrder>
     @GET("products/{id}.json")
     suspend fun getProduct(@Path("id") id: Long): SearchedProductResponse
     @GET("products.json")
