@@ -28,7 +28,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val oderstate: StateFlow<UiState<Int>> = _oderstate
     private var _discountCode = MutableStateFlow<UiState<DiscountCodeX>>(UiState.Loading)
     val discountCodeX: StateFlow<UiState<DiscountCodeX>> = _discountCode
-    private var _priceRules = MutableStateFlow<UiState<PriceRule>>(UiState.Loading)
+    private var _priceRules = MutableStateFlow<UiState<PriceRule>>(UiState.Non)
     val priceRules: StateFlow<UiState<PriceRule>> = _priceRules
     private var _cart = MutableStateFlow<UiState<DraftOrder>>(UiState.Loading)
     val cart: StateFlow<UiState<DraftOrder>> = _cart
@@ -73,8 +73,8 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
         }
     }
     val cvv= MutableStateFlow<String>("")
-    val cardNumber= MutableStateFlow<Int>(-1)
-    val expiryMonth= MutableStateFlow<Int>(-1)
+    val cardNumber= MutableStateFlow("")
+    val expiryMonth= MutableStateFlow("")
     val expiryYear= MutableStateFlow<String>("")
 
     fun submitOrder(id:Long) {
@@ -90,7 +90,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                 if (paymentMethod.value.isBlank()){
                     message+="Payment method is required \n"
                 }
-                if(paymentMethod.value=="paid"&&isValidCreditCard( CreditCard(cardNumber.value.toString(),expiryMonth.value,expiryYear.value.toInt(),cvv.value))){
+                if(paymentMethod.value=="paid"&&isValidCreditCard( CreditCard(cardNumber.value.toString(),expiryMonth.value.toInt(),expiryYear.value.toInt(),cvv.value))){
                      message+= "Wrong Card Info"
                 }
 
@@ -146,7 +146,6 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
         _cart.value = UiState.Loading
         viewModelScope.launch {
             try {
-
                 if (priceRule.value_type == "fixed_amount") {
                  totalamount.value-=priceRule.value.toDouble().roundToTwoDecimalPlaces()
                 } else {
