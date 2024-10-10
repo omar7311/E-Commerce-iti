@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +32,8 @@ fun ProductDescription(description:String){
         modifier = Modifier.fillMaxWidth().wrapContentHeight()
             .padding(horizontal = 12.dp, vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)) {
-        Text(text = "Description", fontSize = 28.sp, modifier = Modifier.padding(start = 12.dp, top = 4.dp))
+        Text(text = "Description", fontSize = 28.sp, fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 12.dp, top = 4.dp))
         Spacer(Modifier.height(6.dp))
         Text(text = description, fontSize = 20.sp,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp))

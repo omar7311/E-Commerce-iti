@@ -97,17 +97,21 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
                     }
                     is UiState.Success -> {
                        val productList = (product as UiState.Success).data
-
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            itemsIndexed(productList) { index, product ->
-                                FavouriteItem(controller,cartViewModel,product,index)
-                            }
-                        }
-
+                       if(productList.isNotEmpty()) {
+                           LazyVerticalGrid(
+                               columns = GridCells.Fixed(2),
+                               modifier = Modifier
+                                   .fillMaxSize()
+                           ) {
+                               itemsIndexed(productList) { index, product ->
+                                   FavouriteItem(controller, cartViewModel, product, index)
+                               }
+                           }
+                       }else{
+                           Column(modifier = Modifier.fillMaxWidth()) {
+                               MyLottiAni(R.raw.empty_fav)
+                           }
+                       }
                     }
 
                     is UiState.Error -> {}

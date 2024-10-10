@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,9 +56,10 @@ fun ProductInfo(name:String, price:String, rating: Int){
         Row(modifier = Modifier.fillMaxWidth().height(70.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = name, fontSize = 20.sp, modifier = Modifier.padding(start = 12.dp,top=4.dp).width(250.dp))
             Text(
-                text = "Review",
-                color = Color.Red,
-                fontSize = 20.sp,
+                text = "Show Reviews",
+                color = Color.Blue,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(end = 12.dp,top=4.dp).clickable {
                     isSheetVisible = true          // view all review
                 }
@@ -69,7 +71,9 @@ fun ProductInfo(name:String, price:String, rating: Int){
                 sheetState = sheetState
             ) {
                 // Content of the bottom sheet
-                Reviews()
+                Column {
+                    Reviews()
+                }
             }
         }
         Row(modifier = Modifier.fillMaxWidth().height(40.dp), horizontalArrangement = Arrangement.SpaceBetween) {

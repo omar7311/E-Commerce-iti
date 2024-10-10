@@ -33,18 +33,9 @@ fun Reviews(){
     val emails= listOf("Omar.gohary123@gmail.com","ahmedsoftware404@gmail.com",
         "sammaralaa95@gmail.com","amgedtamer12345@gmail.com","mahmoudsaaddarwish1@gmail.com",
         "mostafa.gamal123456789@outlook.sa","ga71387@gmail.com","noureldin0@gmail.com")
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        itemsIndexed(emails.shuffled()) { _, email ->
-            ReviewItem(email)
-        }
-    }
-
-
-
+         val randomList=emails.shuffled()
+          for(i in randomList)
+            ReviewItem(i)
 }
 @Composable
 fun ReviewItem(email:String){

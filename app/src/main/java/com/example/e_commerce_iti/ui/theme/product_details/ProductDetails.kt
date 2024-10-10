@@ -56,7 +56,7 @@ fun ProductDetails(currencyViewModel: CurrencyViewModel, productInfoViewModel: P
             }
             ProductDescription(description)
             if (!FirebaseAuth.getInstance().currentUser?.isAnonymous!!) {
-                Actions(product, productInfoViewModel)
+                Actions(context,product, productInfoViewModel)
             }
         }
     }

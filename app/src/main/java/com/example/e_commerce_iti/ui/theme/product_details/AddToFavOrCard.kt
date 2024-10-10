@@ -1,5 +1,7 @@
 package com.example.e_commerce_iti.ui.theme.product_details
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -51,6 +53,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Actions(
+    context: Context,
     product: Product,
     productInfoViewModel: ProductInfoViewModel,
 ) {
@@ -101,21 +104,19 @@ fun Actions(
             )
         }
     }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+
     // Observe changes in draft order state
     LaunchedEffect(draftOrderState) {
         when (draftOrderState) {
             is UiState.Success -> {
                 val draftOrder = (draftOrderState as UiState.Success).data
                 // Check if product is already in cart or add new product to cart
-                if (!draftOrder.line_items.any { it.product_id == product.id }) {
+                if (product.variants[0].inventory_quantity!=0 && !draftOrder.line_items.any { it.product_id == product.id }) {
                     addToCardOFavorite(productInfoViewModel, product, draftOrder)
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = "The Product is Adding Successfully"
-                        )
-                    }
+                    Toast.makeText(context,"the product is adding successfully",Toast.LENGTH_LONG).show()
+                } else{
+                    Toast.makeText(context,"the product is not available",Toast.LENGTH_LONG).show()
+
                 }
             }
             is UiState.Error -> {
