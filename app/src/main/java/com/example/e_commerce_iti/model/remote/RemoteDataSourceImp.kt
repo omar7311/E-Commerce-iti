@@ -196,7 +196,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
         val cart=updateCart(draftOrder).first()
         Log.e("eeeeeeeeeeeeeeeeeeeeeeeee444444","update cart  -> ${cart}")
         draftOrder.email= currentUser?.email
-      //  RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
+       RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
        val f= RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
         val data = create_draftorder(f)
         Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","create draft  -> ${data.errorBody()}")
