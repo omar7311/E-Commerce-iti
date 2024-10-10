@@ -73,7 +73,8 @@ fun ProfileScreen(controller: NavController) {
     }
 
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true
+    , showSystemUi = true)
 @Composable
 fun SettingScreenPreview() {
     ECommerceITITheme {

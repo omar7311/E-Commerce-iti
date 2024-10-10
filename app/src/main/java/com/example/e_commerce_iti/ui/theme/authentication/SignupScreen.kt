@@ -2,6 +2,7 @@ package com.example.e_commerce_iti
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -110,7 +111,7 @@ fun SignupScreen(
     val emailRegex = remember { Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$") }
     val passwordRegex = remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
     val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
-
+    var falg=true
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -266,9 +267,10 @@ fun SignupScreen(
                     isLoading = true
                     FirebaseAuthManager.signUp(email, password) { success, error ->
                         if (success) {
-
-                            GlobalScope.launch(Dispatchers.IO){
-
+                            if (falg){
+                                falg=false
+                                GlobalScope.launch(Dispatchers.IO) {
+                                    Log.i("dasdsddsdsad", "adsdasdasd321443")
                                     RemoteDataSourceImp().createCustomer(
                                         createCustomer(
                                             email,
@@ -277,10 +279,10 @@ fun SignupScreen(
                                             phoneNumber
                                         )
                                     )
-                                isLoading = true
-                                delay(7000) // 3 seconds delay
-                            }
-
+                                    isLoading = true
+                                    delay(7000) // 3 seconds delay
+                                }
+                        }
                             // Start a new coroutine for the delay
                             scope.launch {
                                 isLoading = false

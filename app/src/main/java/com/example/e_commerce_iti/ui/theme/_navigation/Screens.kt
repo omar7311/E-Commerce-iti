@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme._navigation
 
+import PaymentScreen
 import android.app.Activity
 import android.content.Context
 import android.util.Log
@@ -132,7 +133,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
     val productInfoViewModelFac = ProductInfoViewModelFac(repository)
     val changeUserDataFactory = ChangeUserDataViewModelFactory(repository)
 
-    NavHost(navController = navController, startDestination = Screens.Login.route) {
+    NavHost(navController = navController, startDestination = if (Firebase.auth.currentUser == null) Screens.Login.route else Screens.Home.route) {
 
         composable(route = Screens.Home.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
@@ -156,6 +157,10 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
             CartScreen(cartViewModel, navController, context)
+        }
+        composable(route = Screens.Payment.route) {
+            val paymentViewModel: PaymentViewModel = viewModel(factory = paymentViewModelFactory)
+            PaymentScreen(paymentViewModel,navController)
         }
 
         composable(route = Screens.Profile.route) {

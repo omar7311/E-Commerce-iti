@@ -1,19 +1,19 @@
 package com.example.e_commerce_iti.model.pojos.draftorder
 
 data class BillingAddress(
-    var address1: String?,
-    var address2: String?,
-    var city: String?,
-    var company: Any?,
-    var country: String?,
-    var country_code: Any?,
-    var default: Boolean?,
-    var first_name: Any?,
-    var id: Int?,
-    var last_name: Any?,
-    var name: Any?,
-    var phone: String?,
-    var province: String?,
-    var province_code: Any?,
-    var zip: String?
+    var address1: String?=null,
+    var address2: String?=null,
+    var city: String?=null,
+    var company: Any?=null,
+    var country: String?=null,
+    var country_code: Any?=null,
+    var default: Boolean?=null,
+    var first_name: Any?=null,
+    var id: Int?=null,
+    var last_name: Any?=null,
+    var name: Any?=null,
+    var phone: String?=null,
+    var province: String?=null,
+    var province_code: Any?=null,
+    var zip: String?=null
 )
