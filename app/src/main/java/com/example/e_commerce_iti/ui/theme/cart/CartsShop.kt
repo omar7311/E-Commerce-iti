@@ -3,6 +3,7 @@ package com.example.e_commerce_iti.ui.theme.cart
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,9 +26,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -34,6 +41,8 @@ import com.example.e_commerce_iti.CurrentUser
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.getCurrent
+import com.example.e_commerce_iti.gradientBrush
+import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
@@ -67,7 +76,7 @@ fun Carts(modifier: Modifier = Modifier, viewModel: CartViewModel) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(bottom = 50.dp)
+            .padding(bottom = 10.dp)
     ) {
         when (val state = productState.value) {
             is UiState.Success -> {
@@ -149,6 +158,9 @@ fun TotalPriceText(model: CartViewModel, currency2: Pair<String, Float>) {
     val totalAmount = model.totalAmount.collectAsState(initial = 0.0).value
 
     Text(
+        fontSize = 19.sp,
+        color = ingredientColor1,
+        fontWeight = FontWeight.Bold,
         text = model.gettotalValue(currency2.second, currency2.first),
         modifier = Modifier
             .fillMaxWidth()
@@ -163,9 +175,18 @@ fun CheckoutButton(viewModel: CartViewModel) {
         onClick = { viewModel.submit() },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 50.dp)
+            .padding(horizontal = 50.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF76c7c0), // Replace with your desired color
+            contentColor = Color.Black // Text color
+        )
     ) {
-        Text(text = "Checkout")
+        Text(
+            fontSize = 20.sp,
+            text = "Checkout",
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyMedium // Optional: apply a text style
+        )
     }
 }
 

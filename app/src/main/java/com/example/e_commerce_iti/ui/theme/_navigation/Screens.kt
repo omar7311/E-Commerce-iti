@@ -155,7 +155,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Cart.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
-            CartScreen(cartViewModel, navController, context)
+            CartScreen(cartViewModel, navController, context,networkObserver)
         }
 
         composable(route = Screens.Profile.route) {

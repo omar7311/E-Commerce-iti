@@ -10,6 +10,8 @@ const val  DEFAULT_CUSTOM_COLLECTION_ID = 320359989425
     colors = listOf(Color(0xFF76c7c0), Color(0xFF5ca9b9))
 )
 
+val ingredientColor1 = Color(0xFF76c7c0) // A soft teal
+val ingredientColor2 = Color(0xFF5ca9b9) // A deeper teal
 val whiteBrush = Brush.horizontalGradient(
     colors = listOf(Color.White, Color.White)
 )

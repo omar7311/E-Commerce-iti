@@ -27,16 +27,10 @@ import androidx.compose.material.DropdownMenu
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.IconButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,43 +42,24 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
-
 import com.example.e_commerce_iti.ui.theme.createCustomer
-
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Scaffold
-import androidx.compose.material.TextButton
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.rememberScaffoldState
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager
-import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager.firebaseAuthWithGoogle
-import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.common.api.ApiException
+import com.example.e_commerce_iti.ui.theme.home.CustomText
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterialApi::class, DelicateCoroutinesApi::class)
 @Composable
@@ -106,9 +81,10 @@ fun SignupScreen(
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val flag= rememberSaveable{ mutableStateOf(false) }
+    val flag = rememberSaveable { mutableStateOf(false) }
     val emailRegex = remember { Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$") }
-    val passwordRegex = remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
+    val passwordRegex =
+        remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
     val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
 
     Column(
@@ -120,6 +96,18 @@ fun SignupScreen(
     ) {
         // Header and other components can be added here...
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        CustomText(
+            "Sign Up Now",
+            backGroundColor = transparentBrush,
+            textColor = Color.Black,
+            25.sp,
+            style = FontWeight.Bold,
+            modifier = Modifier.wrapContentSize()
+                .align(Alignment.CenterHorizontally)
+        )
+
         OutlinedTextField(
             value = fullName,
             onValueChange = {
@@ -127,7 +115,9 @@ fun SignupScreen(
                 fullNameError = if (it.isBlank()) "Full name is required" else null
             },
             label = { Text("Full Name") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             shape = RoundedCornerShape(12.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF6200EE),
@@ -154,7 +144,9 @@ fun SignupScreen(
                 emailError = if (!emailRegex.matches(it)) "Invalid email format" else null
             },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             shape = RoundedCornerShape(12.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF6200EE),
@@ -181,7 +173,9 @@ fun SignupScreen(
                 phoneError = if (!phoneRegex.matches(it)) "Invalid Egyptian phone number" else null
             },
             label = { Text("Phone Number") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             shape = RoundedCornerShape(12.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF6200EE),
@@ -205,10 +199,13 @@ fun SignupScreen(
             value = password,
             onValueChange = {
                 password = it
-                passwordError = if (!passwordRegex.matches(it)) "Password must be at least 8 characters long and include numbers, uppercase letters, lowercase letters, and special characters." else null
+                passwordError =
+                    if (!passwordRegex.matches(it)) "Password must be at least 8 characters long and include numbers, uppercase letters, lowercase letters, and special characters." else null
             },
             label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             shape = RoundedCornerShape(12.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF6200EE),
@@ -236,7 +233,9 @@ fun SignupScreen(
                 confirmPasswordError = if (it != password) "Passwords do not match" else null
             },
             label = { Text("Confirm Password") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             shape = RoundedCornerShape(12.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF6200EE),
@@ -254,29 +253,36 @@ fun SignupScreen(
             visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
         )
         if (confirmPasswordError != null) {
-            Text(confirmPasswordError!!, color = Color.Red, modifier = Modifier.align(Alignment.Start))
+            Text(
+                confirmPasswordError!!,
+                color = Color.Red,
+                modifier = Modifier.align(Alignment.Start)
+            )
         }
 
         Button(
             onClick = {
-                if (fullName.isBlank() || !emailRegex.matches(email) || !phoneRegex.matches(phoneNumber) ||
-                    !passwordRegex.matches(password) || password != confirmPassword) {
+                if (fullName.isBlank() || !emailRegex.matches(email) || !phoneRegex.matches(
+                        phoneNumber
+                    ) ||
+                    !passwordRegex.matches(password) || password != confirmPassword
+                ) {
                     errorMessage = "Please correct the errors in the form"
                 } else {
                     isLoading = true
                     FirebaseAuthManager.signUp(email, password) { success, error ->
                         if (success) {
 
-                            GlobalScope.launch(Dispatchers.IO){
+                            GlobalScope.launch(Dispatchers.IO) {
 
-                                    RemoteDataSourceImp().createCustomer(
-                                        createCustomer(
-                                            email,
-                                            fullName,
-                                            fullName,
-                                            phoneNumber
-                                        )
+                                RemoteDataSourceImp().createCustomer(
+                                    createCustomer(
+                                        email,
+                                        fullName,
+                                        fullName,
+                                        phoneNumber
                                     )
+                                )
                                 isLoading = true
                                 delay(7000) // 3 seconds delay
                             }
@@ -293,17 +299,17 @@ fun SignupScreen(
                     }
                 }
             },
-            modifier = Modifier.wrapContentSize(),
+            modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = turquoise,
-                contentColor = mediumVioletRed
+                containerColor = ingredientColor1,
+                contentColor = Color.Black
             ),
             shape = RoundedCornerShape(8.dp)
         ) {
             if (isLoading) {
                 LoadingIndicator()
             } else {
-                Text("SIGN UP", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
+                Text("SIGN UP", color = Color.Black, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -316,13 +322,13 @@ fun SignupScreen(
     }
 
 // ... (keep the existing "Already have an account?" button)
-
-        AnimatedVisibility(visible = errorMessage != null) {
-            errorMessage?.let {
-                Text(text = it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
-            }
+/*
+    AnimatedVisibility(visible = errorMessage != null) {
+        errorMessage?.let {
+            Text(text = it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
         }
-    }
+    }*/
+}
 
 /*@Composable
 fun SignupAnimation(modifier: Modifier) {

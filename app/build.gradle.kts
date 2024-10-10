@@ -116,7 +116,7 @@ dependencies {
     implementation ("com.airbnb.android:lottie-compose:5.0.3")
 
     implementation ("androidx.compose.ui:ui:$2024.1.0")
-
+    implementation ("androidx.compose.material3:material3:1.1.0")
 
     implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
 }
