@@ -183,7 +183,7 @@ fun MyAlertDialog(order: com.example.e_commerce_iti.model.pojos.draftorder.LineI
             },
             // 5
             title = { Text(text = "Delete Product Item") },
-            text = { Text(text = "Are you sure from deleting this product from card?") },
+            text = { Text(text = "Are you sure from deleting this product ?") },
             confirmButton = { // 6
                 Button(
                     onClick = {

@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.favorite
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +37,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -50,9 +53,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
+import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
 import com.example.e_commerce_iti.transparentBrush
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme.cart.MyAlertDialog
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
@@ -63,6 +69,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewMode
 import java.nio.file.WatchEvent
 
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
 
@@ -72,7 +79,7 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
     val product by cartViewModel.product.collectAsState()
 
 
-    var productList=mutableListOf<Product>()
+
     Scaffold(
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller,LocalContext.current) },     // Keep the navigation controller for buttons
@@ -86,14 +93,14 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
                             ShimmerLoadingGrid()
                     }
                     is UiState.Success -> {
-                        productList = (product as UiState.Success).data
+                       val productList = (product as UiState.Success).data
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             modifier = Modifier
                                 .fillMaxSize()
                         ) {
-                            itemsIndexed(productList) { _, product ->
-                                FavouriteItem(product)
+                            itemsIndexed(productList) { index, product ->
+                                FavouriteItem(cartViewModel,product,index)
                             }
                         }
                     }
@@ -115,8 +122,16 @@ fun FavouriteScreenPreview(){
     //FavoriteScreen(controller)
 
 }
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavouriteItem(product: Product){
+fun FavouriteItem(cartViewModel: CartViewModel,product: Product,index:Int){
+    val draftOrder = (cartViewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
+    val showDialog = rememberSaveable { mutableStateOf(false) }
+    if (showDialog.value) {
+        MyAlertDialog(draftOrder?.line_items!!.get(index) ,{ lineItem:LineItems->
+            cartViewModel.updateCart(product, lineItem)
+        }, showDialog)
+    }
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Card(
             modifier = Modifier.padding(8.dp), // Padding around the card
@@ -140,12 +155,12 @@ fun FavouriteItem(product: Product){
                         fontSize = 16.sp
                     )
                 Button(onClick = {
-
+                   showDialog.value=true
                 }, colors = ButtonDefaults.buttonColors(Color.Red)) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Delete" , color = Color.White)
+                    Text(text = "Delete" , color = Color.White, fontSize = 18.sp)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Icon(imageVector = Icons.Filled.Delete, tint = Color.Red ,contentDescription = null)
+                    Icon(imageVector = Icons.Filled.Delete, tint = Color.White ,contentDescription = null)
                 }
                 }
 
