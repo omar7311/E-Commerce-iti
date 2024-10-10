@@ -80,57 +80,36 @@ class RemoteDataSourceImp : IRemoteDataSource {
         val helper = RetrofitHelper.service
 
         try {
-            // Create customer request
-            val customerResponse = helper.createCustomer(customer)
-            Log.i("CustomerCreation", "Error body: ${customerResponse.errorBody()?.string()}")
 
-            val response = customerResponse.body()!!
-            Log.e("CustomerCreation", "Customer created: $response")
+            val response1 = helper.createCustomer(customer)
+            Log.i("eoorradasdesadasd","${response1.errorBody()?.string()} ------------ ")
+            val response=response1.body()!!
+            Log.e("reasdasdsdsdsdsdsa213212eq", "${response} ------------ ")
+            val cart = createDumpDraft(response.customer!!)
+            val fav = createDumpDraft(response.customer!!)
+            var data = Gson().fromJson(Gson().toJson(cart), RDraftOrderRequest::class.java)
 
-            // Create draft orders for cart and favorites
-            val cartDraftData = createDumpDraft(response.customer!!)
-            val favDraftData = createDumpDraft(response.customer!!)
+            val cartDraft = helper.createDraftOrder(data)
+            data = Gson().fromJson(Gson().toJson(fav), RDraftOrderRequest::class.java)
+            val favDraft = helper.createDraftOrder(data)
+            Log.i("eeeeeeeeeeeeeeeee" ,  "${cartDraft.errorBody()?.string()}")
 
-            // Convert drafts to RDraftOrderRequest and send API requests
-            var data = Gson().fromJson(Gson().toJson(cartDraftData), RDraftOrderRequest::class.java)
-            val cartDraftResponse = helper.createDraftOrder(data)
+            val cartmeta = createDummyMetafield("cart_id", cartDraft.body()!!.draft_order!!.id.toString())
 
-            data = Gson().fromJson(Gson().toJson(favDraftData), RDraftOrderRequest::class.java)
-            val favDraftResponse = helper.createDraftOrder(data)
+            Log.i("55555555555555555draftfav" , Gson().toJson(cartmeta))
+            val favmeta = createDummyMetafield("fav_id", favDraft.body()!!.draft_order!!.id.toString())
+            Log.i("55555555555555555draftfav" , "${favmeta}")
+           val a= helper.createCustomerMetafields(response.customer!!.id!!, cartmeta)
+            Log.i("deeeeeeeeeee cart" , "${a}")
+           val b= helper.createCustomerMetafields(response.customer!!.id!!, favmeta)
+            Log.i("deeeeeeeeeee fav" , "${b}")
+            Log.i("resopne from raeteunseadsa" , "email = ${customer.customer?.email},id=${response.customer?.id},name = ${response.customer?.first_name}, cart = ${a.body()!!.metafield.id},fav= ${b.body()!!.metafield.id}")
+             metadata=b.body()!!.metafield
+             currentUser= CurrentUser(id = response.customer!!.id!!, cart = a.body()!!.metafield.id!!,fav=b.body()!!.metafield.id!!,name = response.customer!!.first_name!!,lname = response.customer!!.last_name!!,email = response.customer!!.email!!)
+            Log.i("mostfa gaal user","${currentUser}")
+        }catch (e:Exception){
+        Log.e("vvvvvvvvvvvvvvvvvvvvvvvvvvvvv","data error is ${e}")
 
-            Log.i("DraftOrder", "Cart draft error: ${cartDraftResponse.errorBody()?.string()}")
-
-            // Create metafields for cart and favorites
-            val cartMeta = createDummyMetafield(
-                "cart_id",
-                cartDraftResponse.body()!!.draft_order!!.id.toString()
-            )
-            Log.i("DraftOrder", "Cart metafield: ${Gson().toJson(cartMeta)}")
-
-            val favMeta = createDummyMetafield(
-                "fav_id",
-                favDraftResponse.body()!!.draft_order!!.id.toString()
-            )
-            Log.i("DraftOrder", "Favorite metafield: $favMeta")
-
-            // Associate metafields with customer
-            val cartMetaResponse =
-                helper.createCustomerMetafields(response.customer!!.id!!, cartMeta)
-            Log.i("MetafieldCreation", "Cart metafield response: $cartMetaResponse")
-
-            val favMetaResponse = helper.createCustomerMetafields(response.customer!!.id!!, favMeta)
-            Log.i("MetafieldCreation", "Favorite metafield response: $favMetaResponse")
-
-            // Log the result with all necessary details
-            Log.i(
-                "CustomerCreationSummary",
-                "Customer email = ${customer.customer?.email}, id = ${response.customer?.id}, " +
-                        "name = ${response.customer?.first_name}, cartMeta = ${cartMetaResponse.body()!!.metafield.id}, " +
-                        "favMeta = ${favMetaResponse.body()!!.metafield.id}"
-            )
-
-        } catch (e: Exception) {
-            Log.e("CustomerCreationError", "Error occurred: $e")
         }
     }
 
@@ -229,6 +208,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
         Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder.id} ------------ ")
+        draftOrder.line_items= draftOrder.line_items.filter { it.product_id !=null }
         updateCart(draftOrder)
         draftOrder.email = currentUser?.email
         //  RetrofitHelper.service.sendInvoice(draftOrder.id!!,)

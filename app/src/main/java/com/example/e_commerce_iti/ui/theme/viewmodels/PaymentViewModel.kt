@@ -23,7 +23,7 @@ import java.util.Calendar
 
 class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val currency= MutableStateFlow<Pair<String,Float>>(Pair("USD",1.0F))
-    val address= MutableStateFlow<String>("")
+    val address= MutableStateFlow<String>(currentUser!!.address)
     val _oderstate= MutableStateFlow<UiState<Int>>(UiState.Loading)
     val oderstate: StateFlow<UiState<Int>> = _oderstate
     private var _discountCode = MutableStateFlow<UiState<DiscountCodeX>>(UiState.Loading)
@@ -99,12 +99,10 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                     return@launch
                 }
             e.email= currentUser?.email
-           val ex= (_cart.value as UiState.Success)
+            val ex= (_cart.value as UiState.Success)
             val sh= ShippingAddress()
-           sh.address1=address.value
-           sh.address2=address.value
-           sh.city="Cairo"
-            sh.country="Egypt"
+            sh.address1=address.value
+            sh.address2=address.value
             e.shipping_address=sh
             repository.compeleteDraftOrder(e)
             _oderstate.value=UiState.Success(1)
