@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
@@ -59,6 +60,7 @@ import com.example.e_commerce_iti.transparentBrush
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.cart.MyAlertDialog
+import com.example.e_commerce_iti.ui.theme.cart.MyLottiAni
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
@@ -95,6 +97,7 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
                     }
                     is UiState.Success -> {
                        val productList = (product as UiState.Success).data
+
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             modifier = Modifier
@@ -104,6 +107,7 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController) {
                                 FavouriteItem(controller,cartViewModel,product,index)
                             }
                         }
+
                     }
 
                     is UiState.Error -> {}
@@ -129,7 +133,7 @@ fun FavouriteItem(controller: NavController,cartViewModel: CartViewModel,product
     val draftOrder = (cartViewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
     val showDialog = rememberSaveable { mutableStateOf(false) }
     if (showDialog.value) {
-        MyAlertDialog(draftOrder?.line_items!!.get(index) ,{ lineItem:LineItems->
+        MyAlertDialog(draftOrder?.line_items!![index+1] ,{ lineItem->
             cartViewModel.updateCart(product, lineItem)
         }, showDialog)
     }

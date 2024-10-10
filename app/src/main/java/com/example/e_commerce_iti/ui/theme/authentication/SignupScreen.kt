@@ -108,7 +108,10 @@ fun SignupScreen(
     val scope = rememberCoroutineScope()
     val flag= rememberSaveable{ mutableStateOf(false) }
     val emailRegex = remember { Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$") }
-    val passwordRegex = remember { Regex("^(?=.[0-9])(?=.[a-z])(?=.[A-Z])(?=.[@#$%^&+=])(?=\\S+$).{8,}\$") }
+    val passwordRegex = remember {
+        Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
+       // Regex("^(?=.[0-9])(?=.[a-z])(?=.[A-Z])(?=.[@#$%^&+=])(?=\\S+$).{8,}\$")
+    }
     val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
 
     Column(
