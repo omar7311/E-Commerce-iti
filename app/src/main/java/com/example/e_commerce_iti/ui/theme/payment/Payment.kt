@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
@@ -23,11 +24,13 @@ import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -45,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -54,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.gradientBrush
+import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.cart.roundToTwoDecimalPlaces
@@ -66,6 +71,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavController) {
     var cop by remember { mutableStateOf("") }
@@ -136,8 +142,12 @@ fun PaymentContent(
         modifier = Modifier.fillMaxWidth(),
         text = "Payment Information",
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.headlineMedium
+        style = MaterialTheme.typography.headlineMedium.copy(
+            fontWeight = FontWeight.Bold,
+            fontSize = 30.sp
+        )
     )
+
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = "Shipping Address:",
@@ -171,18 +181,34 @@ fun PaymentContent(
 
 @Composable
 fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel: PaymentViewModel) {
-    Row(modifier = Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+        ,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Text(
             text = "$label:",
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color.DarkGray
+            )
         )
         Text(
             text = "${(amount.value * paymentViewModel.currency.collectAsState().value.second).roundToTwoDecimalPlaces()} ${paymentViewModel.currency.collectAsState().value.first}",
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color.Blue
+            )
         )
     }
+
+
     Spacer(modifier = Modifier.height(12.dp))
 }
 
@@ -198,18 +224,33 @@ fun DiscountCodeSection(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
-        TextField(
+        androidx.compose.material.OutlinedTextField(
             modifier = Modifier
+                .padding(5.dp)
                 .weight(1f),
             value = cop,
             onValueChange = onCopChange,
-            label = { Text("Coupon") }
+            label = { Text("Coupon") },
+            shape = RoundedCornerShape(16.dp), // This makes the TextField rounded
+                    colors = TextFieldDefaults.outlinedTextFieldColors( // Correct colors for TextField
+                    textColor = Color.Black,  // Text color
+            focusedBorderColor = ingredientColor1, // Color of the border when focused
+            unfocusedBorderColor = Color.Gray // Color of the border when not focused
         )
+
+        )
+
         Spacer(modifier = Modifier.width(10.dp))
         val priceRulesState = paymentViewModel.priceRules.collectAsState().value
         if (priceRulesState != UiState.Loading) {
             Button(
-                modifier = Modifier.wrapContentWidth(),
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ingredientColor1, // Custom green color
+                    contentColor = Color.White // Text color
+                ),
                 onClick = {
                     if (cop.isNotBlank()) {
                         paymentViewModel.get_discount_details(cop)
@@ -251,8 +292,9 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolea
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
             elevation = 8.dp // Fixed elevation issue
-        ) {
+        )  {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
@@ -378,8 +420,9 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolea
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp), // Adjust the dp value for more/less rounding
             elevation = 8.dp // Fixed elevation issue
-        ) {
+        )  {
             Column(
 
                 modifier = Modifier.padding(16.dp)
@@ -449,8 +492,13 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolea
                     }
                 },
                 modifier = Modifier
+                    .padding(30.dp)
                     .fillMaxWidth()
-                    .padding(top = 24.dp)
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ingredientColor1, // Custom green color
+                    contentColor = Color.White // Text color
+                )
             ) {
                 Text(text = "Confirm Payment")
             }
