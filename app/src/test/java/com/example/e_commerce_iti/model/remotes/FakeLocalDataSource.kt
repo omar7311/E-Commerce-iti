@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti.model.reposiatory.remotes
+package com.example.e_commerce_iti.model.remotes
 
 import android.content.SharedPreferences
 import com.example.e_commerce_iti.model.local.IlocalDataSource

@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya
+package com.example.e_commerce_iti.model.remotes.dummydaya
 
 import com.example.e_commerce_iti.model.pojos.Address
 import com.example.e_commerce_iti.model.pojos.Customer
