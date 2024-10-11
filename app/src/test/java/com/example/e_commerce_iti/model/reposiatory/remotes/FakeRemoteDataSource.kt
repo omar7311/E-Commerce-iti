@@ -96,9 +96,9 @@ class FakeRemoteDataSource : IRemoteDataSource {
         return flow { emit(FullMeatDataResponse(listOf( ResponseMetaData(
             id = 1,
             key = "test",
-            value = "test",
+            value = "1001",
             namespace = "test",
-            type = "test",
+            type = "1001",
             owner_id = 1,
             owner_resource = "test",
             created_at = "test",
@@ -117,7 +117,8 @@ class FakeRemoteDataSource : IRemoteDataSource {
     }
 
     override suspend fun getCart(id: Long): Flow<DraftOrder> {
-        return flow { emit(draftOrders.first { it.id == id }) }
+        val cart = draftOrders.find { it.id == id }
+        return flowOf (cart!!)
     }
 
     override suspend fun getProductByID(id: Long): Flow<Product> {
