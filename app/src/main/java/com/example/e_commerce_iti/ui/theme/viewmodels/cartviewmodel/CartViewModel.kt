@@ -100,7 +100,6 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
         }
     }
     fun submit() {
-        Log.i("eeeeeeeeeeeeeeeeeeeeeeeee",(_cartState.value as UiState.Success).data.line_items.toString())
         val currentCartState = _cartState.value as? UiState.Success<DraftOrder>
         viewModelScope.launch {
             cartRepository.updateCart(cart = currentCartState!!.data)

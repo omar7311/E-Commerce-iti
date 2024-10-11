@@ -160,9 +160,23 @@ class FackRemoteReposiatory : IReposiatory {
     }
 
     override suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse> {
-       return flow {
-
-       }
+        return flow { emit(FullMeatDataResponse(listOf( ResponseMetaData(
+            id = 1,
+            key = "test",
+            value = "1001",
+            namespace = "test",
+            type = "1001",
+            owner_id = 1,
+            owner_resource = "test",
+            created_at = "test",
+        ),ResponseMetaData(
+            id = 2,
+            key = "test2",
+            value = "test2",
+            namespace = "test2",
+            type = "test2",
+        )
+        ))) }
     }
 
     override suspend fun getCart(id: Long): Flow<DraftOrder> {
