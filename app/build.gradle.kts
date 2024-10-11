@@ -109,10 +109,35 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+// Unit Testing Libraries
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.hamcrest:hamcrest-all:1.3")
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation("org.robolectric:robolectric:4.10.3")
 
-    // Robolectric for unit tests
-    testImplementation("org.robolectric:robolectric:4.13")
+// AndroidX Test - JVM Testing
+    testImplementation("androidx.test:core-ktx:1.5.0")
 
+// AndroidX Test - Instrumented Testing
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+// Timber for Logging
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
+// Hamcrest Libraries
+    testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.hamcrest:hamcrest-library:2.2")
+    androidTestImplementation("org.hamcrest:hamcrest:2.2")
+    androidTestImplementation("org.hamcrest:hamcrest-library:2.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+// AndroidX Test and Robolectric
+    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
+
+// InstantTaskExecutorRule for LiveData testing
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
     // lotii animation
     implementation ("com.airbnb.android:lottie-compose:5.0.3")
 
