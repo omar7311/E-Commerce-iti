@@ -1,15 +1,21 @@
 package com.example.e_commerce_iti.ui.theme.products
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,16 +35,16 @@ import com.example.e_commerce_iti.ui.theme.product_details.addToCardOrFavorite
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 
+@SuppressLint("CommitPrefEdits")
 @Composable
 fun FavoriteButton(
     product: Product,
     productInfoViewModel: ProductInfoViewModel,
-    cartViewModel: CartViewModel,
     context: Context
 ) {
+
     var isInFavorites by remember { mutableStateOf(false) }
     var isAddingToFavorites by remember { mutableStateOf(false) }
-    val showRemoveDialog = rememberSaveable { mutableStateOf(false) }
 
     val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
 
@@ -49,26 +55,23 @@ fun FavoriteButton(
         }
     }
 
-    IconButton(
-        modifier = Modifier.padding(bottom = 3.dp),
+    IconButton( colors = IconButtonDefaults.iconButtonColors(ingredientColor1, Color.White),
+        modifier = Modifier.size(35.dp),
         onClick = {
-            if (isInFavorites) {
-                showRemoveDialog.value = true
-            } else {
                 currentUser?.fav?.let { favId ->
                     isAddingToFavorites = true
                     productInfoViewModel.getDraftOrder(favId)
                 } ?: run {
                     Toast.makeText(context, "User not logged in or no favorite list available", Toast.LENGTH_LONG).show()
                 }
-            }
+
         }
     ) {
         Icon(
-            imageVector = if (isInFavorites) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-            contentDescription = if (isInFavorites) "Remove from Favorites" else "Add to Favorites",
-            tint = if (isInFavorites) Color.Red else ingredientColor1,
-            modifier = Modifier.size(60.dp)
+            imageVector = Icons.Filled.Favorite,
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(25.dp)
         )
     }
 

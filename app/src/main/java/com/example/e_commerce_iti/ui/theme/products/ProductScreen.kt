@@ -325,15 +325,12 @@ fun ProductItem(
                             padding = PaddingValues(10.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(5.dp))
 
-                    // for adding to favorite
 
 
                     FavoriteButton(
                         product = product,
                         productInfoViewModel = productInfoViewModel,
-                        cartViewModel = cartViewModel,
                         context = context
                     )
                 }

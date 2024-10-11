@@ -95,22 +95,12 @@ fun Actions(
                 // Check if product is already in cart or add new product to cart
                 if (!draftOrder.line_items.any { it.product_id == product.id }) {
                     addToCardOrFavorite(productInfoViewModel, product, draftOrder)
-                    if(product.variants[0].inventory_quantity!=0) {
                         Toast.makeText(
                             context,
                             "the product is adding successfully",
                             Toast.LENGTH_LONG
                         )
                             .show()
-                    }
-                    else{
-                        Toast.makeText(
-                            context,
-                            "the product is not available",
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
-                    }
                 }
             }
             is UiState.Error -> {
