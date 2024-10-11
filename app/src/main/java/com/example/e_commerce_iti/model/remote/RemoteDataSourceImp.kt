@@ -193,6 +193,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
         Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder} ------------ ")
         draftOrder.line_items= draftOrder.line_items.filter { it.product_id !=null }
+        draftOrder.invoice_sent_at= currentUser!!.email
         val cart=updateCart(draftOrder).first()
         Log.e("eeeeeeeeeeeeeeeeeeeeeeeee444444","update cart  -> ${cart}")
         draftOrder.email= currentUser?.email
@@ -203,7 +204,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
         }
        val f= RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
         try {
-           // RetrofitHelper.service.sendInvoice(f.)
+            RetrofitHelper.service.sendInvoice(draftOrder.id!!)
         }catch (e:Exception){
             Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update cart  -> ${e.message}")
         }
@@ -213,13 +214,18 @@ class RemoteDataSourceImp : IRemoteDataSource {
             val tmp=RetrofitHelper.service.updateCustomerMetafield(currentUser!!.id, metadata!!.id!!,UReposeMeta(metadata!!))
              Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update meta draft  -> ${tmp.errorBody()}")
         Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update meta draft  -> ${tmp.body()}")
-
-                  metadata=tmp.body()!!.metafield
+        try {
+            RetrofitHelper.service.sendInvoice(draftOrder.id!!)
+        }catch (e:Exception){
+            Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update cart  -> ${e.message}")
+        }
+              metadata=tmp.body()!!.metafield
               Log.e("dasdsasdsadsadsad","$metadata")
             currentUser!!.cart = metadata!!.value!!.toLong()
 
             Log.i("ddddddddddddddddddddddddd","${metadata}")
-            return flowOf(true)
+            return flowOf(true
+            )
 
     }
 
