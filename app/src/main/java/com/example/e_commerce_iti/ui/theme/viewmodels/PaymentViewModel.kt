@@ -87,14 +87,12 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
            if (paymentMethod.value.isBlank()) {
                throw Exception("Payment Method is required")
            }
-           if (paymentMethod.value == "paid" && isValidCreditCard(
+            Log.i("eeeeeeeeeqqqqddddd","${expiryMonth.value}  ${expiryYear.value}")
+           if (paymentMethod.value == "paid" && (isValidCreditCard(
                    CreditCard(
                        cardNumber.value.toString(),
-                       expiryMonth.value.toInt(),
-                       expiryYear.value.toInt(),
-                       cvv.value
-                   )
-               )
+                       expiryMonth.value.toInt(), expiryYear.value.toInt(), cvv.value)
+               )|| !isExpiryDateValid(expiryMonth.value,expiryYear.value))
            ) {
                message += "Wrong Card Info"
            }
@@ -199,6 +197,20 @@ fun isValidCardNumber(cardNumber: String): Boolean {
 
     // Implement Luhn algorithm to check if the card number is valid
     return isLuhnValid(cardNumber)
+}
+
+fun isExpiryDateValid(month: String, year: String): Boolean {
+    val currentYear = Calendar.getInstance().get(Calendar.YEAR) % 100
+    val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+
+    val expiryMonth = month.toIntOrNull() ?: return false
+    val expiryYear = year.toIntOrNull() ?: return false
+
+    if (expiryYear < currentYear) return false
+    if (expiryYear == currentYear && expiryMonth < currentMonth) return false
+    if (expiryMonth !in 1..12) return false
+
+    return true
 }
 
 fun isLuhnValid(cardNumber: String): Boolean {
