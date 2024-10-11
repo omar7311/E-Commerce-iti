@@ -380,10 +380,11 @@ fun CustomButtonBar(controller: NavController, context: Context) {
             label = { Text("Cart") },
             selected = currentRoute.value == Screens.Cart.route,
             onClick = {
-                if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank())
-                    controller.navigate(Screens.Cart.route)
+              /*  if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank())
                 else
-                    Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show()*/
+                controller.navigate(Screens.Cart.route)
+
             }
         )
 

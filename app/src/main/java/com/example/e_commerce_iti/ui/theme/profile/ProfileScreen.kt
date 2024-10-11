@@ -48,6 +48,7 @@ import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme.guest.GuestScreen
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.google.firebase.Firebase
@@ -62,29 +63,80 @@ fun ProfileScreen(controller: NavController) {
 
     Scaffold(
         topBar = { CustomTopBar("Profile", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller,context = LocalContext.current) },     // Keep the navigation controller for buttons
-    ) { innerPadding ->                                // Use padding for the content
-       Column(modifier = Modifier
-           .fillMaxSize().verticalScroll(rememberScrollState()).
-           padding(innerPadding),Arrangement.SpaceAround,) {
-           Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(20.dp),Arrangement.Center) {
-           GlideImage(imageModel = R.drawable.avatar ,Modifier.size(100.dp))
-           }
-           Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(top = 2.dp, start = 20.dp,end = 20.dp),Arrangement.Center) {
-               Text(text = "Name : ${currentUser?.name?:"N/A"}", fontSize = 17.sp, fontWeight = FontWeight.Bold)
-           }
-           Row( modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(top = 2.dp, start = 20.dp,end = 20.dp),Arrangement.Center) {
-               Text(text = "Email : ${currentUser?.email?:"N/A"}", fontSize = 17.sp, fontWeight = FontWeight.Bold)
-           }
-           ProfieItem(e = {controller.navigate(Screens.Orders.route)}, t = "Orders", id = R.drawable.ordersicon)
-           ProfieItem(e = {controller.navigate(Screens.Favorite.route)}, t = "Favorites", id = R.drawable.baseline_favorite_border_24)
-           ProfieItem(e = {controller.navigate(Screens.Setting.route)}, t = "Settings", id = R.drawable.settings)
-           // Logout Button
-           LogoutButton(controller)
+        bottomBar = {
+            CustomButtonBar(
+                controller,
+                context = LocalContext.current
+            )
+        },     // Keep the navigation controller for buttons
+    ) { innerPadding ->
 
-       }
+        if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {  // when guest
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding),
+                Arrangement.SpaceAround,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(20.dp),
+                    Arrangement.Center
+                ) {
+                    GlideImage(imageModel = R.drawable.avatar, Modifier.size(100.dp))
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(top = 2.dp, start = 20.dp, end = 20.dp), Arrangement.Center
+                ) {
+                    Text(
+                        text = "Name : ${currentUser?.name ?: "N/A"}",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(top = 2.dp, start = 20.dp, end = 20.dp), Arrangement.Center
+                ) {
+                    Text(
+                        text = "Email : ${currentUser?.email ?: "N/A"}",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                ProfieItem(
+                    e = { controller.navigate(Screens.Orders.route) },
+                    t = "Orders",
+                    id = R.drawable.ordersicon
+                )
+                ProfieItem(
+                    e = { controller.navigate(Screens.Favorite.route) },
+                    t = "Favorites",
+                    id = R.drawable.baseline_favorite_border_24
+                )
+                ProfieItem(
+                    e = { controller.navigate(Screens.Setting.route) },
+                    t = "Settings",
+                    id = R.drawable.settings
+                )
+                // Logout Button
+                LogoutButton(controller)
+
+            }
+        }else{
+            GuestScreen(controller)
+        }
     }
-    }
+}
+
 @Composable
 fun LogoutButton(controller: NavController) {
     Box(
@@ -118,25 +170,34 @@ fun LogoutButton(controller: NavController) {
 }
 
 
-@Preview(showBackground = true
-    , showSystemUi = true)
+@Preview(
+    showBackground = true, showSystemUi = true
+)
 @Composable
 fun SettingScreenPreview() {
     ECommerceITITheme {
         val context = LocalContext.current
-            ProfileScreen(NavController(context))
+        ProfileScreen(NavController(context))
     }
 }
+
 @Composable
-fun ProfieItem(e:()->Unit,t:String,id:Int,){
-    Row( modifier = Modifier.wrapContentWidth().wrapContentHeight().padding(20.dp),Arrangement.Center) {
+fun ProfieItem(e: () -> Unit, t: String, id: Int) {
+    Row(
+        modifier = Modifier
+            .wrapContentWidth()
+            .wrapContentHeight()
+            .padding(20.dp),
+        Arrangement.Center
+    ) {
 
         Card(
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(30.dp)).clickable { e() }
+                .clip(RoundedCornerShape(30.dp))
+                .clickable { e() }
                 .animateContentSize(),
             border = BorderStroke(2.dp, Color.Black),
             colors = CardDefaults.cardColors(
@@ -144,17 +205,24 @@ fun ProfieItem(e:()->Unit,t:String,id:Int,){
             )
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().height(60.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
                     .padding(start = 10.dp, end = 10.dp, bottom = 5.dp, top = 9.dp)
             ) {
                 Image(
                     painter = painterResource(id = id),
                     contentDescription = "",
-                    modifier = Modifier.fillMaxHeight().weight(2F).padding(start = 10.dp)
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(2F)
+                        .padding(start = 10.dp)
                 )
 
                 Box(
-                    modifier = Modifier.fillMaxSize().weight(8F),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(8F),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -166,12 +234,15 @@ fun ProfieItem(e:()->Unit,t:String,id:Int,){
                 Image(
                     painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
                     contentDescription = "",
-                    modifier = Modifier.fillMaxSize().weight(2F).padding(start = 10.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(2F)
+                        .padding(start = 10.dp)
                 )
             }
 
         }
-        }
+    }
 
 }
 

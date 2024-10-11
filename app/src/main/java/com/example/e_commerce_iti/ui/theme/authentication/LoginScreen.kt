@@ -181,70 +181,72 @@ fun LoginScreen(
             isError = !passwordRegex.matches(password) && password.isNotEmpty(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Button(
-                onClick = {
-                    if (emailRegex.matches(email) && passwordRegex.matches(password)) {
-                        scope.launch {
-                            isLoading = true
-                            FirebaseAuthManager.login(email, password) { success, error ->
-                                isLoading = false
-                                if (success) {
-                                    if(currentUser?.isEmailVerified == true) controller.navigate(Screens.Home.route)
-                                    else Toast.makeText(context,"Verify Your Mail",Toast.LENGTH_LONG).show()
-                                } else {
-                                    errorMessage = error
-                                }
+
+        Button(
+
+            onClick  = {
+                if (emailRegex.matches(email) && passwordRegex.matches(password)) {
+                    scope.launch {
+                        isLoading = true
+                        FirebaseAuthManager.login(email, password) { success, error ->
+                            isLoading = false
+                            if (success) {
+                                if(currentUser?.isEmailVerified == true) controller.navigate(Screens.Home.route)
+                                else Toast.makeText(context,"Verify Your Mail",Toast.LENGTH_LONG).show()
+                            } else {
+                                errorMessage = error
                             }
                         }
-                    } else {
-                        errorMessage = "Please enter a valid email and password"
                     }
-                },
-                modifier = Modifier
-                    .wrapContentSize(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ingredientColor1,
-                    contentColor = mediumVioletRed
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                if (isLoading) {
-                    LoadingIndicator()
                 } else {
-                    Text("LOGIN ", color = Color.Black, fontWeight = FontWeight.Bold)
+                    errorMessage = "Please enter a valid email and password"
                 }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ingredientColor1, // Custom green color
+                contentColor = Color.White // Text color
+            )
+        ) {
+            if (isLoading) {
+                LoadingIndicator()
+            } else {
+                Text("Log In", fontSize = 18.sp)
             }
+        }
 
             var isLoading by remember { mutableStateOf(false) }
 
           //
-            Button(
-                onClick = {
-                    FirebaseAuthManager.loginAnonymously { success, error ->
-                        if (success) {
-                            controller.navigate(Screens.Home.route) {
-                                popUpTo(controller.graph.startDestinationId) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        } else {
-                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+
+        Button(
+
+            onClick  = {
+                FirebaseAuthManager.loginAnonymously { success, error ->
+                    if (success) {
+                        controller.navigate(Screens.Home.route) {
+                            popUpTo(controller.graph.startDestinationId) { inclusive = true }
+                            launchSingleTop = true
                         }
+                    } else {
+                        Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                     }
-                },
-                modifier = Modifier
-                    .wrapContentSize(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ingredientColor1,
-                    contentColor = indigo
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text("Go Guest", color = Color.Black, fontWeight = FontWeight.Bold)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ingredientColor1, // Custom green color
+                contentColor = Color.White // Text color
+            )
+        ) {
+            if (isLoading) {
+                LoadingIndicator()
+            } else {
+                Text("Go Guest", fontSize = 18.sp)
             }
 
         }
@@ -254,44 +256,22 @@ fun LoginScreen(
 
         Row(
             modifier = Modifier
-                .padding(16.dp)
                 .fillMaxWidth(), // Make the row fill the available width
-            horizontalArrangement = Arrangement.SpaceAround // Add space between the buttons
+            horizontalArrangement = Arrangement.Center // Center the button horizontally
         ) {
-
-            // Google Sign-In button
-
-                Box(
-                    modifier = Modifier
-                        .size(50.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.google),
-                        contentDescription = "Sign in with Google",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clickable {
-                                isLoading = true
-                                // Launch Google sign-in flow
-                                signInWithGoogle(googleSignInClient, launcher)
-                                isLoading = false
-                            }
-                    )
-                }
-
-
-            Spacer(modifier = Modifier.width(16.dp))
-
             TextButton(
-
-            onClick = { controller.navigate(Screens.Signup.route) },
-                modifier = Modifier.align(Alignment.CenterVertically)
-                    .padding(  20.dp),
+                onClick = { controller.navigate(Screens.Signup.route) },
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(20.dp),
             ) {
-                Text("New user? Register Now", color = royalBlue)
+                Text("New user? ", color = royalBlue, fontSize = 20.sp)
+                Text("Register", color = ingredientColor1, fontSize = 20.sp)
+                Text(" Now", color = royalBlue, fontSize = 20.sp)
             }
+
         }
+
 
 
         AnimatedVisibility(visible = errorMessage != null) {
@@ -324,3 +304,28 @@ fun LoginAnimation(
         )
     }
 }
+
+/**
+ *
+ *     // Google Sign-In button
+ *
+ *                 Box(
+ *                     modifier = Modifier
+ *                         .size(50.dp),
+ *                     contentAlignment = Alignment.Center
+ *                 ) {
+ *                     Image(
+ *                         painter = painterResource(id = R.drawable.google),
+ *                         contentDescription = "Sign in with Google",
+ *                         modifier = Modifier
+ *                             .size(100.dp)
+ *                             .clickable {
+ *                                 isLoading = true
+ *                                 // Launch Google sign-in flow
+ *                                 signInWithGoogle(googleSignInClient, launcher)
+ *                                 isLoading = false
+ *                             }
+ *                     )
+ *                 }
+ *
+ */
