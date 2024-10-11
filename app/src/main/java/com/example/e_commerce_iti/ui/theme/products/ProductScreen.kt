@@ -194,12 +194,10 @@ fun FetchingProductsByVendor(
     val productsState by homeViewModel.productStateFlow.collectAsState()
 
     when (productsState) {
-
         is ProductsApiState.Loading -> {
             // Show loading indicator
             ShimmerLoadingGrid()
         }
-
         is ProductsApiState.Success -> {
             val products = (productsState as ProductsApiState.Success).products
             // Display the products
@@ -219,7 +217,6 @@ fun FetchingProductsByVendor(
             )
 
         }
-
         is ProductsApiState.Failure -> {
             // Show error message
             val eror = (productsState as ProductsApiState.Failure).msg
