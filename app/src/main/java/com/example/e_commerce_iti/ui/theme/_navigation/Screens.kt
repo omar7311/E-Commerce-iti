@@ -145,7 +145,9 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.Category.route) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
-            CategoryScreen(homeViewModel, currencyViewModel, navController, networkObserver, LocalContext.current)
+            val productInfoViewModel: ProductInfoViewModel = viewModel(factory = productInfoViewModelFac)
+            val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
+            CategoryScreen(homeViewModel, currencyViewModel,productInfoViewModel, cartViewModel,navController, networkObserver, LocalContext.current)
         }
 
         composable(route = Screens.Cart.route) {
@@ -174,7 +176,9 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.Search.route) {
             val searchViewModel: SearchViewModel = viewModel(factory = searchFactory)
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
-            SearchScreen(navController, context, searchViewModel, currencyViewModel)
+            val productInfoViewModel: ProductInfoViewModel = viewModel(factory = productInfoViewModelFac)
+            val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
+            SearchScreen(navController, context, searchViewModel, currencyViewModel,productInfoViewModel,cartViewModel)
         }
 
         composable(route = Screens.Signup.route) {
@@ -192,8 +196,12 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val homeViewModel: HomeViewModel = viewModel(factory = homeFactory)
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
             val vendorName = it.arguments?.getString(VENDOR_NAME)
+            val productInfoViewModel: ProductInfoViewModel = viewModel(factory = productInfoViewModelFac)
+            val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
+
+
             if (vendorName != null) {
-                ProductScreen(homeViewModel, currencyViewModel, navController, vendorName)
+                ProductScreen(homeViewModel, currencyViewModel, productInfoViewModel,cartViewModel,navController, vendorName,context)
             }
         }
 

@@ -62,6 +62,7 @@ import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.cart.MyAlertDialog
 import com.example.e_commerce_iti.ui.theme.cart.MyLottiAni
+import com.example.e_commerce_iti.ui.theme.guest.GuestScreen
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
@@ -69,57 +70,82 @@ import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.SimpleText
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.gson.Gson
 import java.nio.file.WatchEvent
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController,networkObserver: NetworkObserver) {
+fun FavoriteScreen(
+    cartViewModel: CartViewModel,
+    controller: NavController,
+    networkObserver: NetworkObserver
+) {
 
-    LaunchedEffect(Unit) {
-        currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
-    }
+
     val product by cartViewModel.product.collectAsState()
     Scaffold(
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
-        bottomBar = { CustomButtonBar(controller,LocalContext.current) },     // Keep the navigation controller for buttons
-    ) { innerPadding ->                                // Use padding for the content
-        Box(modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize()) {
+        bottomBar = {
+            CustomButtonBar(
+                controller,
+                LocalContext.current
+            )
+        },     // Keep the navigation controller for buttons
+    ) { innerPadding ->
 
-                when(product) {
-                    is UiState.Loading -> {
-                            ShimmerLoadingGrid()
-                    }
-                    is UiState.Success -> {
-                       val productList = (product as UiState.Success).data
-                       if(productList.isNotEmpty()) {
-                           LazyVerticalGrid(
-                               columns = GridCells.Fixed(2),
-                               modifier = Modifier
-                                   .fillMaxSize()
-                           ) {
-                               itemsIndexed(productList) { index, product ->
-                                   FavouriteItem(controller, cartViewModel, product, index)
-                               }
-                           }
-                       }else{
-                           Column(modifier = Modifier.fillMaxWidth()) {
-                               MyLottiAni(R.raw.animation_no_data)
-                           }
-                       }
-                    }
-
-                    is UiState.Error -> {}
-                    is UiState.Failure -> {}
-                    UiState.Non -> {}
+        val isConnected = networkObserver.isConnected.collectAsState()
+        if (isConnected.value) {
+            if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {  // when guest
+                LaunchedEffect(Unit) {
+                    currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
                 }
+                // Use padding for the content
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    when (product) {
+                        is UiState.Loading -> {
+                            ShimmerLoadingGrid()
+                        }
 
+                        is UiState.Success -> {
+                            val productList = (product as UiState.Success).data
+                            if (productList.isNotEmpty()) {
+                                LazyVerticalGrid(
+                                    columns = GridCells.Fixed(2),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                ) {
+                                    itemsIndexed(productList) { index, product ->
+                                        FavouriteItem(controller, cartViewModel, product, index)
+                                    }
+                                }
+                            } else {
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    MyLottiAni(R.raw.animation_no_data)
+                                }
+                            }
+                        }
+
+                        is UiState.Error -> {}
+                        is UiState.Failure -> {}
+                        UiState.Non -> {}
+                    }
+                }
+            } else {
+                GuestScreen(controller)
             }
+
+        } else {
+            GuestScreen(controller)
         }
     }
+}
 
 
 /*@Preview(showSystemUi = true)
@@ -131,19 +157,32 @@ fun FavouriteScreenPreview(){
 }*/
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavouriteItem(controller: NavController,cartViewModel: CartViewModel,product: Product,index:Int){
+fun FavouriteItem(
+    controller: NavController,
+    cartViewModel: CartViewModel,
+    product: Product,
+    index: Int
+) {
     val draftOrder = (cartViewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
     val showDialog = rememberSaveable { mutableStateOf(false) }
     if (showDialog.value) {
-        MyAlertDialog(draftOrder?.line_items!![index+1] ,{ lineItem->
+        MyAlertDialog(draftOrder?.line_items!![index + 1], { lineItem ->
             cartViewModel.updateCart(product, lineItem)
         }, showDialog)
     }
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Card(
-            modifier = Modifier.padding(8.dp).clickable {
-                controller.navigate(Screens.ProductDetails.createDetailRoute(Gson().toJson(product)))
-            }, // Padding around the card
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable {
+                    controller.navigate(
+                        Screens.ProductDetails.createDetailRoute(
+                            Gson().toJson(
+                                product
+                            )
+                        )
+                    )
+                }, // Padding around the card
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Set elevation
             shape = RoundedCornerShape(10.dp), // Rounded corners
         ) {
@@ -157,21 +196,25 @@ fun FavouriteItem(controller: NavController,cartViewModel: CartViewModel,product
             ) {
                 CustomImage(product.images[0].src)
                 Spacer(modifier = Modifier.size(10.dp))
-                    CustomText(
-                        product.title,
-                        transparentBrush,
-                        textColor = Color.Black,
-                        fontSize = 16.sp
-                    )
+                CustomText(
+                    product.title,
+                    transparentBrush,
+                    textColor = Color.Black,
+                    fontSize = 16.sp
+                )
                 Button(onClick = {
-                   showDialog.value=true
+                    showDialog.value = true
                 }, colors = ButtonDefaults.buttonColors(Color.Red)) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Delete" , color = Color.White, fontSize = 18.sp)
+                    Text(text = "Delete", color = Color.White, fontSize = 18.sp)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Icon(imageVector = Icons.Filled.Delete, tint = Color.White ,contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        tint = Color.White,
+                        contentDescription = null
+                    )
                 }
-                }
+            }
 
         }
     }

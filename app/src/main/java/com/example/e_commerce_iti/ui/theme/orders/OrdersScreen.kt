@@ -51,12 +51,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme.cart.MyLottiAni
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.MyLottieAnimation
@@ -130,14 +132,25 @@ fun FetchOrdersByCustomerId(
     Box(modifier = Modifier.fillMaxSize()) {
         when (ordersState) {
             is UiState.Success -> {
-                val orders = (ordersState as UiState.Success<List<Order>>).data
-                Log.d("Orrrrrrders", "Orders: $orders")
-                OrdersList(orders, controller, orderViewModel)
+                if((ordersState as UiState.Success<List<Order>>).data.isNotEmpty()){
+                    val orders = (ordersState as UiState.Success<List<Order>>).data
+                    Log.d("Orrrrrrders", "Orders: $orders")
+                    OrdersList(orders, controller, orderViewModel)
+                }else{
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        MyLottiAni(R.raw.animation_no_data)
+                    }
+                }
+
             }
 
             is UiState.Loading -> LoadingIndicator()
             is UiState.Failure -> ErrorContent((ordersState as UiState.Failure).exception)
-            else -> {} // Handle other states if needed
+            else -> {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    MyLottiAni(R.raw.animation_no_data)
+                }
+            } // Handle other states if needed
         }
     }
 }
