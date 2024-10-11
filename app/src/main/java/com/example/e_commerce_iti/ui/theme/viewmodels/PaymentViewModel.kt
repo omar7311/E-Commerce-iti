@@ -14,7 +14,10 @@ import com.example.e_commerce_iti.model.pojos.draftorder.ShippingAddress
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
+import com.example.e_commerce_iti.ui.theme._navigation.shippingAddress
 import com.example.e_commerce_iti.ui.theme.cart.roundToTwoDecimalPlaces
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -23,9 +26,9 @@ import java.util.Calendar
 
 class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val currency= MutableStateFlow<Pair<String,Float>>(Pair("USD",1.0F))
-    val address= MutableStateFlow<String>(currentUser!!.address)
-    val _oderstate= MutableStateFlow<UiState<Int>>(UiState.Loading)
-    val oderstate: StateFlow<UiState<Int>> = _oderstate
+    val address= MutableStateFlow<String>("")
+    var _oderstate= MutableStateFlow<UiState<String>>(UiState.Loading)
+    val oderstate: StateFlow<UiState<String>> = _oderstate
     private var _discountCode = MutableStateFlow<UiState<DiscountCodeX>>(UiState.Loading)
     private var _priceRules = MutableStateFlow<UiState<PriceRule>>(UiState.Non)
     val priceRules: StateFlow<UiState<PriceRule>> = _priceRules
@@ -73,46 +76,45 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val cardNumber= MutableStateFlow("")
     val expiryMonth= MutableStateFlow("")
     val expiryYear= MutableStateFlow<String>("")
-
-    fun submitOrder() {
-        _oderstate.value=UiState.Loading
-
-        viewModelScope.launch {
-            var message=""
-            try {
-               val e= (_cart.value as UiState.Success<DraftOrder>).data
-                if (address.value.isBlank()||address.value=="N/A"){
-                    message+="Address is required \n"
-                }
-                if (paymentMethod.value.isBlank()){
-                    message+="Payment method is required \n"
-                }
-                try {
-                    if(paymentMethod.value=="paid"&&isValidCreditCard( CreditCard(cardNumber.value.toString(),expiryMonth.value.toInt(),expiryYear.value.toInt(),cvv.value))){
-                        message+= "Wrong Card Info"
-                    }
-                }catch (e:Exception){
-                    message+="Invalid Card Info"
-                }
-                if (message.isNotBlank()){
-                    _oderstate.value=UiState.Error(message)
-                    return@launch
-                }
-
-            e.email= currentUser?.email
-            val sh= ShippingAddress()
-            sh.address1=address.value
-            sh.address2=address.value
-            e.shipping_address=sh
-            repository.compeleteDraftOrder(e)
-            _oderstate.value=UiState.Success(1)
-            }catch (e:Exception){
-                Log.e("create odere eriirdssad",e.message.toString())
-             _oderstate.value=UiState.Error(e.message.toString())
-            }
+  suspend fun submitOrder() {
+       var message = ""
+         if(shippingAddress!=null){
+             address.value=shippingAddress!!.address1!!
+         }
+           if (address.value.isBlank() || address.value == "N/A") {
+               throw Exception("Address is required")
+           }
+           if (paymentMethod.value.isBlank()) {
+               throw Exception("Payment Method is required")
+           }
+           if (paymentMethod.value == "paid" && isValidCreditCard(
+                   CreditCard(
+                       cardNumber.value.toString(),
+                       expiryMonth.value.toInt(),
+                       expiryYear.value.toInt(),
+                       cvv.value
+                   )
+               )
+           ) {
+               message += "Wrong Card Info"
+           }
+           if (message.isNotBlank()) {
+               throw Exception(message)
+           }
+           Log.e("create odere", "${shippingAddress}")
+           if (shippingAddress == null) {
+               throw Exception("Shipping Address is required")
+           }
+               val e = (_cart.value as UiState.Success<DraftOrder>).data
+               e.email = currentUser?.email
+               e.invoice_sent_at = currentUser!!.email
+               e.billing_address = BillingAddress(address.value, city = shippingAddress!!.address1)
+               e.shipping_address = shippingAddress
+               repository.compeleteDraftOrder(e)
+               shippingAddress = null
+               _oderstate.value = UiState.Success("payment Sucessfully")
 
         }
-    }
     fun get_discount_details(id:String){
         viewModelScope.launch {
             try {

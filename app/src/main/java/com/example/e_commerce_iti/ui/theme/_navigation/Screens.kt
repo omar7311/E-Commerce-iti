@@ -24,6 +24,7 @@ import com.example.e_commerce_iti.getCurrent
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.draftorder.ShippingAddress
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
@@ -35,6 +36,7 @@ import com.example.e_commerce_iti.ui.theme.favorite.FavoriteScreen
 import com.example.e_commerce_iti.ui.theme.home.HomeScreen
 import com.example.e_commerce_iti.ui.theme.orders.OrderDetailsScreen
 import com.example.e_commerce_iti.ui.theme.orders.OrdersScreen
+import com.example.e_commerce_iti.ui.theme.payment.AddressScreen
 import com.example.e_commerce_iti.ui.theme.product_details.ProductDetails
 import com.example.e_commerce_iti.ui.theme.products.ProductScreen
 import com.example.e_commerce_iti.ui.theme.profile.ProfileScreen
@@ -75,7 +77,7 @@ import com.google.firebase.auth.auth
 import com.google.gson.Gson
 import java.net.URLEncoder
 
-
+var shippingAddress : ShippingAddress?=null
 sealed class Screens(val route: String) {
 
     object Orders : Screens(route = "orders")
@@ -85,7 +87,7 @@ sealed class Screens(val route: String) {
             return "order_details/$encodedOrder"
         }
     }
-
+    object Address : Screens(route = "Address")
     object Setting : Screens(route = "setting")
     object Home : Screens(route = "home")
     object Category : Screens(route = "category")
@@ -165,7 +167,9 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val changeUserDataViewModel: ChangeUserDataViewModel = viewModel(factory = changeUserDataFactory)
             ChangeUserDataScreen(viewModel = changeUserDataViewModel, navController = navController)
         }
-
+        composable(route = Screens.Address.route) {
+            AddressScreen(navController)
+        }
         composable(route = Screens.Favorite.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
             FavoriteScreen(cartViewModel, navController)
