@@ -45,10 +45,12 @@ import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.rememberAsyncImagePainter
+import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Address
 import com.example.e_commerce_iti.model.pojos.Customer
@@ -123,7 +125,7 @@ fun OrderHeader(order: Order) {
             text = "Order Details",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.Black
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -223,7 +225,7 @@ fun LineItemRow(item: LineItem) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(item.name, fontWeight = FontWeight.Bold)
+            Text(item.name.replace("+"," "), fontWeight = FontWeight.Bold)
             Text("Quantity: ${item.quantity}", fontSize = 14.sp, fontWeight = FontWeight.Bold)
             if (item.sku != null) Text(
                 "SKU: ${item.sku}",

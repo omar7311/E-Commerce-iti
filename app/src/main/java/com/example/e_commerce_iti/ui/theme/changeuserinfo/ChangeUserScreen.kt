@@ -61,7 +61,10 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserD
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.ingredientColor1
 import com.skydoves.landscapist.glide.GlideImage
 
 
@@ -94,7 +97,8 @@ fun ChangeUserDataScreenContent(viewModel: ChangeUserDataViewModel,navController
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Change User Data",
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium,
+                color = ingredientColor1
             )
         }
         Column(
@@ -153,11 +157,11 @@ fun ChangeUserDataScreenContent(viewModel: ChangeUserDataViewModel,navController
                                     .show()
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                        colors = ButtonDefaults.buttonColors(ingredientColor1, Color.White)
                     ) {
                         Text(
                             text = "Save Changes",
-                            style = MaterialTheme.typography.bodyLarge,
+                            fontSize = 18.sp,
                             modifier = Modifier.padding(8.dp)
                         )
                     }
@@ -184,12 +188,13 @@ fun UserDataInputField(label: String, state: MutableState<String>, keyboardOptio
     OutlinedTextField(
         value = state.value,
         onValueChange = { state.value = it },
-        label = { Text(text = label) },
+        label = { Text(text = label, color = ingredientColor1) },
         keyboardOptions = keyboardOptions,
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         shape = RoundedCornerShape(8.dp),
-        colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(  focusedBorderColor = MaterialTheme.colorScheme.primary,             unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
+        colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(  focusedBorderColor = ingredientColor1,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
         ) // Removing specific Material 3 colors, fall back to defaults
 
     )

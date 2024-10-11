@@ -41,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -94,7 +95,7 @@ fun SettingScreen(
                         Text(
                             text = "Settings",
                             style = MaterialTheme.typography.headlineMedium,
-                            color = navyBlue,
+                            color = ingredientColor1,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -141,12 +142,12 @@ fun SettingScreen(
                                     }  // for about and contact
                                     Currencies(viewModel)
                                     ItemsSettingScreen("Contact Us") {
-                                        currentSheetContent = SheetContent.ABOUT
+                                        currentSheetContent = SheetContent.CONTACT
                                         showBottomSheet = true
                                     }
                                     ItemsSettingScreen("About Us") {
                                         currentSheetContent =
-                                            SheetContent.CONTACT // or SheetContent.CONTACT
+                                            SheetContent.ABOUT // or SheetContent.CONTACT
                                         showBottomSheet = true
                                     }
 
@@ -197,7 +198,7 @@ fun ItemsSettingScreen(text: String, onClick: (() -> Unit)? = null) {
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = lavender // Set background color
+            containerColor = Color.White // Set background color
         )
     ) {
         Row(
@@ -210,7 +211,7 @@ fun ItemsSettingScreen(text: String, onClick: (() -> Unit)? = null) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyLarge,
-                color = navyBlue,
+                color = ingredientColor1,
                 fontWeight = FontWeight.Bold
             )
             Icon(
@@ -235,7 +236,7 @@ fun Currencies(viewModel: CurrencyViewModel) {
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = lavender // Set background color
+            containerColor = Color.White // Set background color
         )
     ) {
         Column(
@@ -246,7 +247,7 @@ fun Currencies(viewModel: CurrencyViewModel) {
             Text(
                 text = "Select Currency",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = navyBlue
+                color = ingredientColor1
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -303,11 +304,11 @@ fun CurrencyChips(name: String, isSelected: Boolean, onSelect: () -> Unit) {
         modifier = Modifier.padding(4.dp),
         shape = RoundedCornerShape(16.dp),
         colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedContainerColor = ingredientColor1,
             selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = Color.White,
             labelColor = MaterialTheme.colorScheme.onSurface
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        border = BorderStroke(1.dp, ingredientColor1)
     )
 }
