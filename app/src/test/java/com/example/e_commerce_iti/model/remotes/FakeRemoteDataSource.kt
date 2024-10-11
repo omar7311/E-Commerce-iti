@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti.model.reposiatory.remotes
+package com.example.e_commerce_iti.model.remotes
 
 import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
@@ -12,23 +12,20 @@ import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCode
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCodeX
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
-import com.example.e_commerce_iti.model.pojos.price_rules.PrerequisiteSubtotalRange
-import com.example.e_commerce_iti.model.pojos.price_rules.PrerequisiteToEntitlementPurchase
-import com.example.e_commerce_iti.model.pojos.price_rules.PrerequisiteToEntitlementQuantityRatio
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyBrandData
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomCollections
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomers
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyDiscountCodes
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyOrders
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.list
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyBrandData
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyCustomCollections
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyCustomers
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyDiscountCodes
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyOrders
+import com.example.e_commerce_iti.model.remotes.dummydaya.list
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.products
+import com.example.e_commerce_iti.model.remotes.dummydaya.products
 import kotlinx.coroutines.flow.flowOf
 
 class FakeRemoteDataSource : IRemoteDataSource {

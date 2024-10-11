@@ -1,8 +1,8 @@
-package com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya
+package com.example.e_commerce_iti.model.remotes.dummydaya
 
 import com.example.e_commerce_iti.model.pojos.CollectionImage
 import com.example.e_commerce_iti.model.pojos.CustomCollection
-import com.example.e_commerce_iti.model.pojos.CustomCollectionsResponse
+
 val customCollection1 = CustomCollection(
     id = 201L,
     handle = "eco-friendly-products",

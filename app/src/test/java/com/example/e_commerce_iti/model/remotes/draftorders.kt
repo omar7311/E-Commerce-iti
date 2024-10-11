@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti.model.reposiatory.remotes
+package com.example.e_commerce_iti.model.remotes
 
 import com.example.e_commerce_iti.model.pojos.draftorder.Customer
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder

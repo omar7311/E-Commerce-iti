@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti.model.reposiatory
+package com.example.e_commerce_iti.model.remotes.reposiatory
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -10,25 +10,25 @@ import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.customer.DefaultAddress
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
-import com.example.e_commerce_iti.model.reposiatory.remotes.FakeLocalDataSource
-import com.example.e_commerce_iti.model.reposiatory.remotes.FakeRemoteDataSource
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.customCollection1
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.customCollection2
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyBrandData
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomCollections
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.order1
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.order2
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.order3
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.order4
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product1
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product2
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product3
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product4
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product5
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product6
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product7
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product8
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product9
+import com.example.e_commerce_iti.model.remotes.FakeLocalDataSource
+import com.example.e_commerce_iti.model.remotes.FakeRemoteDataSource
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyBrandData
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyCustomCollections
+import com.example.e_commerce_iti.model.remotes.dummydaya.order1
+import com.example.e_commerce_iti.model.remotes.dummydaya.order2
+import com.example.e_commerce_iti.model.remotes.dummydaya.order3
+import com.example.e_commerce_iti.model.remotes.dummydaya.order4
+import com.example.e_commerce_iti.model.remotes.dummydaya.product1
+import com.example.e_commerce_iti.model.remotes.dummydaya.product2
+import com.example.e_commerce_iti.model.remotes.dummydaya.product3
+import com.example.e_commerce_iti.model.remotes.dummydaya.product4
+import com.example.e_commerce_iti.model.remotes.dummydaya.product5
+import com.example.e_commerce_iti.model.remotes.dummydaya.product6
+import com.example.e_commerce_iti.model.remotes.dummydaya.product7
+import com.example.e_commerce_iti.model.remotes.dummydaya.product8
+import com.example.e_commerce_iti.model.remotes.dummydaya.product9
+import com.example.e_commerce_iti.model.reposiatory.IReposiatory
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -46,7 +46,7 @@ class ReposiatoryImplTest {
 
     lateinit var      remoteDataSource : IRemoteDataSource
     lateinit var  localDataSource : IlocalDataSource
-    lateinit var  reposiatory:IReposiatory
+    lateinit var  reposiatory: IReposiatory
 
 
     @Before
@@ -54,7 +54,12 @@ class ReposiatoryImplTest {
         remoteDataSource = FakeRemoteDataSource()
         val context: Context = ApplicationProvider.getApplicationContext()
 
-        localDataSource = FakeLocalDataSource(context.getSharedPreferences(LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
+        localDataSource = FakeLocalDataSource(
+            context.getSharedPreferences(
+                LocalDataSourceImp.currentCurrency,
+                Context.MODE_PRIVATE
+            )
+        )
         reposiatory = ReposiatoryImpl(remoteDataSource, localDataSource)
     }
     /**
@@ -171,13 +176,19 @@ class ReposiatoryImplTest {
     @Test
     fun getOrders_passWrongCustomerId_asserEqualityList() = runTest {
         // when
-        val listToTest = listOf(order1, order4)
+        val listToTest = listOf(
+            order1,
+            order4
+        )
         val ordersFlow = reposiatory.getOrdersByCustomerId(1000001L)
         val result = ordersFlow.first()
         // then
         Assert.assertEquals(listToTest, result)
         // when 2
-        val listToTest2 = listOf(order2, order3)
+        val listToTest2 = listOf(
+            order2,
+            order3
+        )
         val ordersFlow2 = reposiatory.getOrdersByCustomerId(1000003L)
         val result2 = ordersFlow2.first()
         // then 2
@@ -190,7 +201,12 @@ class ReposiatoryImplTest {
     @Test
     fun getProductsByVendor_passVendorName_assertList() = runTest{
         // when
-        val listToTest = listOf(product1, product2, product3,product4)
+        val listToTest = listOf(
+            product1,
+            product2,
+            product3,
+            product4
+        )
         val productsFlow = reposiatory.getProductsByVendor("Vendor1")
         val result = productsFlow.first()
         // then
@@ -200,7 +216,13 @@ class ReposiatoryImplTest {
     @Test
    fun  getProductsByVendor_passWrongVendorName_assertList2() = runTest{
        // when
-        val listToTest2 = listOf( product5, product6, product7, product8, product9)
+        val listToTest2 = listOf(
+            product5,
+            product6,
+            product7,
+            product8,
+            product9
+        )
         val productsFlow2 = reposiatory.getProductsByVendor("Vendor2")
         val result2 = productsFlow2.first()
         // then
