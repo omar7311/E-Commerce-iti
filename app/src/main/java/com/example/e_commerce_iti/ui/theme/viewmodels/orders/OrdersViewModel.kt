@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.viewmodels.orders
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -51,6 +52,7 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     suspend fun getTempProductById(productId:Long):Product{
         var product :Product?= null
           product =  repository.getTempProductById(productId)

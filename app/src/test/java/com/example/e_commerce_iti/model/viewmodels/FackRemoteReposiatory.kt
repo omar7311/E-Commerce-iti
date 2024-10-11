@@ -24,9 +24,13 @@ import com.example.e_commerce_iti.model.remotes.dummydaya.dummyDiscountCodes
 import com.example.e_commerce_iti.model.remotes.dummydaya.dummycurrency
 import com.example.e_commerce_iti.model.remotes.dummydaya.list
 import com.example.e_commerce_iti.model.remotes.dummydaya.products
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyOrders
+import com.example.e_commerce_iti.model.remotes.dummydaya.product1
+import com.example.e_commerce_iti.model.remotes.dummydaya.products
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -62,8 +66,10 @@ class FackRemoteReposiatory : IReposiatory {
       return flowOf(dummyBrandData)
     }
 
-    override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {
-        TODO()
+
+    override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {  // ahmed
+        val filteredProducts = products.filter { it.vendor == vendorName }
+        return flowOf(filteredProducts)
     }
 
     override suspend fun getCustomer(email: String): Flow<CustomerX> {
@@ -134,12 +140,15 @@ class FackRemoteReposiatory : IReposiatory {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
-        TODO("Not yet implemented")
+    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {   // ahmed
+        val filtered  = dummyOrders.orders.filter { it.customer.id == customer_id }
+        return flowOf(filtered)
     }
 
-    override suspend fun getProductById(productId: Long): Flow<Product> {
-        TODO("Not yet implemented")
+    override suspend fun getProductById(productId: Long): Flow<Product> {           // omar
+        val product = products.find { it.id == productId }
+            ?: throw IllegalArgumentException("Product with id $productId not found") // Handle null case
+        return flowOf(product)
     }
 
     override fun getAllProduct(): Flow<AllProduct> {
@@ -174,8 +183,10 @@ class FackRemoteReposiatory : IReposiatory {
         return flowOf(draftOrders.find { it.id == id }?:throw Exception("Not Found"))
     }
 
-    override suspend fun getProductByID(id: Long): Flow<Product> {
-        return flow { emit(products.first { it.id == id }) }
+    override suspend fun getProductByID(id: Long): Flow<Product> {    // omar
+        val product = products.find { it.id == id }
+            ?: throw IllegalArgumentException("Product with id $id not found") // Handle null case
+        return flowOf(product)
     }
 
     override suspend fun getAllDrafts(): Flow<List<DraftOrder>> {
@@ -183,6 +194,6 @@ class FackRemoteReposiatory : IReposiatory {
     }
 
     override suspend fun getTempProductById(ProductId: Long): Product {
-        TODO("Not yet implemented")
+        return product1  // as temp product
     }
 }
