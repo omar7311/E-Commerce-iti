@@ -5,6 +5,7 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.currenyex.ConversionRates
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
@@ -15,38 +16,59 @@ import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
+import com.example.e_commerce_iti.model.remotes.draftOrders
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyBrandData
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyCustomCollections
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyCustomers
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyDiscountCodes
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummycurrency
+import com.example.e_commerce_iti.model.remotes.dummydaya.list
+import com.example.e_commerce_iti.model.remotes.dummydaya.products
 import com.example.e_commerce_iti.model.remotes.dummydaya.dummyOrders
 import com.example.e_commerce_iti.model.remotes.dummydaya.product1
 import com.example.e_commerce_iti.model.remotes.dummydaya.products
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
 class FackRemoteReposiatory : IReposiatory {
-
+    var chosed_currency="EGP"
     override suspend fun getDiscountCode(code: String): Flow<DiscountCodeX> {
-        TODO("Not yet implemented")
+        return flowOf(dummyDiscountCodes.find { it.code == code }?:throw Exception("Not Found"))
     }
 
-    override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {         // ahmed
-        TODO("Not yet implemented")
+    override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
+        return flowOf(dummyCustomCollections)
     }
 
-    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> {   // ahmed
+    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> {
         TODO("Not yet implemented")
     }
 
     override suspend fun getPriceRules(): Flow<PriceRules> {
-        TODO("Not yet implemented")
+        return flowOf(PriceRules(list))
     }
 
     override suspend fun getCopuons(priceId: Long): Flow<DiscountCode> {
-        TODO("Not yet implemented")
+        val e= dummyDiscountCodes.find { it.price_rule_id == priceId }
+        if (e==null){
+            throw Exception("Not Found")
+        }else{
+            val discountCode= DiscountCode(listOf(e))
+            return flowOf(discountCode)
+        }
     }
 
-    override suspend fun getBrands(): Flow<List<BrandData>> {            // ahmed
-        TODO("Not yet implemented")
+    override suspend fun getBrands(): Flow<List<BrandData>> {
+      return flowOf(dummyBrandData)
     }
+
+    override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {
+        TODO()
+
 
     override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {  // ahmed
         val filteredProducts = products.filter { it.vendor == vendorName }
@@ -54,39 +76,64 @@ class FackRemoteReposiatory : IReposiatory {
     }
 
     override suspend fun getCustomer(email: String): Flow<CustomerX> {
-        TODO("Not yet implemented")
+        return flowOf(dummyCustomers.find { it.email == email }?:throw Exception("Not Found"))
     }
 
     override suspend fun updateCustomer(id: Long, customer: String): Flow<Customer> {
-        TODO("Not yet implemented")
+        val e= Gson().fromJson(customer,Customer::class.java)
+        return flowOf(e)
     }
 
     override suspend fun getCurrency(currency: String): Flow<CurrencyExc> {
-        TODO("Not yet implemented")
+       return  flow { emit(dummycurrency) }
     }
 
     override suspend fun getCurrencyFromLocal(currency: String): Flow<Pair<String, Float>> {
-        TODO("Not yet implemented")
+        return flowOf(Pair("EGP",1.0f))
     }
 
     override suspend fun insertCurrency(currency: CurrencyExc) {
-        TODO("Not yet implemented")
+        dummycurrency=currency
     }
 
     override suspend fun getChoosedCurrency(): Flow<Pair<String, Float>> {
-        TODO("Not yet implemented")
+        if (chosed_currency=="USD"){
+            return flowOf(Pair("USD",dummycurrency.conversion_rates!!.USD.toFloat()))
+        }else if (chosed_currency=="EGP"){
+            return flowOf(Pair("EGP",dummycurrency.conversion_rates!!.EGP.toFloat()))
+        }else if (chosed_currency=="SAR"){
+            return flowOf(Pair("SAR",dummycurrency.conversion_rates!!.SAR.toFloat()))
+        } else if (chosed_currency=="EUR"){
+            return flowOf(Pair("EUR",dummycurrency.conversion_rates!!.EUR.toFloat()))
+        }else{
+            throw Exception("Not Found")
+        }
     }
 
     override suspend fun updateCurrency(currency: String): Flow<Pair<String, Float>> {
-        TODO("Not yet implemented")
+        chosed_currency=currency
+        if (currency=="USD"){
+            chosed_currency=currency
+            return flowOf(Pair("USD",dummycurrency.conversion_rates!!.USD.toFloat()))
+        }else if (currency=="EGP"){
+            chosed_currency=currency
+            return flowOf(Pair("EGP",dummycurrency.conversion_rates!!.EGP.toFloat()))
+        }else if (currency=="SAR"){
+            chosed_currency=currency
+            return flowOf(Pair("SAR",dummycurrency.conversion_rates!!.SAR.toFloat()))
+        }else if (currency=="EUR"){
+            chosed_currency=currency
+            return flowOf(Pair("EUR",dummycurrency.conversion_rates!!.EUR.toFloat()))
+        }
+        return flowOf(throw Exception("Not Found"))
     }
 
     override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
-        TODO("Not yet implemented")
+     return flow { emit(cart) }
     }
 
     override suspend fun getPrice_rules(id: Long): Flow<PriceRule> {
-        TODO("Not yet implemented")
+       return flow { emit(list.find { it.id == id }?:throw Exception("Not Found")) }
     }
 
     override suspend fun updateMetaData(
@@ -107,20 +154,22 @@ class FackRemoteReposiatory : IReposiatory {
         return flowOf(product)
     }
 
-    override fun getAllProduct(): Flow<AllProduct> {   // omar
-        TODO("Not yet implemented")
+    override fun getAllProduct(): Flow<AllProduct> {
+        return flow{ emit(AllProduct(products)) }
     }
 
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
-        TODO("Not yet implemented")
+        return flow { emit(true) }
     }
 
     override suspend fun getMetaFields(customerId: Long): Flow<FullMeatDataResponse> {
-        TODO("Not yet implemented")
+       return flow {
+
+       }
     }
 
     override suspend fun getCart(id: Long): Flow<DraftOrder> {
-        TODO("Not yet implemented")
+        return flowOf(draftOrders.find { it.id == id }?:throw Exception("Not Found"))
     }
 
     override suspend fun getProductByID(id: Long): Flow<Product> {    // omar
@@ -130,7 +179,7 @@ class FackRemoteReposiatory : IReposiatory {
     }
 
     override suspend fun getAllDrafts(): Flow<List<DraftOrder>> {
-        TODO("Not yet implemented")
+       return flow{ emit(draftOrders) }
     }
 
     override suspend fun getTempProductById(ProductId: Long): Product {
