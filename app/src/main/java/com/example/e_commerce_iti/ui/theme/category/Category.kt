@@ -333,8 +333,6 @@ fun ProductGrid(products: List<Product>,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier.padding(1.dp),
-        contentPadding = PaddingValues(5.dp)
     ) {
         items(products) { product ->
             ProductItem(product , controller,currencyViewModel ,productInfoViewModel, cartViewModel  ,context) // to navigate when press on it

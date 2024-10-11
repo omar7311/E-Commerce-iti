@@ -290,7 +290,7 @@ fun ProductItem(
                         )
                     )
                 }
-                .padding(8.dp), // Padding around the card
+                .padding(2.dp), // Padding around the card
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp), // Set elevation
             shape = RoundedCornerShape(10.dp), // Rounded corners
         ) {

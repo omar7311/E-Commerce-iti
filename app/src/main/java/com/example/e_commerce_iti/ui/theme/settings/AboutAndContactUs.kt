@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.e_commerce_iti.gradientBrush
+import com.example.e_commerce_iti.ingredientColor1
 import kotlinx.coroutines.launch
 
 enum class SheetContent {
@@ -61,20 +63,17 @@ fun BottomSheetContent(sheetContent: SheetContent) {
 
 @Composable
 fun AboutContent() {
-    val gradientBrush = Brush.verticalGradient(
-        colors = listOf(Color(0xFFE6E6FA), Color(0xFFE6E6FA), Color(0xFFE6E6FA), Color(0xFFE6E6FA), Color(0xFFAFEEEE))
-    )
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(brush = gradientBrush)
+            .background(androidx.compose.ui.graphics.Color.White)
             .padding(24.dp)
     ) {
         Text(
             "About Us",
             style = MaterialTheme.typography.headlineLarge.copy(
-                color = Color(0xFF1A237E),
+                color = ingredientColor1,
                 fontWeight = FontWeight.Bold
             )
         )
@@ -82,14 +81,14 @@ fun AboutContent() {
         Text(
             "We are the android-sv24-Team1 dedicated to creating amazing apps!",
             style = MaterialTheme.typography.bodyLarge.copy(
-                color = Color(0xFF283593)
+                color = ingredientColor1
             )
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             "Team Members:",
             style = MaterialTheme.typography.titleLarge.copy(
-                color = Color(0xFF303F9F),
+                color = ingredientColor1,
                 fontWeight = FontWeight.Bold
             )
         )
@@ -110,7 +109,7 @@ fun TeamMember(name: String, role: String) {
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .background(Color(0xFF3F51B5), shape = RoundedCornerShape(50))
+                .background(androidx.compose.ui.graphics.Color.White, shape = RoundedCornerShape(50))
                 .align(Alignment.CenterVertically)
         )
         Spacer(modifier = Modifier.width(16.dp))
@@ -118,14 +117,14 @@ fun TeamMember(name: String, role: String) {
             Text(
                 name,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = Color(0xFF3F51B5),
+                    color = ingredientColor1,
                     fontWeight = FontWeight.Bold
                 )
             )
             Text(
                 role,
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color(0xFF5C6BC0)
+                    color = ingredientColor1
                 )
             )
         }
@@ -134,28 +133,24 @@ fun TeamMember(name: String, role: String) {
 
 @Composable
 fun ContactUsContent() {
-    val gradientBrush = Brush.verticalGradient(
-        colors = listOf(Color(0xFFE6E6FA), Color(0xFFE6E6FA), Color(0xFFE6E6FA), Color(0xFFE6E6FA), Color(0xFFE6E6FA))
-    )
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(brush = gradientBrush)
+            .background(androidx.compose.ui.graphics.Color.White)
             .padding(24.dp)
     ) {
         Text(
             "Contact Us",
             style = MaterialTheme.typography.headlineLarge.copy(
-                color = Color(0xFF3E2723),
+                color = ingredientColor1),
                 fontWeight = FontWeight.Bold
             )
-        )
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             "We'd love to hear from you!",
             style = MaterialTheme.typography.bodyLarge.copy(
-                color = Color(0xFF4E342E)
+                color = ingredientColor1
             )
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -175,14 +170,14 @@ fun ContactInfo(label: String, value: String) {
         Text(
             label,
             style = MaterialTheme.typography.titleMedium.copy(
-                color = Color(0xFF3E2723),
+                color = ingredientColor1,
                 fontWeight = FontWeight.Bold
             )
         )
         Text(
             value,
             style = MaterialTheme.typography.bodyLarge.copy(
-                color = Color(0xFF4E342E)
+                color = ingredientColor1
             )
         )
     }
