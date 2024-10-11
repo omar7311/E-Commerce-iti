@@ -69,8 +69,10 @@ import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.products.FilterButtonWithSlider
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import kotlinx.coroutines.flow.first
 
 
@@ -79,6 +81,8 @@ import kotlinx.coroutines.flow.first
 fun CategoryScreen(
     homeViewModel: HomeViewModel,
     currencyViewModel: CurrencyViewModel,
+    productInfoViewModel: ProductInfoViewModel,
+    cartViewModel: CartViewModel,
     controller: NavController,
     networkObserver: NetworkObserver, context: Context
 
@@ -123,7 +127,10 @@ fun CategoryScreen(
                             controller,
                             collectionId,
                             selectedPrice,
-                            selectedCategory
+                            selectedCategory,
+                            productInfoViewModel ,
+                            cartViewModel ,
+                            context
                         )
                     }
                 }
@@ -200,7 +207,10 @@ fun FetchProductsByCustomCollection(
     controller: NavController,
     collectionId: Long,
     maxPrice: Float,
-    selectedCategory: String? // TO FILTER THE PRODUCTS BY type
+    selectedCategory: String?, // TO FILTER THE PRODUCTS BY type
+    productInfoViewModel:ProductInfoViewModel,
+    cartViewModel:CartViewModel,
+    context: Context
 ) {
     LaunchedEffect(Unit) {
         homeViewModel.getProductsByCustomCollection(collectionId)
@@ -224,7 +234,7 @@ fun FetchProductsByCustomCollection(
                     }
                 }
 
-            ProductGrid(filteredProducts, controller,currencyViewModel)  // here im passing the products
+            ProductGrid(filteredProducts, controller,currencyViewModel, productInfoViewModel, cartViewModel  ,context)  // here im passing the products
         }
 
         is ProductsApiState.Failure -> {
@@ -314,14 +324,20 @@ fun CustomCollectionItem(
 
 // create a  lazy Grid to show the products in the right
 @Composable
-fun ProductGrid(products: List<Product>, controller: NavController,currencyViewModel: CurrencyViewModel) {
+fun ProductGrid(products: List<Product>,
+                controller: NavController,
+                currencyViewModel: CurrencyViewModel,
+                productInfoViewModel: ProductInfoViewModel,
+                cartViewModel: CartViewModel,
+                context: Context
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.padding(1.dp),
         contentPadding = PaddingValues(5.dp)
     ) {
         items(products) { product ->
-            ProductItem(product , controller,currencyViewModel ) // to navigate when press on it
+            ProductItem(product , controller,currencyViewModel ,productInfoViewModel, cartViewModel  ,context) // to navigate when press on it
         }
     }
 }

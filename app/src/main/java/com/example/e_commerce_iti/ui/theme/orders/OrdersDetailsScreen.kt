@@ -96,6 +96,7 @@ fun ScreenContent(order: Order, orderViewModel: OrdersViewModel, modifier: Modif
         contentPadding = PaddingValues(16.dp)
     ) {
         item { OrderHeader(order) }
+
         item {
             val products =
                 FetchProductsDetails(orderViewModel, order)  // to fetch products from details

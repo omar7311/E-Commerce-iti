@@ -1,6 +1,9 @@
 package com.example.e_commerce_iti.ui.theme.products
 
+import android.content.Context
 import android.util.Log
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -22,16 +25,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -56,13 +65,17 @@ import androidx.navigation.NavController
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.coralColor
 import com.example.e_commerce_iti.crimson
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.firebrick
 import com.example.e_commerce_iti.gradientBrush
 import com.example.e_commerce_iti.indigo
+import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.limeGreen
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.navyBlue
 import com.example.e_commerce_iti.paleGoldenrod
 import com.example.e_commerce_iti.pastelBrush
@@ -74,8 +87,10 @@ import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.example.e_commerce_iti.whiteBrush
 import com.google.gson.Gson
 
@@ -84,8 +99,11 @@ import com.google.gson.Gson
 fun ProductScreen(
     homeVieVModel: HomeViewModel,
     currencyViewModle: CurrencyViewModel,
+    productInfoViewModel: ProductInfoViewModel,
+    cartViewModel: CartViewModel,
     controller: NavController,
-    vendorName: String
+    vendorName: String,
+    context: Context,
 ) {
 
     Scaffold(
@@ -101,9 +119,12 @@ fun ProductScreen(
         ProductsContent(
             homeVieVModel,
             currencyViewModle,
+            productInfoViewModel,
+            cartViewModel ,
             controller,
             vendorName,
-            Modifier.padding(innerPadding)
+            Modifier.padding(innerPadding),
+            context
         )
     }
 }
@@ -113,10 +134,14 @@ fun ProductScreen(
 fun ProductsContent(
     homeViewModel: HomeViewModel,
     currencyViewModle: CurrencyViewModel,
+    productInfoViewModel: ProductInfoViewModel,
+    cartViewModel: CartViewModel,
     controller: NavController,
     vendorName: String,
-    modifier: Modifier
+    modifier: Modifier,
+    context: Context
 ) {
+
     var selectedPrice by remember { mutableStateOf(10000f) }  // Single value for the selected price
     val minPrice = 0f  // Minimum price fixed
     val maxPrice = 5000f  // Maximum price fixed
@@ -137,9 +162,12 @@ fun ProductsContent(
         FetchingProductsByVendor(
             homeViewModel,
             currencyViewModle,
+            productInfoViewModel,
+            cartViewModel ,
             controller,
             vendorName,
-            selectedPrice
+            selectedPrice,
+            context
         )
     }
 }
@@ -149,9 +177,12 @@ fun ProductsContent(
 fun FetchingProductsByVendor(
     homeViewModel: HomeViewModel,
     currencyViewModle: CurrencyViewModel,
+    productInfoViewModel: ProductInfoViewModel,
+    cartViewModel: CartViewModel,
     controller: NavController,
     vendorName: String,
-    maxPrice: Float
+    maxPrice: Float,
+    context: Context
 ) {
 
     // Observe the state of the brands
@@ -162,12 +193,10 @@ fun FetchingProductsByVendor(
     val productsState by homeViewModel.productStateFlow.collectAsState()
 
     when (productsState) {
-
         is ProductsApiState.Loading -> {
             // Show loading indicator
             ShimmerLoadingGrid()
         }
-
         is ProductsApiState.Success -> {
             val products = (productsState as ProductsApiState.Success).products
             // Display the products
@@ -177,10 +206,16 @@ fun FetchingProductsByVendor(
                 val productPrice = product.variants[0].price.toFloatOrNull() ?: 0f
                 productPrice <= maxPrice  // Filter products with price <= slider value
             }
-            ProductsList(filteredProducts, controller, currencyViewModle)
+            ProductsList(
+                filteredProducts,
+                controller,
+                currencyViewModle,
+                productInfoViewModel,
+                cartViewModel ,
+                context
+            )
 
         }
-
         is ProductsApiState.Failure -> {
             // Show error message
             val eror = (productsState as ProductsApiState.Failure).msg
@@ -194,7 +229,10 @@ fun FetchingProductsByVendor(
 fun ProductsList(
     products: List<Product>,
     controller: NavController,
-    currencyViewModle: CurrencyViewModel
+    currencyViewModle: CurrencyViewModel,
+    productInfoViewModel: ProductInfoViewModel,
+    cartViewModel: CartViewModel,
+    context: Context
 ) {
 
     LazyVerticalGrid(
@@ -203,13 +241,20 @@ fun ProductsList(
             .fillMaxSize()
     ) {
         itemsIndexed(products) { _, product ->
-            ProductItem(product, controller, currencyViewModle)
+            ProductItem(product, controller, currencyViewModle, productInfoViewModel, cartViewModel , context)
         }
     }
 }
 
 @Composable
-fun ProductItem(product: Product, controller: NavController, currencyViewModel: CurrencyViewModel) {
+fun ProductItem(
+    product: Product,
+    controller: NavController,
+    currencyViewModel: CurrencyViewModel,
+    productInfoViewModel: ProductInfoViewModel,
+    cartViewModel: CartViewModel,
+    context: Context
+) {
     var visible by remember { mutableStateOf(false) }
 
     // Launch effect to make the item visible
@@ -222,16 +267,28 @@ fun ProductItem(product: Product, controller: NavController, currencyViewModel: 
         visible = visible,
         enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
                 scaleIn(initialScale = 0.9f, animationSpec = tween(durationMillis = 400)) +
-                slideInVertically(initialOffsetY = { -it }, animationSpec = tween(durationMillis = 400)),
+                slideInVertically(
+                    initialOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 400)
+                ),
         exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
                 scaleOut(targetScale = 0.8f, animationSpec = tween(durationMillis = 300)) +
-                slideOutVertically(targetOffsetY = { it }, animationSpec = tween(durationMillis = 300))
+                slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 300)
+                )
     ) {
         Card(
             modifier = Modifier
                 .clickable {
                     // Navigation to Product Details here
-                    controller.navigate(Screens.ProductDetails.createDetailRoute(Gson().toJson(product)))
+                    controller.navigate(
+                        Screens.ProductDetails.createDetailRoute(
+                            Gson().toJson(
+                                product
+                            )
+                        )
+                    )
                 }
                 .padding(8.dp), // Padding around the card
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp), // Set elevation
@@ -255,20 +312,37 @@ fun ProductItem(product: Product, controller: NavController, currencyViewModel: 
                     textColor = Color.Black,
                     fontSize = 16.sp
                 )
-                // Price display
-                getCurrencyAndPrice(product.variants[0].price, currencyViewModel)?.let {
-                    CustomText(
-                        it,
-                        pastelBrush,
-                        textColor = navyBlue,
-                        fontSize = 18.sp,
-                        padding = PaddingValues(10.dp)
+                Row(
+                    modifier = Modifier.wrapContentWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    getCurrencyAndPrice(product.variants[0].price, currencyViewModel)?.let {
+                        CustomText(
+                            it,
+                            pastelBrush,
+                            textColor = navyBlue,
+                            fontSize = 18.sp,
+                            padding = PaddingValues(10.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+
+                    // for adding to favorite
+
+
+                    FavoriteButton(
+                        product = product,
+                        productInfoViewModel = productInfoViewModel,
+                        cartViewModel = cartViewModel,
+                        context = context
                     )
                 }
             }
         }
     }
 }
+
+
 
 
 @Composable

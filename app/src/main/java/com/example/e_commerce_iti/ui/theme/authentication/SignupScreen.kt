@@ -105,8 +105,10 @@ fun SignupScreen(
     val scope = rememberCoroutineScope()
     val flag = rememberSaveable { mutableStateOf(false) }
     val emailRegex = remember { Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$") }
-    val passwordRegex =
-        remember { Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$") }
+    val passwordRegex = remember {
+        Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}\$")
+    }
+
     val phoneRegex = remember { Regex("^\\+20[1][0125][0-9]{8}\$") }
     var falg=true
     Column(
@@ -283,7 +285,8 @@ fun SignupScreen(
         }
 
         Button(
-            onClick = {
+
+            onClick  ={
                 if (fullName.isBlank() || !emailRegex.matches(email) || !phoneRegex.matches(
                         phoneNumber
                     ) ||
@@ -309,7 +312,7 @@ fun SignupScreen(
                                     isLoading = true
                                     delay(7000) // 3 seconds delay
                                 }
-                        }
+                            }
                             // Start a new coroutine for the delay
                             scope.launch {
                                 isLoading = false
@@ -322,17 +325,18 @@ fun SignupScreen(
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = ingredientColor1,
-                contentColor = Color.Black
-            ),
-            shape = RoundedCornerShape(8.dp)
+                containerColor = ingredientColor1, // Custom green color
+                contentColor = Color.White // Text color
+            )
         ) {
             if (isLoading) {
                 LoadingIndicator()
             } else {
-                Text("SIGN UP", color = Color.Black, fontWeight = FontWeight.Bold)
+                Text("Sign UP", fontSize = 18.sp)
             }
         }
 

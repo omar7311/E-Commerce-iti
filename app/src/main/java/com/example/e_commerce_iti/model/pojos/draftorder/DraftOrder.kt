@@ -11,7 +11,7 @@ data class DraftOrder(
     var id: Long?=null,
     var invoice_sent_at: String?=null,
     var invoice_url: String?=null,
-    var line_items: List<LineItems>,
+    var line_items: List<LineItems> = emptyList(),
     var name: String?=null,
     var note: Any?=null,
     var note_attributes: List<NoteAttribute>?=null,

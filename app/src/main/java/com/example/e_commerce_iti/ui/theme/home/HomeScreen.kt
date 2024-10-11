@@ -298,6 +298,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
             ) {
                 Text(
                     text = customTitle,
+                    fontSize = 22.sp,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -320,7 +321,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
         },
         actions = {
             // Favorite icon on the right
-            //if(!FirebaseAuth.getInstance().currentUser?.isAnonymous!!){
+
             IconButton(onClick = { controller.navigate(Screens.Favorite.route) }) {
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
@@ -328,8 +329,8 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                     tint = Color.White,
                     contentDescription = "Favorite"
                 )
-           // }
-        }
+            }
+
                   },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color.Transparent // Transparent to let gradient shine
@@ -379,10 +380,11 @@ fun CustomButtonBar(controller: NavController, context: Context) {
             label = { Text("Cart") },
             selected = currentRoute.value == Screens.Cart.route,
             onClick = {
-                if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank())
-                    controller.navigate(Screens.Cart.route)
+              /*  if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank())
                 else
-                    Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show()*/
+                controller.navigate(Screens.Cart.route)
+
             }
         )
 
@@ -494,14 +496,14 @@ fun CustomText(
     fontSize: TextUnit = 20.sp,
     padding: PaddingValues = PaddingValues(),
     modifier: Modifier= Modifier,
-    style: FontWeight = FontWeight.Normal
+    style: FontWeight=FontWeight.Normal
 ) {
     Text(
         text = textToUse,
         color = textColor,
         fontSize = fontSize,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier
+        fontWeight = style,
+        modifier = modifier
             .padding(padding)
             .clip(RoundedCornerShape(15.dp))
             .background(backGroundColor)

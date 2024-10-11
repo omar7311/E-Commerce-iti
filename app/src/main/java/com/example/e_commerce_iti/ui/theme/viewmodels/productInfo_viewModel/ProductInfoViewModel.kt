@@ -33,6 +33,23 @@ class ProductInfoViewModel(var repo:IReposiatory):ViewModel() {
                 .collect{  _upDatedDraftOrderState.value=UiState.Success(it) }
         }
     }
+
+
+  /*  *//***
+     *      some functions needed for add infavorite
+     *//*
+
+    private val _favoritesMap = MutableStateFlow<Map<Long, Boolean>>(emptyMap())
+    val favoritesMap: StateFlow<Map<Long, Boolean>> = _favoritesMap
+
+    fun setInFavorites(productId: Long, value: Boolean) {
+        _favoritesMap.value = _favoritesMap.value + (productId to value)
+    }
+
+    fun checkIfInFavorites(productId: Long, draftOrder: DraftOrder) {
+        val isFavorite = draftOrder.line_items.any { it.product_id == productId }
+        setInFavorites(productId, isFavorite)
+    }*/
 }
 
 

@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.lavender
@@ -55,6 +56,7 @@ import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.navyBlue
+import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
@@ -62,111 +64,125 @@ import com.google.accompanist.flowlayout.FlowRow
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun SettingScreen(viewModel: CurrencyViewModel, navController: NavController? = null) {
+fun SettingScreen(
+    networkObserver: NetworkObserver,
+    viewModel: CurrencyViewModel,
+    navController: NavController? = null
+) {
 
-
-
-    if (currentUser?.email != null) {
-        viewModel.getCustomerData(currentUser!!.email)
-        viewModel.getCurrency()
-        val state = viewModel.userStateData.collectAsState()
-        Column(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(top = 15.dp)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    verticalAlignment = Alignment.CenterVertically // Align items vertically to center
-                ) {
-                    IconButton(onClick = { navController?.navigateUp() }) {
-                        androidx.compose.material.Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+    val isConnected = networkObserver.isConnected.collectAsState()
+    if (isConnected.value) {
+        if (currentUser?.email != null) {
+            viewModel.getCustomerData(currentUser!!.email)
+            viewModel.getCurrency()
+            val state = viewModel.userStateData.collectAsState()
+            Column(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(top = 15.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        verticalAlignment = Alignment.CenterVertically // Align items vertically to center
+                    ) {
+                        IconButton(onClick = { navController?.navigateUp() }) {
+                            androidx.compose.material.Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp)) // Add some spacing between the icon and the text
+                        Text(
+                            text = "Settings",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = navyBlue,
+                            fontWeight = FontWeight.Bold
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp)) // Add some spacing between the icon and the text
-                    Text(
-                        text = "Settings",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = navyBlue,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(modifier = Modifier.height(40.dp))
+                    Spacer(modifier = Modifier.height(40.dp))
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(40.dp) // Change here
-                    ) {
-                        when (state.value) {
-                            is UiState.Success<CustomerX> -> {
-                                val user = (state.value as UiState.Success<CustomerX>).data
-                             /*   Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth() // Fill the width of the screen
-                                        .padding(top = 20.dp) // Optional: Add some vertical padding
-                                ) {
-                                    Text(
-                                        modifier = Modifier.align(Alignment.Center), // Center the text
-                                        text = "Hello :  ${user.first_name}",
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        color = navyBlue,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }*/
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(40.dp) // Change here
+                        ) {
+                            when (state.value) {
+                                is UiState.Success<CustomerX> -> {
+                                    val user = (state.value as UiState.Success<CustomerX>).data
+                                    /*   Box(
+                                           modifier = Modifier
+                                               .fillMaxWidth() // Fill the width of the screen
+                                               .padding(top = 20.dp) // Optional: Add some vertical padding
+                                       ) {
+                                           Text(
+                                               modifier = Modifier.align(Alignment.Center), // Center the text
+                                               text = "Hello :  ${user.first_name}",
+                                               style = MaterialTheme.typography.headlineSmall,
+                                               color = navyBlue,
+                                               fontWeight = FontWeight.Bold
+                                           )
+                                       }*/
 
-                                ItemsSettingScreen("Change User Data") {
-                                    navController?.navigate(
-                                        Screens.ChangeUserData.route
-                                    )
-                                }
-                                /**
-                                 *      for about and contact
-                                 */
-                                var showBottomSheet by remember { mutableStateOf(false) }
-                                var currentSheetContent by remember { mutableStateOf(SheetContent.ABOUT)}  // for about and contact
-                                Currencies(viewModel)
-                                ItemsSettingScreen("Contact Us"){
-                                    currentSheetContent = SheetContent.ABOUT
-                                    showBottomSheet = true}
-                                ItemsSettingScreen("About Us"){
-                                    currentSheetContent = SheetContent.CONTACT // or SheetContent.CONTACT
-                                    showBottomSheet = true
-                                }
-
-                                // to show the sheets
-                                if (showBottomSheet) {
-                                    CallableBottomSheet(
-                                        onDismiss = { showBottomSheet = false }
-                                    ) {
-                                        BottomSheetContent(currentSheetContent)
+                                    ItemsSettingScreen("Change User Data") {
+                                        navController?.navigate(
+                                            Screens.ChangeUserData.route
+                                        )
                                     }
+                                    /**
+                                     *      for about and contact
+                                     */
+                                    var showBottomSheet by remember { mutableStateOf(false) }
+                                    var currentSheetContent by remember {
+                                        mutableStateOf(
+                                            SheetContent.ABOUT
+                                        )
+                                    }  // for about and contact
+                                    Currencies(viewModel)
+                                    ItemsSettingScreen("Contact Us") {
+                                        currentSheetContent = SheetContent.ABOUT
+                                        showBottomSheet = true
+                                    }
+                                    ItemsSettingScreen("About Us") {
+                                        currentSheetContent =
+                                            SheetContent.CONTACT // or SheetContent.CONTACT
+                                        showBottomSheet = true
+                                    }
+
+                                    // to show the sheets
+                                    if (showBottomSheet) {
+                                        CallableBottomSheet(
+                                            onDismiss = { showBottomSheet = false }
+                                        ) {
+                                            BottomSheetContent(currentSheetContent)
+                                        }
+                                    }
+                                    /**
+                                     *      end
+                                     */
+
                                 }
-                                /**
-                                 *      end
-                                 */
 
-                            }
-
-                            else -> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator()
+                                else -> {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
+                }
             }
         }
+    } else {
+        NetworkErrorContent()
     }
+
 
 }
 
@@ -220,7 +236,8 @@ fun Currencies(viewModel: CurrencyViewModel) {
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = lavender // Set background color
-        )    ) {
+        )
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -293,31 +310,4 @@ fun CurrencyChips(name: String, isSelected: Boolean, onSelect: () -> Unit) {
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
     )
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun SettingScreenPreview() {
-    val context = LocalContext.current
-
-    val repo = ReposiatoryImpl(
-        RemoteDataSourceImp(),
-        LocalDataSourceImp(context.getSharedPreferences("currentCurrency", Context.MODE_PRIVATE))
-    )
-    ECommerceITITheme {
-        SettingScreen(
-            viewModel = CurrencyViewModel(
-                repository = ReposiatoryImpl(
-                    RemoteDataSourceImp(),
-                    LocalDataSourceImp(
-                        context.getSharedPreferences(
-                            "currentCurrency",
-                            Context.MODE_PRIVATE
-                        )
-                    )
-                )
-            )
-        )
-    }
 }

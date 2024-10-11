@@ -239,7 +239,7 @@ fun MyAlertDialog(
             text = {
                 Column {
                     Icon(
-                        painter = painterResource(id = R.drawable.baseline_settings_24), // Replace with your trash icon resource
+                        imageVector = Icons.Filled.Delete, // Replace with your trash icon resource
                         contentDescription = "Delete Item",
                         modifier = Modifier
                             .size(40.dp)
@@ -247,7 +247,7 @@ fun MyAlertDialog(
                         tint = ingredientColor1
                     )
                     Text(
-                        text = "Are you sure you want to delete '${order.name}' from your cart?",
+                        text = "Are you sure you want to delete '${order.name}?",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Black,
                         textAlign = TextAlign.Start
