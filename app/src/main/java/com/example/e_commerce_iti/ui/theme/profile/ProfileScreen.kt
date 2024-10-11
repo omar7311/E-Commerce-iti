@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -100,15 +101,24 @@ fun ProfileScreen(controller: NavController) {
                         fontWeight = FontWeight.Bold
                     )
                 }
+                // for withd of emmail size
+                val configuration = LocalConfiguration.current
+                val screenWidth = configuration.screenWidthDp.dp
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(top = 2.dp, start = 20.dp, end = 20.dp), Arrangement.Center
+                        .padding(
+                            top = if (screenWidth < 600.dp) 2.dp else 10.dp, // More padding for larger screens
+                            start = if (screenWidth < 600.dp) 10.dp else 20.dp, // Adjust start padding
+                            end = if (screenWidth < 600.dp) 10.dp else 20.dp  // Adjust end padding
+                        ),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "Email : ${currentUser?.email ?: "N/A"}",
-                        fontSize = 17.sp,
+                        fontSize = if (screenWidth < 600.dp) 14.sp else 17.sp, // Smaller font size on small screens
                         fontWeight = FontWeight.Bold
                     )
                 }
