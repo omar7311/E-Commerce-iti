@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.example.e_commerce_iti.model.local.IlocalDataSource
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
+import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.customer.Addresse
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
@@ -11,8 +12,30 @@ import com.example.e_commerce_iti.model.pojos.customer.DefaultAddress
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
 import com.example.e_commerce_iti.model.reposiatory.remotes.FakeLocalDataSource
 import com.example.e_commerce_iti.model.reposiatory.remotes.FakeRemoteDataSource
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.customCollection1
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.customCollection2
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyBrandData
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomCollections
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.order1
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.order2
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.order3
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.order4
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product1
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product2
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product3
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product4
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product5
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product6
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product7
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product8
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.product9
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert
+
+
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -133,9 +156,115 @@ class ReposiatoryImplTest {
 
 
     /*****
-     * Test case 2: ahmed   ahmed
+     * Test  ahmed   ahmed
      */
 
+    @Test
+    fun getOrders_passCustomerId_assertNumOfOrders() = runTest {
+
+        val ordersFlow = reposiatory.getOrdersByCustomerId(1000001L)
+        val result = ordersFlow.first()
+        Assert.assertEquals(2, result.size)
+    }
+
+
+    @Test
+    fun getOrders_passWrongCustomerId_asserEqualityList() = runTest {
+        // when
+        val listToTest = listOf(order1, order4)
+        val ordersFlow = reposiatory.getOrdersByCustomerId(1000001L)
+        val result = ordersFlow.first()
+        // then
+        Assert.assertEquals(listToTest, result)
+        // when 2
+        val listToTest2 = listOf(order2, order3)
+        val ordersFlow2 = reposiatory.getOrdersByCustomerId(1000003L)
+        val result2 = ordersFlow2.first()
+        // then 2
+        Assert.assertEquals(listToTest2, result2)
+    }
+
+
+    // test get products by vendor
+
+    @Test
+    fun getProductsByVendor_passVendorName_assertList() = runTest{
+        // when
+        val listToTest = listOf(product1, product2, product3,product4)
+        val productsFlow = reposiatory.getProductsByVendor("Vendor1")
+        val result = productsFlow.first()
+        // then
+        Assert.assertEquals(listToTest, result)
+    }
+
+    @Test
+   fun  getProductsByVendor_passWrongVendorName_assertList2() = runTest{
+       // when
+        val listToTest2 = listOf( product5, product6, product7, product8, product9)
+        val productsFlow2 = reposiatory.getProductsByVendor("Vendor2")
+        val result2 = productsFlow2.first()
+        // then
+        Assert.assertEquals(listToTest2,result2)
+    }
+
+    @Test
+    fun getProductsByVendor_passWrongVendorName_assertEmptyList() = runTest{
+        //when
+        val listToTest3 = emptyList<Product>()
+        val productsFlow3 = reposiatory.getProductsByVendor("Vendor3")
+        val result3 = productsFlow3.first()
+        // then
+        Assert.assertEquals(listToTest3,result3)
+    }
+
+    @Test
+    fun getProductsByVendor_passNullVendorName_assertListSize() = runTest{
+        // when
+        val productsFlow4 = reposiatory.getProductsByVendor("Vendor1")
+        val result4 = productsFlow4.first()
+        // then
+        Assert.assertEquals(4,result4.size)
+    }
+
+    // test  brands
+    @Test
+    fun getBrands_assertListSize() = runTest{
+        // when
+        val brandsFlow = reposiatory.getBrands()
+        val result = brandsFlow.first()
+        // then
+        Assert.assertEquals(5,result.size)
+    }
+
+    @Test
+    fun getBrands_assertListEquality() = runTest{
+        // when
+        val brandsFlow = reposiatory.getBrands()
+        val result = brandsFlow.first()
+        // then
+        Assert.assertEquals(dummyBrandData,result)
+    }
+
+    // test customCollections
+
+    @Test
+    fun getCustomCollections_assertListSize() = runTest{
+        // when
+        val customCollectionsFlow = reposiatory.getCustomCollections()
+        val result = customCollectionsFlow.first()
+        // then
+        Assert.assertEquals(dummyCustomCollections.size,result.size)
+    }
+
+    @Test
+    fun getCustomCollections_assertListEquality() = runTest{
+
+        // when
+        val customStateFlow = reposiatory.getCustomCollections()
+        val result = customStateFlow.first()
+        // then
+        Assert.assertEquals(dummyCustomCollections,result)
+    }
 
 
     //***********

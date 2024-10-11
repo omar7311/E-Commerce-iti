@@ -22,7 +22,6 @@ import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
 import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyBrandData
 import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomCollections
-import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomCollectionsResponse
 import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomers
 import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyDiscountCodes
 import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyOrders
@@ -54,7 +53,7 @@ class FakeRemoteDataSource : IRemoteDataSource {
         return flowOf(dummyBrandData)
     }
 
-    override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {
+    override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {   // ahmed
         val list= products.filter { it.vendor == vendorName }
         return flow { emit(list) }
     }
@@ -153,17 +152,17 @@ class FakeRemoteDataSource : IRemoteDataSource {
         return flow { emit(true) }
     }
 
-    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
-       val e= dummyOrders.orders.filter { it.id==customer_id }
+    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {  // ahmed
+       val e= dummyOrders.orders.filter { it.customer.id==customer_id }
         return flowOf(e)
     }
 
-    override suspend fun getProductById(productId: Long): Flow<Product> {
+    override suspend fun getProductById(productId: Long): Flow<Product> {           // omar
       val e=  products.first { it.id==productId }
         return flowOf(e)
     }
 
-    override fun getAllProduct(): Flow<AllProduct> {
+    override fun getAllProduct(): Flow<AllProduct> {                // omar
       return flow{ emit(AllProduct(products)) }
     }
 
