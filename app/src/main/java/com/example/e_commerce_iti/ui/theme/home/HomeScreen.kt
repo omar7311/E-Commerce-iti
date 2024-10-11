@@ -494,14 +494,14 @@ fun CustomText(
     fontSize: TextUnit = 20.sp,
     padding: PaddingValues = PaddingValues(),
     modifier: Modifier= Modifier,
-    style: FontWeight = FontWeight.Normal
+    style: FontWeight=FontWeight.Normal
 ) {
     Text(
         text = textToUse,
         color = textColor,
         fontSize = fontSize,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier
+        fontWeight = style,
+        modifier = modifier
             .padding(padding)
             .clip(RoundedCornerShape(15.dp))
             .background(backGroundColor)
