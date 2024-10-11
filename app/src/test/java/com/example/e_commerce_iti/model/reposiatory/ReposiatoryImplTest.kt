@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.example.e_commerce_iti.model.local.IlocalDataSource
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
+import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.customer.Addresse
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
