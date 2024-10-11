@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.e_commerce_iti.network.NetworkObserver
+import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
 import com.example.e_commerce_iti.ui.theme._navigation.Navigation
 import com.example.e_commerce_iti.ui.theme.authentication.FirebaseAuthManager
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -29,10 +30,7 @@ class MainActivity : ComponentActivity() {
         // Build the One-Tap sign-in request
 
         setContent {
-            /**
-             *      here is the start of home and all screens in the below function
-             */
-            Navigation(networkObserver,this)
+              Navigation(networkObserver, this)
         }
     }
     // Start Google sign-in flow using One-Tap

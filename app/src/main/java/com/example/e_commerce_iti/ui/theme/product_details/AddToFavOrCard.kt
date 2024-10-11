@@ -2,6 +2,7 @@ package com.example.e_commerce_iti.ui.theme.product_details
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.earthyBrush
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
@@ -68,7 +70,7 @@ fun Actions(
     ) {
         Button(
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)),
+            colors = ButtonDefaults.buttonColors(Color(0xFF76c7c0), Color.White),
             onClick = {
                 currentUser?.fav?.let {
                     productInfoViewModel.getDraftOrder(it)
@@ -77,7 +79,7 @@ fun Actions(
                     println("User not logged in or cart is null")
                 }
             }) {
-            Text(text = "Add to favorite", color = Color.Black, fontSize = 16.sp)
+            Text(text = "Add to favorite", color = Color.White, fontSize = 16.sp)
             Spacer(Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Filled.Favorite,
@@ -87,7 +89,7 @@ fun Actions(
 
         Button(
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFFCCC2DC)),
+            colors =ButtonDefaults.buttonColors(Color(0xFF76c7c0), Color.White),
             onClick = {
                 currentUser?.cart?.let {
                     productInfoViewModel.getDraftOrder(it)
@@ -96,7 +98,7 @@ fun Actions(
                     println("User not logged in or cart is null")
                 }
             }) {
-            Text(text = "Add to cart", color = Color.Black, fontSize = 16.sp)
+            Text(text = "Add to cart", color = Color.White ,fontSize = 16.sp)
             Spacer(Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Filled.ShoppingCart,
@@ -111,12 +113,24 @@ fun Actions(
             is UiState.Success -> {
                 val draftOrder = (draftOrderState as UiState.Success).data
                 // Check if product is already in cart or add new product to cart
-                if ( !draftOrder.line_items.any { it.product_id == product.id }) {
+                if (!draftOrder.line_items.any { it.product_id == product.id }) {
                     addToCardOFavorite(productInfoViewModel, product, draftOrder)
-                    Toast.makeText(context,"the product is adding successfully",Toast.LENGTH_LONG).show()
-                } else{
-                    Toast.makeText(context,"the product is not available",Toast.LENGTH_LONG).show()
-
+                    if(product.variants[0].inventory_quantity!=0) {
+                        Toast.makeText(
+                            context,
+                            "the product is adding successfully",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
+                    else{
+                        Toast.makeText(
+                            context,
+                            "the product is not available",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
                 }
             }
             is UiState.Error -> {
@@ -127,6 +141,9 @@ fun Actions(
         }
     }
 }
+
+
+
 
 
 fun addToCardOFavorite(

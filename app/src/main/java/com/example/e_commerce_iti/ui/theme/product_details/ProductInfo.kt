@@ -1,10 +1,12 @@
 package com.example.e_commerce_iti.ui.theme.product_details
 
 import android.widget.RatingBar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,12 +36,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.e_commerce_iti.navyBlue
+import com.example.e_commerce_iti.pastelBrush
+import com.example.e_commerce_iti.ui.theme.home.CustomText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,15 +61,15 @@ fun ProductInfo(name:String, price:String, rating: Int){
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)){
         Row(modifier = Modifier.fillMaxWidth().height(70.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = name, fontSize = 20.sp, modifier = Modifier.padding(start = 12.dp,top=4.dp).width(250.dp))
-            Text(
-                text = "Show Reviews",
-                color = Color.Blue,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(end = 12.dp,top=4.dp).clickable {
-                    isSheetVisible = true          // view all review
-                }
+            Text(text = name, fontWeight = FontWeight.Bold , fontSize = 20.sp, modifier = Modifier.padding(start = 12.dp,top=4.dp).width(200.dp))
+            CustomText(
+                "Show Reviews",
+                pastelBrush,
+                textColor = navyBlue,
+                fontSize = 14.sp,
+                padding = PaddingValues(8.dp),
+                modifier = Modifier.clickable { isSheetVisible=true },
+                style = FontWeight.Bold
             )
         }
         if (isSheetVisible) {
