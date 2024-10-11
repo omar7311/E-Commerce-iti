@@ -31,7 +31,7 @@ data class Variant(
     val title: String,
     val price: String,
     val inventory_quantity: Int,
-    val inventoryQuantity: Int,
+    val inventoryQuantity: Int=0,
     val sku: String
 )
 

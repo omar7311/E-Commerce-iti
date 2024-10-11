@@ -193,7 +193,7 @@ fun CartItem(
                     IconButton(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            if (totalAmount.totalAmount.value < 1000.0) {
+                            if (totalAmount.totalAmount.value < 10000.0&& numberOfItemsChosen.value<10) {
                                 if (numberOfItemsChosen.value < quantity) {
                                     numberOfItemsChosen.value++
                                     totalAmount.add(price)
