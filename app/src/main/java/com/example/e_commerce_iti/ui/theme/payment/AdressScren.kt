@@ -5,16 +5,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -42,10 +47,23 @@ fun AddressScreen(navController: NavController) {
     val selectedOption = remember { mutableStateOf(egyptianCities[0]) }
     val selectedOption2=remember { mutableStateOf(egyptGovernoratesAndAreas[selectedOption.value]!![0]) }
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Row(Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                modifier = Modifier.fillMaxHeight(),
+                onClick = { navController.navigateUp() }
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                "Delivary Address",
-                fontSize = MaterialTheme.typography.headlineMedium.fontSize
+                modifier = Modifier.fillMaxWidth(),
+                text = "Address ",
+                style = MaterialTheme.typography.headlineMedium
             )
         }
         Spacer(modifier = Modifier.height(50.dp))

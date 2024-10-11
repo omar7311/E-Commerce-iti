@@ -155,8 +155,8 @@ fun PaymentContent(
     Spacer(modifier = Modifier.height(12.dp))
 
     // Display Discount, Tax, and Total
-    DisplayAmountRow("Discount", paymentViewModel.discount, paymentViewModel)
     DisplayAmountRow("Tax", paymentViewModel.tax, paymentViewModel)
+    DisplayAmountRow("Discount", paymentViewModel.discount, paymentViewModel)
     DisplayAmountRow("Total", paymentViewModel.total, paymentViewModel)
 
     Spacer(modifier = Modifier.height(16.dp))
