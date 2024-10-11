@@ -1,3 +1,5 @@
+package com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya
+
 import com.example.e_commerce_iti.model.pojos.Image
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.Variant

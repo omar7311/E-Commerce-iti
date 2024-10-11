@@ -48,6 +48,8 @@ data class Order(
 }
 
 data class Customer(
+    @SerializedName("id")
+    val id: Long,
     @SerializedName("first_name")
     val firstName: String,
     @SerializedName("last_name")

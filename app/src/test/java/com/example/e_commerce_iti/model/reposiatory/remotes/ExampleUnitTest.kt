@@ -1,22 +1,9 @@
-package com.example.e_commerce_iti
+package com.example.e_commerce_iti.model.reposiatory.remotes
 
-import android.content.Context
-import androidx.test.platform.app.InstrumentationRegistry
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp
-import com.example.e_commerce_iti.model.pojos.customer.CustomerX
-import com.example.e_commerce_iti.model.pojos.customer.Customer
-import com.example.e_commerce_iti.model.pojos.draftorder.LineItems
-import com.example.e_commerce_iti.model.remote.RDraftOrderRequest
-import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
-import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
-import com.example.e_commerce_iti.ui.theme.createCustomer
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 import org.junit.runner.RunWith
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import java.util.Calendar
 
