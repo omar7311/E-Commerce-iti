@@ -291,12 +291,11 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                 modifier = Modifier
                     .fillMaxWidth() // Make the title box take full width
                     .padding(
-                        start = 48.dp,
-                        end = 48.dp
+                        horizontal = 30.dp,
                     ), // Ensure title is centered by leaving space for icons
                 contentAlignment = Alignment.Center // Center align the text
             ) {
-                Text(
+                Text(modifier = Modifier.wrapContentWidth(),
                     text = customTitle,
                     fontSize = 22.sp,
                     style = MaterialTheme.typography.titleMedium.copy(
