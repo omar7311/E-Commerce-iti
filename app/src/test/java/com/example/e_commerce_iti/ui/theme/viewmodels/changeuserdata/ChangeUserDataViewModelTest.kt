@@ -33,16 +33,16 @@ class ChangeUserDataViewModelTest{
             }
         }
     }
-//    @Test
-//    fun asdsad()= runTest {
-//        viewModel.getCustomerData("alice.smith@example.com")
-//        viewModel.updateCustomerData("asddas","asddas","adda","sdsdasd")
-//        launch {
-//            viewModel.userStateData.collect{
-//                if (it is UiState.Success&& it.data.first_name=="asddas"){
-//                    assert(it.data.first_name=="asddas")
-//                }
-//            }
-//        }
-//    }
+    @Test
+    fun asdsad()= runTest {
+        viewModel.getCustomerData("alice.smith@example.com")
+        viewModel.updateCustomerData("asddas","asddas","adda","sdsdasd")
+        launch {
+            viewModel.userStateData.collect{
+                if (it is UiState.Success&& it.data.first_name=="asddas"){
+                    assert(it.data.first_name=="asddas")
+                }
+            }
+        }
+    }
 }
