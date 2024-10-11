@@ -48,6 +48,7 @@ class ChangeUserDataViewModel(val repository: IReposiatory):ViewModel() {
        // userStateData.value=UiState.Loading
         job=viewModelScope.launch(Dispatchers.IO) {
            val customer= repository.getCustomer(email).first()
+            println(customer)
            _userStateData.value=UiState.Success(customer)
         }
     }
