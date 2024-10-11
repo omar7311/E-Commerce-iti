@@ -1,4 +1,4 @@
-package com.example.e_commerce_iti.remotes
+package com.example.e_commerce_iti.model.reposiatory.remotes
 
 import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.BrandData
@@ -20,42 +20,52 @@ import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
 import com.example.e_commerce_iti.model.remote.IRemoteDataSource
-import draftOrders
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyBrandData
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomCollections
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomCollectionsResponse
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyCustomers
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyDiscountCodes
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.dummyOrders
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.list
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import products
+import com.example.e_commerce_iti.model.reposiatory.remotes.dummydaya.products
+import kotlinx.coroutines.flow.flowOf
 
 class FakeRemoteDataSource : IRemoteDataSource {
     override suspend fun getPriceRules(): Flow<PriceRules> {
-        TODO("Not yet implemented")
+     return flowOf(PriceRules(list))
     }
 
     override suspend fun getCopuons(priceId: Long): Flow<DiscountCode> {
-        TODO("Not yet implemented")
+      val e= dummyDiscountCodes.filter { it.price_rule_id==priceId }
+        return flowOf(DiscountCode(e))
     }
 
     override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
-        TODO("Not yet implemented")
+        return  flowOf(dummyCustomCollections)
     }
 
     override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> {
-        TODO("Not yet implemented")
+    TODO()
     }
 
     override suspend fun getBrands(): Flow<List<BrandData>> {
-        TODO("Not yet implemented")
+        return flowOf(dummyBrandData)
     }
 
     override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {
-        TODO("Not yet implemented")
+        val list= products.filter { it.vendor == vendorName }
+        return flow { emit(list) }
     }
 
     override suspend fun getCustomer(email: String): Flow<CustomerX> {
-        TODO("Not yet implemented")
+        val customer = dummyCustomers.find { it.email==email }
+        return flowOf(customer!!)
     }
 
     override suspend fun createCustomer(customer: Customer) {
-        TODO("Not yet implemented")
+        dummyCustomers.add(customer.customer!!)
     }
 
     override suspend fun updateCustomer(id: Long, customer: String): Flow<Customer> {
@@ -127,41 +137,8 @@ class FakeRemoteDataSource : IRemoteDataSource {
     }
 
     override suspend fun getPriceRulesByid(priceId: Long): Flow<PriceRule> {
-        //val list = listOf()
-        return flow { emit(PriceRule(
-            admin_graphql_api_id = "gid://shopify/PriceRule/123456789",
-            allocation_method = "across",
-            created_at = "2024-09-01T08:00:00Z",
-            customer_segment_prerequisite_ids = listOf(),
-            customer_selection = "all",
-            ends_at = "2024-12-31T23:59:59Z",
-            entitled_collection_ids = listOf(),
-            entitled_country_ids = listOf(),
-            entitled_product_ids = listOf(),
-            entitled_variant_ids = listOf(),
-            id = 987654321L,
-            once_per_customer = true,
-            prerequisite_collection_ids = listOf(),
-            prerequisite_customer_ids = listOf(),
-            prerequisite_product_ids = listOf(),
-            prerequisite_quantity_range = null,
-            prerequisite_shipping_price_range = null,
-            prerequisite_subtotal_range = PrerequisiteSubtotalRange(greater_than_or_equal_to = "50.00"),
-            prerequisite_to_entitlement_purchase = PrerequisiteToEntitlementPurchase(prerequisite_amount = 1),
-            prerequisite_to_entitlement_quantity_ratio = PrerequisiteToEntitlementQuantityRatio(
-                prerequisite_quantity = 1,
-                entitled_quantity = 1
-            ),
-            prerequisite_variant_ids = listOf(),
-            starts_at = "2024-09-01T08:00:00Z",
-            target_selection = "all",
-            target_type = "line_item",
-            title = "10% Off Orders Over $50",
-            updated_at = "2024-09-15T12:00:00Z",
-            usage_limit = 100,
-            value = "10.0",
-            value_type = "percentage"
-        ))}
+
+        return flow { emit(list.first { it.id == priceId })}
     }
 
     override suspend fun updateMetaData(
@@ -172,15 +149,17 @@ class FakeRemoteDataSource : IRemoteDataSource {
     }
 
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
-        TODO("Not yet implemented")
+        return flow { emit(true) }
     }
 
     override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
-        TODO("Not yet implemented")
+       val e= dummyOrders.orders.filter { it.id==customer_id }
+        return flowOf(e)
     }
 
     override suspend fun getProductById(productId: Long): Flow<Product> {
-        TODO("Not yet implemented")
+      val e=  products.first { it.id==productId }
+        return flowOf(e)
     }
 
     override fun getAllProduct(): Flow<AllProduct> {
@@ -192,6 +171,7 @@ class FakeRemoteDataSource : IRemoteDataSource {
     }
 
     override suspend fun getTempProductById(id: Long): Product {
-        TODO("Not yet implemented")
+       val e= products.filter { it.id==id }
+       return (e[0])
     }
 }
