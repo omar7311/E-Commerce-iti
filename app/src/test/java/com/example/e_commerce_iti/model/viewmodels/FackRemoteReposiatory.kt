@@ -15,8 +15,12 @@ import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRules
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.FullMeatDataResponse
 import com.example.e_commerce_iti.model.pojos.repsonemetadata.ResponseMetaData
+import com.example.e_commerce_iti.model.remotes.dummydaya.dummyOrders
+import com.example.e_commerce_iti.model.remotes.dummydaya.product1
+import com.example.e_commerce_iti.model.remotes.dummydaya.products
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class FackRemoteReposiatory : IReposiatory {
 
@@ -24,11 +28,11 @@ class FackRemoteReposiatory : IReposiatory {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {
+    override suspend fun getCustomCollections(): Flow<List<CustomCollection>> {         // ahmed
         TODO("Not yet implemented")
     }
 
-    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> {
+    override suspend fun getProductsByCustomCollection(collectionId: Long): Flow<List<Product>> {   // ahmed
         TODO("Not yet implemented")
     }
 
@@ -40,12 +44,13 @@ class FackRemoteReposiatory : IReposiatory {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getBrands(): Flow<List<BrandData>> {
+    override suspend fun getBrands(): Flow<List<BrandData>> {            // ahmed
         TODO("Not yet implemented")
     }
 
-    override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {
-        TODO("Not yet implemented")
+    override suspend fun getProductsByVendor(vendorName: String): Flow<List<Product>> {  // ahmed
+        val filteredProducts = products.filter { it.vendor == vendorName }
+        return flowOf(filteredProducts)
     }
 
     override suspend fun getCustomer(email: String): Flow<CustomerX> {
@@ -91,15 +96,18 @@ class FackRemoteReposiatory : IReposiatory {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {
-        TODO("Not yet implemented")
+    override suspend fun getOrdersByCustomerId(customer_id: Long): Flow<List<Order>> {   // ahmed
+        val filtered  = dummyOrders.orders.filter { it.customer.id == customer_id }
+        return flowOf(filtered)
     }
 
-    override suspend fun getProductById(productId: Long): Flow<Product> {
-        TODO("Not yet implemented")
+    override suspend fun getProductById(productId: Long): Flow<Product> {           // omar
+        val product = products.find { it.id == productId }
+            ?: throw IllegalArgumentException("Product with id $productId not found") // Handle null case
+        return flowOf(product)
     }
 
-    override fun getAllProduct(): Flow<AllProduct> {
+    override fun getAllProduct(): Flow<AllProduct> {   // omar
         TODO("Not yet implemented")
     }
 
@@ -115,8 +123,10 @@ class FackRemoteReposiatory : IReposiatory {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getProductByID(id: Long): Flow<Product> {
-        TODO("Not yet implemented")
+    override suspend fun getProductByID(id: Long): Flow<Product> {    // omar
+        val product = products.find { it.id == id }
+            ?: throw IllegalArgumentException("Product with id $id not found") // Handle null case
+        return flowOf(product)
     }
 
     override suspend fun getAllDrafts(): Flow<List<DraftOrder>> {
@@ -124,6 +134,6 @@ class FackRemoteReposiatory : IReposiatory {
     }
 
     override suspend fun getTempProductById(ProductId: Long): Product {
-        TODO("Not yet implemented")
+        return product1  // as temp product
     }
 }
