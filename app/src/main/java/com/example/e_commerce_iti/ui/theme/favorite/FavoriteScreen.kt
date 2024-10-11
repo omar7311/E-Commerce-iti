@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.ui.theme.favorite
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +25,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,7 +41,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,6 +57,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.earthyBrush
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
@@ -67,15 +73,17 @@ import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.SimpleText
+import com.example.e_commerce_iti.ui.theme.product_details.addToCardOFavorite
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.google.gson.Gson
 import java.nio.file.WatchEvent
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController,networkObserver: NetworkObserver) {
+fun FavoriteScreen(productInfoViewModel: ProductInfoViewModel,cartViewModel: CartViewModel, controller: NavController,networkObserver: NetworkObserver) {
 
     LaunchedEffect(Unit) {
         currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
@@ -102,7 +110,7 @@ fun FavoriteScreen(cartViewModel: CartViewModel, controller: NavController,netwo
                                    .fillMaxSize()
                            ) {
                                itemsIndexed(productList) { index, product ->
-                                   FavouriteItem(controller, cartViewModel, product, index)
+                                   FavouriteItem(productInfoViewModel,controller, cartViewModel, product, index)
                                }
                            }
                        }else{
@@ -131,8 +139,10 @@ fun FavouriteScreenPreview(){
 }*/
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavouriteItem(controller: NavController,cartViewModel: CartViewModel,product: Product,index:Int){
+fun FavouriteItem(productInfoViewModel: ProductInfoViewModel,controller: NavController,cartViewModel: CartViewModel,product: Product,index:Int){
     val draftOrder = (cartViewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
+    var isAddingToCards by remember { mutableStateOf(false) }
+    val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
     val showDialog = rememberSaveable { mutableStateOf(false) }
     if (showDialog.value) {
         MyAlertDialog(draftOrder?.line_items!![index+1] ,{ lineItem->
@@ -163,6 +173,25 @@ fun FavouriteItem(controller: NavController,cartViewModel: CartViewModel,product
                         textColor = Color.Black,
                         fontSize = 16.sp
                     )
+                Button(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF76c7c0)),
+                    onClick = {
+                        currentUser?.cart?.let {
+                            isAddingToCards = true
+                            productInfoViewModel.getDraftOrder(it)
+                        } ?: run {
+                            // Handle null cart case
+                            println("User not logged in or cart is null")
+                        }
+                    }) {
+                    Text(text = "Add to cart", color = Color.White, fontSize = 16.sp)
+                    Spacer(Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Filled.ShoppingCart,
+                        contentDescription = null
+                    )
+                }
                 Button(onClick = {
                    showDialog.value=true
                 }, colors = ButtonDefaults.buttonColors(Color.Red)) {
@@ -171,8 +200,51 @@ fun FavouriteItem(controller: NavController,cartViewModel: CartViewModel,product
                     Spacer(modifier = Modifier.width(12.dp))
                     Icon(imageVector = Icons.Filled.Delete, tint = Color.White ,contentDescription = null)
                 }
+
+
                 }
 
         }
     }
+
+    LaunchedEffect(draftOrderState) {
+        if (isAddingToCards) {
+            when (draftOrderState) {
+                is UiState.Success -> {
+                    val draftOrder = (draftOrderState as UiState.Success).data
+                    // Check if product is already in cart or add new product to cart
+                    if (!draftOrder.line_items.any { it.product_id == product.id }) {
+                        addToCardOFavorite(productInfoViewModel, product, draftOrder)
+//                    if(product.variants[0].inventory_quantity!=0) {
+//                        Toast.makeText(
+//                            context,
+//                            "the product is adding successfully",
+//                            Toast.LENGTH_LONG
+//                        )
+//                            .show()
+//                    }
+//                    else{
+//                        Toast.makeText(
+//                            context,
+//                            "the product is not available",
+//                            Toast.LENGTH_LONG
+//                        )
+//                            .show()
+//                    }
+                        isAddingToCards = false
+
+                    }
+                }
+
+                is UiState.Error -> {
+                    // Handle error, show message
+                    println("Error fetching draft order")
+                    isAddingToCards = false
+                }
+
+                else -> {}
+            }
+        }
+    }
+
 }

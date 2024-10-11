@@ -188,7 +188,7 @@ fun CheckoutButton(viewModel: CartViewModel) {
             .padding(horizontal = 50.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF76c7c0), // Replace with your desired color
-            contentColor = Color.Black // Text color
+            contentColor = Color.White // Text color
         )
     ) {
         Text(
