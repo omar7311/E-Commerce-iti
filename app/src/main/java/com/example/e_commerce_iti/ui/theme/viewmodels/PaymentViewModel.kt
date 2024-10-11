@@ -96,6 +96,9 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
            ) {
                message += "Wrong Card Info"
            }
+      if (totalamount.value>1000&&paymentMethod.value!="paid"){
+          message+="this total amount cannot pay in delivery"
+      }
            if (message.isNotBlank()) {
                throw Exception(message)
            }
