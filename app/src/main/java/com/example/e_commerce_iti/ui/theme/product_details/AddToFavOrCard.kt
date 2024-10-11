@@ -2,7 +2,6 @@ package com.example.e_commerce_iti.ui.theme.product_details
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.e_commerce_iti.currentUser
-import com.example.e_commerce_iti.earthyBrush
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
@@ -96,7 +94,7 @@ fun Actions(
                 val draftOrder = (draftOrderState as UiState.Success).data
                 // Check if product is already in cart or add new product to cart
                 if (!draftOrder.line_items.any { it.product_id == product.id }) {
-                    addToCardOFavorite(productInfoViewModel, product, draftOrder)
+                    addToCardOrFavorite(productInfoViewModel, product, draftOrder)
                     if(product.variants[0].inventory_quantity!=0) {
                         Toast.makeText(
                             context,
@@ -128,7 +126,7 @@ fun Actions(
 
 
 
-fun addToCardOFavorite(
+fun addToCardOrFavorite(
     productInfoViewModel: ProductInfoViewModel,
     product: Product,
     draftOrder: DraftOrder

@@ -87,7 +87,6 @@ import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomImage
 import com.example.e_commerce_iti.ui.theme.home.CustomText
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
-import com.example.e_commerce_iti.ui.theme.product_details.addToCardOrFavorite
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel

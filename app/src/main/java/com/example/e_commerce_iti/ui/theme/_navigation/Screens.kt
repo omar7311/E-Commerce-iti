@@ -171,7 +171,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
         composable(route = Screens.Favorite.route) {
             val cartViewModel: CartViewModel = viewModel(factory = cartFactory)
             val productInfoViewModel:ProductInfoViewModel= viewModel(factory = productInfoViewModelFac)
-            FavoriteScreen(productInfoViewModel,cartViewModel, navController,context)
+            FavoriteScreen(productInfoViewModel,cartViewModel, navController,context,networkObserver)
         }
 
         composable(route = Screens.Search.route) {
