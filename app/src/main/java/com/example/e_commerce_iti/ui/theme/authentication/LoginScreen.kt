@@ -194,7 +194,8 @@ fun LoginScreen(
                             FirebaseAuthManager.login(email, password) { success, error ->
                                 isLoading = false
                                 if (success) {
-                                    controller.navigate(Screens.Home.route)
+                                    if(currentUser?.isEmailVerified == true) controller.navigate(Screens.Home.route)
+                                    else Toast.makeText(context,"Verify Your Mail",Toast.LENGTH_LONG).show()
                                 } else {
                                     errorMessage = error
                                 }

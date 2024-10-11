@@ -298,6 +298,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
             ) {
                 Text(
                     text = customTitle,
+                    fontSize = 22.sp,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -320,7 +321,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
         },
         actions = {
             // Favorite icon on the right
-            //if(!FirebaseAuth.getInstance().currentUser?.isAnonymous!!){
+
             IconButton(onClick = { controller.navigate(Screens.Favorite.route) }) {
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
@@ -328,8 +329,8 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                     tint = Color.White,
                     contentDescription = "Favorite"
                 )
-           // }
-        }
+            }
+
                   },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color.Transparent // Transparent to let gradient shine

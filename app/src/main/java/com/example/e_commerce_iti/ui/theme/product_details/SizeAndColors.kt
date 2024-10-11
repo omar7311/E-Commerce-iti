@@ -73,8 +73,8 @@ fun colors(color:String):Color{
     else if(color=="white") Color.White
     else if(color=="black") Color.Black
     else if(color=="blue") Color.Blue
-    else if(color.contains("gray")) Color.DarkGray
-    else Color.LightGray
+    else if(color.contains("gray")) Color.Gray
+    else Color.Unspecified
 }
 
 

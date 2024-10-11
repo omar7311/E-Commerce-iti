@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.ui.theme.favorite
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -83,7 +84,7 @@ import java.nio.file.WatchEvent
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavoriteScreen(productInfoViewModel: ProductInfoViewModel,cartViewModel: CartViewModel, controller: NavController,networkObserver: NetworkObserver) {
+fun FavoriteScreen(productInfoViewModel: ProductInfoViewModel,cartViewModel: CartViewModel, controller: NavController,context: Context) {
 
     LaunchedEffect(Unit) {
         currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
@@ -110,7 +111,7 @@ fun FavoriteScreen(productInfoViewModel: ProductInfoViewModel,cartViewModel: Car
                                    .fillMaxSize()
                            ) {
                                itemsIndexed(productList) { index, product ->
-                                   FavouriteItem(productInfoViewModel,controller, cartViewModel, product, index)
+                                   FavouriteItem(context,productInfoViewModel,controller, cartViewModel, product, index)
                                }
                            }
                        }else{
@@ -130,16 +131,10 @@ fun FavoriteScreen(productInfoViewModel: ProductInfoViewModel,cartViewModel: Car
     }
 
 
-/*@Preview(showSystemUi = true)
-@Composable
-fun FavouriteScreenPreview(){
-    val controller= rememberNavController()
-    //FavoriteScreen(controller)
 
-}*/
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun FavouriteItem(productInfoViewModel: ProductInfoViewModel,controller: NavController,cartViewModel: CartViewModel,product: Product,index:Int){
+fun FavouriteItem(context:Context,productInfoViewModel: ProductInfoViewModel,controller: NavController,cartViewModel: CartViewModel,product: Product,index:Int){
     val draftOrder = (cartViewModel.cartState.value as? UiState.Success<DraftOrder>)?.data
     var isAddingToCards by remember { mutableStateOf(false) }
     val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
@@ -215,22 +210,22 @@ fun FavouriteItem(productInfoViewModel: ProductInfoViewModel,controller: NavCont
                     // Check if product is already in cart or add new product to cart
                     if (!draftOrder.line_items.any { it.product_id == product.id }) {
                         addToCardOFavorite(productInfoViewModel, product, draftOrder)
-//                    if(product.variants[0].inventory_quantity!=0) {
-//                        Toast.makeText(
-//                            context,
-//                            "the product is adding successfully",
-//                            Toast.LENGTH_LONG
-//                        )
-//                            .show()
-//                    }
-//                    else{
-//                        Toast.makeText(
-//                            context,
-//                            "the product is not available",
-//                            Toast.LENGTH_LONG
-//                        )
-//                            .show()
-//                    }
+                    if(product.variants[0].inventory_quantity!=0) {
+                        Toast.makeText(
+                            context,
+                            "the product is adding successfully",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
+                    else{
+                        Toast.makeText(
+                            context,
+                            "the product is not available",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
                         isAddingToCards = false
 
                     }
