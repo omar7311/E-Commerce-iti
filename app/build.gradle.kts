@@ -135,4 +135,11 @@ dependencies {
 
     // Accompanist FlowLayout
     implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
+
+    // Slider implementation
+    implementation("com.google.accompanist:accompanist-pager:0.36.0")
+
+// For indicators
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.32.0")
+
 }
