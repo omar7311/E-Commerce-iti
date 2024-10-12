@@ -14,6 +14,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +38,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -65,6 +69,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,6 +92,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
@@ -105,6 +111,7 @@ import com.example.e_commerce_iti.LoadingIndicator
 import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.earthyBrush
+import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
@@ -114,11 +121,7 @@ import com.example.e_commerce_iti.pastelBrush
 import com.example.e_commerce_iti.transparentBrush
 import com.example.e_commerce_iti.ui.theme.ShimmerEffect
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
-import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModelFac
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
-import com.skydoves.landscapist.Shimmer
+import kotlinx.coroutines.delay
 
 /**
  *      don't forget navigation
@@ -184,51 +187,95 @@ fun HomeContent(
 /**
  *  this function to show coupons randomly
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CouponCarousel(viewModel: CouponViewModel) {
     val context = LocalContext.current
-
-    val couponImages by viewModel.couponImages.observeAsState(emptyList())
+    val couponImages by viewModel.couponImages.collectAsState(initial = emptyList())
     val couponsState by viewModel.couponsStateflow.collectAsState()
-    viewModel.getCoupons()
-    // Display the images in a carousel-like format
-    LazyRow(
+    val pagerState = rememberPagerState { couponImages.size }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        viewModel.getCoupons()
+    }
+
+    LaunchedEffect(pagerState) {
+        while (true) {
+            delay(4000L) // Change slide every 3 seconds
+            val nextPage = (pagerState.currentPage + 1) % (couponImages.size.coerceAtLeast(1))
+            pagerState.animateScrollToPage(nextPage)
+        }
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        itemsIndexed(couponImages) { index, coupon ->
-            if (couponsState is UiState.Loading){
+        when (couponsState) {
+            is UiState.Loading -> {
                 ShimmerEffect()
             }
-            if (couponsState is UiState.Success) {
-                val cc = (couponsState as UiState.Success).data
-                Box(
+            is UiState.Success -> {
+                val coupons = (couponsState as UiState.Success).data
+                HorizontalPager(
+                    state = pagerState,
                     modifier = Modifier
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onLongPress = {
-                                    copyToClipboard(context, cc[index].discount_codes[0].code)
-                                },
-                                onTap = {}
-                            )
-                        }
+                        .fillMaxWidth()
                         .height(200.dp)
-                        .width(400.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // Image display
-                    Image(
-                        painter = rememberImagePainter(coupon.imageUrl),
-                        contentDescription = coupon.description,
-                        modifier = Modifier.fillMaxWidth(),
-                        contentScale = ContentScale.Crop
-
-                    )
+                ) { page ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.LightGray)
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onLongPress = {
+                                        copyToClipboard(context, coupons[page].discount_codes[0].code)
+                                    }
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AsyncImage(
+                            model = couponImages[page].imageUrl,
+                            contentDescription = couponImages[page].description,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
+
+                Row(
+                    Modifier
+                        .height(50.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    repeat(couponImages.size) { iteration ->
+                        val color = if (pagerState.currentPage == iteration) ingredientColor1 else Color.LightGray
+                        Box(
+                            modifier = Modifier
+                                .padding(2.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(color)
+                                .size(8.dp)
+                        )
+                    }
+                }
+            }
+            is UiState.Error -> {
+                Text("Error loading coupons")
+            }
+            is UiState.Failure -> {
+                Text("Failed to load coupons")
+            }
+            UiState.Non -> {
+                // Handle initial state if needed
             }
         }
     }
