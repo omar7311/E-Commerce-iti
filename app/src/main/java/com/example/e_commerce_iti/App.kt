@@ -26,7 +26,7 @@ class App : Application() {
         val auth = Firebase.auth
         val repository: IReposiatory = ReposiatoryImpl(
             RemoteDataSourceImp(),
-            LocalDataSourceImp(this.getSharedPreferences(LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
+            LocalDataSourceImp(this.getSharedPreferences(LocalDataSourceImp.EMAIL_CURRENCY_PREFIX, Context.MODE_PRIVATE))
         )
 
         // Define the auth state listener
@@ -37,14 +37,14 @@ class App : Application() {
                         CoroutineScope(Dispatchers.IO).launch{
                             try {
                                 getCurrent(firebaseAuth.currentUser!!.email!!, repository)
-                                Log.i("created","$currentUser")
+                                Log.i("created","${currentUser.value}")
                             }catch (e:Exception){
                                 Log.i("created","$e")
                             }
-
                         }
                     }else{
-                        deleteCurrentUser()
+                        Log.i("c332132321reated","null")
+                         currentUser.value=null
                     }
         }
 

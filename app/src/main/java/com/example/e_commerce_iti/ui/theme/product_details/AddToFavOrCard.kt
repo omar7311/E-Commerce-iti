@@ -52,7 +52,7 @@ fun Actions(
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFF76c7c0), Color.White),
             onClick = {
-                currentUser?.fav?.let {
+                currentUser.value?.fav?.let {
                     productInfoViewModel.getDraftOrder(it)
                 } ?: run {
                     // Handle null cart case
@@ -71,7 +71,7 @@ fun Actions(
             shape = RoundedCornerShape(16.dp),
             colors =ButtonDefaults.buttonColors(Color(0xFF76c7c0), Color.White),
             onClick = {
-                currentUser?.cart?.let {
+                currentUser.value?.cart?.let {
                     productInfoViewModel.getDraftOrder(it)
                 } ?: run {
                     // Handle null cart case
