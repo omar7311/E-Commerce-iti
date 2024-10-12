@@ -75,6 +75,7 @@ import com.google.android.play.integrity.internal.al
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.gson.Gson
+import timber.log.Timber
 import java.net.URLEncoder
 
 var shippingAddress : ShippingAddress?=null
@@ -122,7 +123,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
     val repository: IReposiatory = ReposiatoryImpl(
         RemoteDataSourceImp(),
-        LocalDataSourceImp(context.getSharedPreferences(LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
+        LocalDataSourceImp(context.getSharedPreferences(currentUser.value?.email ?:"null", Context.MODE_PRIVATE))
     )
 
     val paymentViewModelFactory = PaymentViewModelFactory(repository)
@@ -211,6 +212,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Setting.route) {
             val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
+            Timber.tag("ssssssssssss11ssssssssss").d("Navigation: " + currentUser)
             SettingScreen(networkObserver,currencyViewModel, navController)
         }
 

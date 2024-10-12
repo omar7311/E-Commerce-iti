@@ -25,6 +25,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +41,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.e_commerce_iti.CurrentUser
+import com.example.e_commerce_iti.CurrentUserSaver
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.getCurrent
@@ -46,7 +49,6 @@ import com.example.e_commerce_iti.gradientBrush
 import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currentCurrency
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.Variant
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
@@ -64,10 +66,9 @@ import kotlinx.coroutines.flow.SharedFlow
 
 @Composable
 fun Carts(navController: NavController,modifier: Modifier = Modifier, viewModel: CartViewModel) {
-    // Ensure these functions are called only once when the composable enters the composition
     LaunchedEffect(Unit) {
-        Log.i("CartScreen", "LaunchedEffect called ${currentUser!!.cart}")
-        viewModel.getCartDraftOrder(currentUser!!.cart)
+        Log.i("CartScreen", "LaunchedEffect called ${currentUser.value!!.cart}")
+        viewModel.getCartDraftOrder(currentUser.value!!.cart)
         viewModel.getCurrency()
     }
     if (viewModel.navigateto.collectAsState().value) {
@@ -208,10 +209,10 @@ fun CartsPreview() {
         val viewModel = CartViewModel(
             ReposiatoryImpl(
                 RemoteDataSourceImp(),
-                LocalDataSourceImp(context.getSharedPreferences(currentCurrency, Context.MODE_PRIVATE))
+                LocalDataSourceImp(context.getSharedPreferences(currentUser.value?.email ?:"null", Context.MODE_PRIVATE))
             )
         )
-        currentUser= CurrentUser(id = 7494620905649, cart = 1003013144753L)
+        currentUser.value=CurrentUser(id = 7494620905649, cart = 1003013144753L)
         Carts(viewModel = viewModel,navController = NavController(context))
     }
 }

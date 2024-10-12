@@ -51,6 +51,10 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @Composable
 fun LoginScreen(
@@ -186,13 +190,17 @@ fun LoginScreen(
 
             onClick  = {
                 if (emailRegex.matches(email) && passwordRegex.matches(password)) {
-                    scope.launch {
+                    CoroutineScope(Dispatchers.IO).launch {
                         isLoading = true
                         FirebaseAuthManager.login(email, password) { success, error ->
-                            isLoading = false
+
+                                isLoading = false
+
                             if (success) {
-                                if(currentUser?.isEmailVerified == true) controller.navigate(Screens.Home.route)
-                                else Toast.makeText(context,"Verify Your Mail",Toast.LENGTH_LONG).show()
+                                controller.navigate(Screens.Home.route)
+//                                if(currentUser?.isEmailVerified == true)
+//
+//                                else Toast.makeText(context,"Verify Your Mail",Toast.LENGTH_LONG).show()
                             } else {
                                 errorMessage = error
                             }

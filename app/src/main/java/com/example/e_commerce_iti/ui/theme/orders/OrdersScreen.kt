@@ -96,7 +96,7 @@ fun OrdersScreen(
 @Composable
 fun OrdersContent(orderViewModel: OrdersViewModel, controller: NavController) {
 
-    val customerId = currentUser?.id
+    val customerId = currentUser.value?.id
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "Orders History",

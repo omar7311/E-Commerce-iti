@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.e_commerce_iti.CurrentUser
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCodeX
@@ -31,6 +32,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     var _oderstate= MutableStateFlow<UiState<String>>(UiState.Loading)
     val oderstate: StateFlow<UiState<String>> = _oderstate
     private var _discountCode = MutableStateFlow<UiState<DiscountCodeX>>(UiState.Loading)
+    val discountCode: StateFlow<UiState<DiscountCodeX>> = _discountCode
     private var _priceRules = MutableStateFlow<UiState<PriceRule>>(UiState.Non)
     val priceRules: StateFlow<UiState<PriceRule>> = _priceRules
     private var _cart = MutableStateFlow<UiState<DraftOrder>>(UiState.Loading)
@@ -78,7 +80,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val expiryMonth= MutableStateFlow("")
     val expiryYear= MutableStateFlow<String>("")
   suspend fun submitOrder() {
-       var message = ""
+                var message = ""
          if(shippingAddress!=null){
              address.value=shippingAddress!!.address1!!
          }
@@ -108,8 +110,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                throw Exception("Shipping Address is required")
            }
                val e = (_cart.value as UiState.Success<DraftOrder>).data
-               e.email = currentUser?.email
-               e.invoice_sent_at = currentUser!!.email
+               e.invoice_sent_at  = (currentUser.value!!.email)
                e.billing_address = BillingAddress(address.value, city = shippingAddress!!.address1)
                e.shipping_address = shippingAddress
                repository.compeleteDraftOrder(e)

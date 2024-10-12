@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -79,8 +80,6 @@ fun FavoriteScreen(
     context: Context,
     networkObserver: NetworkObserver
 ) {
-
-
     val product by cartViewModel.product.collectAsState()
     Scaffold(
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
@@ -96,7 +95,7 @@ fun FavoriteScreen(
         if (isConnected.value) {
             if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {  // when guest
                 LaunchedEffect(Unit) {
-                    currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
+                    currentUser.value!!.fav.let { cartViewModel.getCartDraftOrder(it) }
                 }
                 // Use padding for the content
                 Box(
@@ -206,7 +205,7 @@ fun FavouriteItem(
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(Color(0xFF76c7c0)),
                     onClick = {
-                        currentUser?.cart?.let {
+                        currentUser.value!!.cart.let {
                             isAddingToCards = true
                             productInfoViewModel.getDraftOrder(it)
                         } ?: run {

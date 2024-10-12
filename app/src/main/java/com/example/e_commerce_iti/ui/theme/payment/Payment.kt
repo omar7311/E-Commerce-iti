@@ -45,16 +45,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.gradientBrush
@@ -74,59 +77,65 @@ import java.time.LocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavController) {
-    var cop by remember { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        paymentViewModel.getCart(currentUser!!.cart)
-        paymentViewModel.getusercurrency()
-    }
-
-    var flag = remember { mutableStateOf(false) }
-    val cartState = paymentViewModel.cart.collectAsState().value
-
-    Column(Modifier.fillMaxSize()) {
-        // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                modifier = Modifier.fillMaxHeight(),
-                onClick = { navController.navigateUp() }
-            ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Payment",
-                style = MaterialTheme.typography.headlineMedium
-            )
+    if (currentUser.value != null) {
+        var cop by rememberSaveable { mutableStateOf("") }
+        LaunchedEffect(Unit) {
+            paymentViewModel.getCart(currentUser.value!!.cart)
+            paymentViewModel.getusercurrency()
         }
-
-        when (cartState) {
-            is UiState.Loading -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-            is UiState.Success -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp)
+        var flag = remember { mutableStateOf(false) }
+        val cartState = paymentViewModel.cart.collectAsState().value
+        Column(Modifier.fillMaxSize()) {
+            // Header
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    modifier = Modifier.fillMaxHeight(),
+                    onClick = { navController.navigateUp() }
                 ) {
-                    PaymentContent(paymentViewModel, navController, cop) { cop = it }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    CreditCardForm(paymentViewModel, flag,navController)
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Payment",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            }
+
+            when (cartState) {
+                is UiState.Loading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is UiState.Success -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp)
+                    ) {
+                        PaymentContent(paymentViewModel, navController, cop) { cop = it }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CreditCardForm(paymentViewModel, flag, navController)
+                    }
+                }
+
+                else -> {
+                    // Handle error state if needed
+                    Text("Error loading cart data")
                 }
             }
-            else -> {
-                // Handle error state if needed
-                Text("Error loading cart data")
-            }
+        }
+    }else{
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
     }
 }
@@ -198,7 +207,7 @@ fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel:
             )
         )
         Text(
-            text = "${(amount.value * paymentViewModel.currency.collectAsState().value.second).roundToTwoDecimalPlaces()} ${paymentViewModel.currency.collectAsState().value.first}",
+            text = "${(amount.collectAsState().value * paymentViewModel.currency.collectAsState().value.second).roundToTwoDecimalPlaces()} ${paymentViewModel.currency.collectAsState().value.first}",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold,
@@ -211,7 +220,7 @@ fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel:
 
     Spacer(modifier = Modifier.height(12.dp))
 }
-
+var e=false
 @Composable
 fun DiscountCodeSection(
     paymentViewModel: PaymentViewModel,
@@ -219,6 +228,7 @@ fun DiscountCodeSection(
     cop: String,
     onCopChange: (String) -> Unit
 ) {
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -253,6 +263,7 @@ fun DiscountCodeSection(
                 ),
                 onClick = {
                     if (cop.isNotBlank()) {
+                        e=true
                         paymentViewModel.get_discount_details(cop)
                     } else {
                         Toast.makeText(
@@ -265,6 +276,10 @@ fun DiscountCodeSection(
                 enabled = priceRulesState !is UiState.Success
             ) {
                 Text(text = "Apply")
+            }
+            if (paymentViewModel.discountCode.collectAsState().value is UiState.Error&&e) {
+                e=false
+                Toast.makeText(LocalContext.current, "Invalid Coupon", Toast.LENGTH_SHORT).show()
             }
         } else {
             CircularProgressIndicator()
