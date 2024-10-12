@@ -58,7 +58,7 @@ fun FavoriteButton(
     IconButton( colors = IconButtonDefaults.iconButtonColors(ingredientColor1, Color.White),
         modifier = Modifier.size(35.dp),
         onClick = {
-                currentUser?.fav?.let { favId ->
+                currentUser.value!!.fav.let { favId ->
                     isAddingToFavorites = true
                     productInfoViewModel.getDraftOrder(favId)
                 } ?: run {

@@ -23,11 +23,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,10 +43,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.e_commerce_iti.CurrentUserSaver
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.darkSlateGray
-import com.example.e_commerce_iti.deleteCurrentUser
 import com.example.e_commerce_iti.lavender
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
@@ -73,6 +76,8 @@ fun ProfileScreen(controller: NavController) {
     ) { innerPadding ->
 
         if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {  // when guest
+            val e= currentUser.observeAsState().value
+            if (e!= null){
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -96,7 +101,7 @@ fun ProfileScreen(controller: NavController) {
                         .padding(top = 2.dp, start = 20.dp, end = 20.dp), Arrangement.Center
                 ) {
                     Text(
-                        text = "Name : ${currentUser?.name ?: "N/A"}",
+                        text = "Name : ${currentUser.value?.name ?: "N/A"}",
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -117,7 +122,7 @@ fun ProfileScreen(controller: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Email : ${currentUser?.email ?: "N/A"}",
+                        text = "Email : ${currentUser.value?.email ?: "N/A"}",
                         fontSize = if (screenWidth < 600.dp) 14.sp else 17.sp, // Smaller font size on small screens
                         fontWeight = FontWeight.Bold
                     )
@@ -141,7 +146,15 @@ fun ProfileScreen(controller: NavController) {
                 LogoutButton(controller)
 
             }
-        }else{
+        }
+            else{
+            Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        }
+
+        else{
             GuestScreen(controller)
         }
     }
@@ -163,7 +176,7 @@ fun LogoutButton(controller: NavController) {
                     launchSingleTop = true
                 }
                 Firebase.auth.signOut()
-                deleteCurrentUser()
+                currentUser.value = null
             },
             modifier = Modifier
                 .wrapContentWidth()

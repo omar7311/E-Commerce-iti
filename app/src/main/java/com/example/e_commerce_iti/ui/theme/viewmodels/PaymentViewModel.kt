@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.e_commerce_iti.CurrentUser
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.discountcode.DiscountCodeX
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.math.round
 
 class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val currency= MutableStateFlow<Pair<String,Float>>(Pair("USD",1.0F))
@@ -30,6 +32,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     var _oderstate= MutableStateFlow<UiState<String>>(UiState.Loading)
     val oderstate: StateFlow<UiState<String>> = _oderstate
     private var _discountCode = MutableStateFlow<UiState<DiscountCodeX>>(UiState.Loading)
+    val discountCode: StateFlow<UiState<DiscountCodeX>> = _discountCode
     private var _priceRules = MutableStateFlow<UiState<PriceRule>>(UiState.Non)
     val priceRules: StateFlow<UiState<PriceRule>> = _priceRules
     private var _cart = MutableStateFlow<UiState<DraftOrder>>(UiState.Loading)
@@ -77,7 +80,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val expiryMonth= MutableStateFlow("")
     val expiryYear= MutableStateFlow<String>("")
   suspend fun submitOrder() {
-       var message = ""
+                var message = ""
          if(shippingAddress!=null){
              address.value=shippingAddress!!.address1!!
          }
@@ -107,8 +110,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                throw Exception("Shipping Address is required")
            }
                val e = (_cart.value as UiState.Success<DraftOrder>).data
-               e.email = currentUser?.email
-               e.invoice_sent_at = currentUser!!.email
+               e.invoice_sent_at  = (currentUser.value!!.email)
                e.billing_address = BillingAddress(address.value, city = shippingAddress!!.address1)
                e.shipping_address = shippingAddress
                repository.compeleteDraftOrder(e)
@@ -144,21 +146,29 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
             }
         }
     }
-
+    fun calculateDiscountAmount(orderSubtotal: Double, discountValue: Double, isPercentage: Boolean): Double {
+        return if (isPercentage) {
+            orderSubtotal * (discountValue / 100)  // Calculate percentage
+        } else {
+            discountValue  // Use the fixed amount directly
+        }
+    }
     fun apply_discount(priceRule: PriceRule) {
         val cart = (cart.value as UiState.Success<DraftOrder>).data
-
+        _cart.value = UiState.Loading
         viewModelScope.launch {
             try {
+                val discountAmount = calculateDiscountAmount(cart.subtotal_price!!.toDouble(), priceRule.value.toDouble(), priceRule.value_type == "percentage")
+
                 if (priceRule.value_type == "fixed_amount") {
-                 totalamount.value-=priceRule.value.toDouble().roundToTwoDecimalPlaces()
+                    totalamount.value-=priceRule.value.toDouble().roundToTwoDecimalPlaces()
                 } else {
                     val t=(100.0+priceRule.value.toDouble())/100.0
                     discount.value=(totalamount.value* (1.0-t))
                     totalamount.value = (totalamount.value*(t)).roundToTwoDecimalPlaces()
                 }
                 cart.applied_discount = AppliedDiscount(
-                    amount = priceRule.value,
+                    amount = round(discountAmount).toString(),  // Make sure discountAmount is valid and properly converted
                     description = "Discount Code ${(_discountCode.value as UiState.Success<DiscountCodeX>).data.code}",
                     title = priceRule.title,
                     value = priceRule.value,

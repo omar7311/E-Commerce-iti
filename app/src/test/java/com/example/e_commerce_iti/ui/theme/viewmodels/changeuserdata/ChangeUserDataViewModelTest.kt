@@ -2,7 +2,7 @@ package com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata
 
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
-import com.example.e_commerce_iti.model.viewmodels.FackRemoteReposiatory
+import com.example.e_commerce_iti.model.viewmodels.FakeReposiatory
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -18,7 +18,7 @@ class ChangeUserDataViewModelTest{
     private  lateinit var repo: IReposiatory
     @Before
     fun setUp() {
-        val mockReposiatory = FackRemoteReposiatory()
+        val mockReposiatory = FakeReposiatory()
         viewModel = ChangeUserDataViewModel(mockReposiatory)
     }
     @Test
@@ -35,14 +35,22 @@ class ChangeUserDataViewModelTest{
     }
     @Test
     fun asdsad()= runTest {
+        var a=true
         viewModel.getCustomerData("alice.smith@example.com")
-        viewModel.updateCustomerData("asddas","asddas","adda","sdsdasd")
         launch {
             viewModel.userStateData.collect{
-                if (it is UiState.Success&& it.data.first_name=="asddas"){
-                    assert(it.data.first_name=="asddas")
+                println(it)
+                if (it is UiState.Success&&a){
+                    a=false
+                    viewModel.updateCustomerData("asddas","asddas","adda","sdsdasd")
+                }
+                if (it is UiState.Success&&!a){
+                    println(it.data)
+                    assert(it.data.email=="alice.smith@example.com")
+                    cancel()
                 }
             }
         }
+
     }
 }

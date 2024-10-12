@@ -49,7 +49,6 @@ import androidx.navigation.NavController
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
-import com.example.e_commerce_iti.model.local.LocalDataSourceImp.Companion.currencies
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
@@ -61,6 +60,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata.ChangeUserD
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.example.e_commerce_iti.R
@@ -72,10 +72,14 @@ import com.skydoves.landscapist.glide.GlideImage
 
 fun ChangeUserDataScreen(viewModel: ChangeUserDataViewModel, navController: NavController) {
     // Fetch user data from Firebase
-    viewModel.getCustomerData(Firebase.auth.currentUser!!.email!!)
-
-            ChangeUserDataScreenContent(viewModel,navController)
-
+        if (currentUser.observeAsState().value!=null) {
+            viewModel.getCustomerData(Firebase.auth.currentUser!!.email!!)
+            ChangeUserDataScreenContent(viewModel, navController)
+        }else{
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 

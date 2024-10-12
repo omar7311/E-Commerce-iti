@@ -3,7 +3,7 @@ package com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel
 import androidx.compose.runtime.collectAsState
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
-import com.example.e_commerce_iti.model.viewmodels.FackRemoteReposiatory
+import com.example.e_commerce_iti.model.viewmodels.FakeReposiatory
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ class CartViewModelTest {
     lateinit var viewModel: CartViewModel
     @Before
     fun setUp() {
-        val mockReposiatory = FackRemoteReposiatory()
+        val mockReposiatory = FakeReposiatory()
          viewModel = CartViewModel(mockReposiatory)
     }
 
