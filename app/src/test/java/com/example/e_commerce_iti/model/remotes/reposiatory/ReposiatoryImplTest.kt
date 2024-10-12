@@ -2,6 +2,7 @@ package com.example.e_commerce_iti.model.remotes.reposiatory
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.model.local.IlocalDataSource
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.pojos.AllProduct
@@ -61,7 +62,7 @@ class ReposiatoryImplTest {
 
         localDataSource = FakeLocalDataSource(
             context.getSharedPreferences(
-                LocalDataSourceImp.currentCurrency,
+               currentUser.value?.email?:"null",
                 Context.MODE_PRIVATE
             )
         )

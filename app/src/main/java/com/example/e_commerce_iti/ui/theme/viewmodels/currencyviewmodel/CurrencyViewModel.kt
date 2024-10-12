@@ -49,6 +49,7 @@ class CurrencyViewModel(private val repository: IReposiatory) : ViewModel() {
     }
     var job: Job?=null
     fun getCustomerData(email:String){
+        Log.e("sadsadadadsadsadsadsdasdasd","$email")
         job?.cancel()
        // userStateData.value=UiState.Loading
         job=viewModelScope.launch(Dispatchers.IO) {

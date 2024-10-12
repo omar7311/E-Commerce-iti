@@ -73,6 +73,8 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
         viewModelScope.launch {
             val currentCartState = _cartState.value as? UiState.Success<DraftOrder>
             currentCartState?.let { cart ->
+                Log.i("before update cart ", "Updated cart: beofre ${currentCartState.data.line_items.size}")
+
                 _totalAmount.value-=(lineItem.price!!.toDouble() * lineItem.quantity!!)
                 val updatedLineItems = cart.data.line_items.filterNot { it.id == lineItem.id }
                 val updatedDraftOrder = cart.data.copy(line_items = updatedLineItems)
@@ -82,7 +84,8 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
                     }
                 }
                 // Update the cart in the repository
-                cartRepository.updateCart(updatedDraftOrder)
+               val t= cartRepository.updateCart(updatedDraftOrder)
+                Log.i("before update cart ", "Updated cart: after ${t.first().line_items.size}")
 
                 // Now update the product list
                 val updatedProducts = (product.value as? UiState.Success<MutableList<Product>>)?.data?.toMutableList()
@@ -90,6 +93,7 @@ class CartViewModel(private val cartRepository: IReposiatory): ViewModel() {
 
                 // Emit updated state for products
                 _product.value = UiState.Success(updatedProducts ?: mutableListOf())
+                _cartState.value = UiState.Success(t.first())
                 Log.i("CartViewModel", "Updated product list: ${updatedProducts?.size}")
             }
         }
