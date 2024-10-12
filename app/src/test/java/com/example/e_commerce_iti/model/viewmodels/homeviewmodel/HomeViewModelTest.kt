@@ -1,6 +1,5 @@
 package com.example.e_commerce_iti.model.viewmodels.homeviewmodel
 
-import android.util.Log
 import com.example.e_commerce_iti.model.apistates.BrandsApiState
 import com.example.e_commerce_iti.model.apistates.CustomCollectionStates
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
@@ -15,7 +14,7 @@ import com.example.e_commerce_iti.model.remotes.dummydaya.product7
 import com.example.e_commerce_iti.model.remotes.dummydaya.product8
 import com.example.e_commerce_iti.model.remotes.dummydaya.product9
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
-import com.example.e_commerce_iti.model.viewmodels.FackRemoteReposiatory
+import com.example.e_commerce_iti.model.viewmodels.FakeReposiatory
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -35,7 +34,7 @@ class HomeViewModelTest{
 
     @Before
     fun setUp(){
-        repo = FackRemoteReposiatory()
+        repo = FakeReposiatory()
         homeViewModel = HomeViewModel(repo)
     }
 
