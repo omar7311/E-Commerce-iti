@@ -152,14 +152,10 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
-        Log.e("33333333333333333332222222221111111", "before update cart: ${cart.line_items.size} ------------ ")
         val data = RetrofitHelper.service.updateCartDraftOrder(cart.id!!, SearchDraftOrder(cart))
-        Log.e("33333333333333333332222222221111111", "after update cart: ${data.body()!!.draft_order!!.line_items.size} ------------ ")
 
         println(cart)
-        Log.e("12312321312313213", "${data} ------------ ")
-        Log.e("12312321312313213", "${data.errorBody()?.string()} ------------ ")
-        println(data.errorBody()?.string())
+           println(data.errorBody()?.string())
         return flow { emit(data.body()!!.draft_order!!) }
     }
 

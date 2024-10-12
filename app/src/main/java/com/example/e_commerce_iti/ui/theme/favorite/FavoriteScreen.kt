@@ -124,7 +124,7 @@ fun FavoriteScreen(
                                             controller,
                                             cartViewModel,
                                             product,
-                                            index
+                                            index+1
                                         )
                                     }
                                 }
