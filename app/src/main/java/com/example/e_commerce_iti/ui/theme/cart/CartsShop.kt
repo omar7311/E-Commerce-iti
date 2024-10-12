@@ -124,7 +124,7 @@ fun Carts(navController: NavController,modifier: Modifier = Modifier, viewModel:
                 } else {
                     // Handle empty product list
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        MyLottiAni(R.raw.emptycart)
+                        MyLottiAni(R.raw.animation_no_data)
                     }
                 }
             }
