@@ -19,8 +19,7 @@ val draftOrders = listOf<DraftOrder>(DraftOrder(
         LineItems(product_id = 3, variant_id = 301, quantity = 3, price = "7.99")
     ),
     total_price = "42.93",
-    currency = "USD",
-    status = "open"
+
     ),
   DraftOrder(
         id = 1002,
@@ -36,7 +35,6 @@ val draftOrders = listOf<DraftOrder>(DraftOrder(
             LineItems(product_id = 3, variant_id = 301, quantity = 3, price = "7.99")
         ),
         total_price = "42.93",
-        currency = "USD",
-        status = "open"
+
     )
 )
