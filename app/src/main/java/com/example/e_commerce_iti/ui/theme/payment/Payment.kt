@@ -239,6 +239,7 @@ fun DiscountCodeSection(
                 .padding(5.dp)
                 .weight(1f),
             value = cop,
+              enabled =  paymentViewModel.priceRules.collectAsState().value !is UiState.Success ,
             onValueChange = onCopChange,
             label = { Text("Coupon") },
             shape = RoundedCornerShape(16.dp), // This makes the TextField rounded
