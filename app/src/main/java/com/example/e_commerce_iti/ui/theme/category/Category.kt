@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.category
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -53,7 +54,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.e_commerce_iti.DEFAULT_CUSTOM_COLLECTION_ID
+import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.gradientBrush
+import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.CustomCollectionStates
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
 import com.example.e_commerce_iti.model.pojos.CustomCollection
@@ -63,18 +67,24 @@ import com.example.e_commerce_iti.ui.theme.ShimmerLoadingCustomCollection
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
-import com.example.e_commerce_iti.ui.theme.home.MyLottieAnimation
 import com.example.e_commerce_iti.ui.theme.products.FilterButtonWithSlider
 import com.example.e_commerce_iti.ui.theme.products.ProductItem
+import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
+import kotlinx.coroutines.flow.first
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
     homeViewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel,
+    productInfoViewModel: ProductInfoViewModel,
+    cartViewModel: CartViewModel,
     controller: NavController,
-    networkObserver: NetworkObserver
+    networkObserver: NetworkObserver, context: Context
 
 ) {
     var collectionId by remember { mutableStateOf(DEFAULT_CUSTOM_COLLECTION_ID) } // default collection id
@@ -82,23 +92,23 @@ fun CategoryScreen(
     var selectedCategory by remember { mutableStateOf<String?>(null) } //state for selected category
 
     val minPrice = 0f  // Minimum price fixed
-    val maxPrice = 5000f  // Maximum price fixed
+    currencyViewModel.getCurrency()
+    val maxPrice = 2000f  // Maximum price fixed
     // Observe network state
     val isNetworkAvailable by networkObserver.isConnected.collectAsState(initial = false)
     Scaffold(
         topBar = { CustomTopBar("Category", controller) },
-        bottomBar = { CustomButtonBar(controller) },
+        bottomBar = { CustomButtonBar(controller,context) },
     ) { innerPadding ->
 
         if(isNetworkAvailable){
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
-
                     .fillMaxSize() // Fill the entire screen
             ) {
                 Column(
-                    modifier = Modifier.padding(15.dp)
+                    modifier = Modifier.padding(7.dp)
                 ) {
                     FetchCustomCollections(homeViewModel) { selectedCollection ->
                         if (selectedCollection.id != collectionId) {
@@ -110,14 +120,17 @@ fun CategoryScreen(
                     FilterButtonWithSlider(minPrice, maxPrice) { price ->
                         selectedPrice = price
                     }
-
                     if (collectionId != 0L) {
                         FetchProductsByCustomCollection(
                             homeViewModel,
+                            currencyViewModel,
                             controller,
                             collectionId,
                             selectedPrice,
-                            selectedCategory
+                            selectedCategory,
+                            productInfoViewModel ,
+                            cartViewModel ,
+                            context
                         )
                     }
                 }
@@ -137,7 +150,7 @@ fun CategoryScreen(
             }
         }else
         {
-            MyLottieAnimation()  // play lotti when no network
+            NetworkErrorContent() // when no connection
         }
 
     }
@@ -190,10 +203,14 @@ fun FetchCustomCollections(
 @Composable
 fun FetchProductsByCustomCollection(
     homeViewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel,
     controller: NavController,
     collectionId: Long,
     maxPrice: Float,
-    selectedCategory: String? // TO FILTER THE PRODUCTS BY type
+    selectedCategory: String?, // TO FILTER THE PRODUCTS BY type
+    productInfoViewModel:ProductInfoViewModel,
+    cartViewModel:CartViewModel,
+    context: Context
 ) {
     LaunchedEffect(Unit) {
         homeViewModel.getProductsByCustomCollection(collectionId)
@@ -217,7 +234,7 @@ fun FetchProductsByCustomCollection(
                     }
                 }
 
-            ProductGrid(filteredProducts, controller)  // here im passing the products
+            ProductGrid(filteredProducts, controller,currencyViewModel, productInfoViewModel, cartViewModel  ,context)  // here im passing the products
         }
 
         is ProductsApiState.Failure -> {
@@ -265,9 +282,8 @@ fun CustomCollectionItem(
     customCollection: CustomCollection,
     onCustomCollectionSelected: (CustomCollection) -> Unit,
     modifier: Modifier = Modifier,
-    isSelected: Boolean,
-
-    ) {
+    isSelected: Boolean
+) {
     val scale by animateFloatAsState(if (isSelected) 1.1f else 1f) // Pop up slightly when selected
     val offsetY by animateDpAsState(if (isSelected) (-10).dp else 0.dp) // Move up slightly when selected
     Column(
@@ -275,40 +291,51 @@ fun CustomCollectionItem(
             .clickable { onCustomCollectionSelected(customCollection) }
             .scale(scale) // Apply scale transformation
             .offset(y = offsetY) // Apply translation in the Y direction for pop-up effect
-            .padding(4.dp)
-
+            .padding(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally // Ensures both Image and Text are centered
     ) {
         Image(
-            painter = rememberAsyncImagePainter(customCollection.image.src),
+            painter = rememberAsyncImagePainter(
+                model = customCollection.image.src,
+                placeholder = painterResource(id = R.drawable.img), // Placeholder image
+                error = painterResource(id = R.drawable.errorimag) // Error image
+            ),
             contentDescription = customCollection.handle,
             modifier = Modifier
                 .size(70.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface),
-            contentScale = ContentScale.FillBounds
+                .background(MaterialTheme.colorScheme.surface), // Ensure background matches the surface
+            contentScale = ContentScale.Crop // Crop for better aspect ratio
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = customCollection.title,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
-            textAlign = TextAlign.Center
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium // Use typography from MaterialTheme
         )
     }
 }
 
 
+
+
 // create a  lazy Grid to show the products in the right
 @Composable
-fun ProductGrid(products: List<Product>, controller: NavController) {
+fun ProductGrid(products: List<Product>,
+                controller: NavController,
+                currencyViewModel: CurrencyViewModel,
+                productInfoViewModel: ProductInfoViewModel,
+                cartViewModel: CartViewModel,
+                context: Context
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier.padding(1.dp),
-        contentPadding = PaddingValues(8.dp)
     ) {
         items(products) { product ->
-            ProductItem(product, controller) // to navigate when press on it
+            ProductItem(product , controller,currencyViewModel ,productInfoViewModel, cartViewModel  ,context) // to navigate when press on it
         }
     }
 }
@@ -333,11 +360,15 @@ fun ExpandableFab(
 
     ) {
         // Expandable Buttons
-        AnimatedVisibility(visible = expanded) {
+        AnimatedVisibility(
+                    visible = expanded
+        ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    containerColor = ingredientColor1,
+                    onClick = {
                     onFilterClothes()
                     expanded = false // Close the FAB
                 }) {
@@ -346,7 +377,9 @@ fun ExpandableFab(
                         contentDescription = "Filter by Clothes"
                     )
                 }
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    containerColor = ingredientColor1,
+                    onClick = {
                     onFilterShoes()
                     expanded = false // Close the FAB
                 }) {
@@ -356,7 +389,9 @@ fun ExpandableFab(
                     )
                 }
 
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    containerColor = ingredientColor1,
+                    onClick = {
                     expanded = false // Close the FAB
 
                     onFilterAccessories()
@@ -370,7 +405,9 @@ fun ExpandableFab(
         }
 
         // Main Floating Action Button
-        FloatingActionButton(onClick = {
+        FloatingActionButton(
+            containerColor = ingredientColor1,
+          onClick = {
             expanded = !expanded
             if (expanded) {
                 onFabClose()

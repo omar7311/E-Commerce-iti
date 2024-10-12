@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.e_commerce_iti.model.apistates.BrandsApiState
 import com.example.e_commerce_iti.model.apistates.CustomCollectionStates
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
+import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,6 @@ import kotlinx.coroutines.launch
  *      intially create a view Model to fetch brands
  */
 class HomeViewModel(val repo: IReposiatory) : ViewModel() {
-
     // fist brand stateFlow
     private val _brandsStateFlow = MutableStateFlow<BrandsApiState>(BrandsApiState.Loading)
     val brandStateFlow = _brandsStateFlow.asStateFlow()
@@ -49,12 +49,12 @@ class HomeViewModel(val repo: IReposiatory) : ViewModel() {
         }
     }
 
-    fun getProductsByVendor(vendornName: String) {
+    fun getProductsByVendor(vendorName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getProductsByVendor(vendornName)
+            repo.getProductsByVendor(vendorName)
                 .catch { error -> _productStateFlow.value = ProductsApiState.Failure(error) }
                 .collect { products ->
-                    _productStateFlow.value = ProductsApiState.Success(products)
+                    _productStateFlow.emit(ProductsApiState.Success(products))
                 }
         }
     }

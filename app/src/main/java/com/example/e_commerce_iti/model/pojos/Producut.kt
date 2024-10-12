@@ -3,13 +3,21 @@ package com.example.e_commerce_iti.model.pojos
 /**
  *      below class is the actuall one used to catch products
  */
-data class ProductResponse(
+data class Producut(
     val products: List<Product>
 )
+
+data class ProductWrapper(
+    val product: Product
+)
+data class SearchedProductResponse(
+    val product: Product
+)
+data class AllProduct(var products: List<Product>)
 data class Product(
     val id: Long,
     val title: String,
-    val bodyHtml: String,
+    val body_html: String,
     val vendor: String,
     val product_type: String,
     val tags: String,
@@ -22,7 +30,8 @@ data class Variant(
     val id: Long,
     val title: String,
     val price: String,
-    val inventoryQuantity: Int,
+    val inventory_quantity: Int,
+    val inventoryQuantity: Int=0,
     val sku: String
 )
 
