@@ -3,8 +3,6 @@ package com.example.e_commerce_iti.model.remotes.dummydaya
 import com.example.e_commerce_iti.model.pojos.customer.Addresse
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
 import com.example.e_commerce_iti.model.pojos.customer.DefaultAddress
-import com.example.e_commerce_iti.model.pojos.customer.EmailMarketingConsent
-import com.example.e_commerce_iti.model.pojos.customer.SmsMarketingConsent
 
 val dummyCustomers = arrayListOf(
     CustomerX(

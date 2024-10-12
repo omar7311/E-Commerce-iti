@@ -4,7 +4,6 @@ data class DefaultAddress(
     var address1: String?=null,
     var address2: Any?=null,
     var city: String?=null,
-    var company: Any?=null,
     var country: String?=null,
     var country_code: String?=null,
     var country_name: String?=null,

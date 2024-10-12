@@ -86,23 +86,21 @@ class RemoteDataSourceImp : IRemoteDataSource {
     override suspend fun createCustomer(customer: Customer){
         Log.e("qweqwewqeeeeeeeeeee", "${customer} ------------ ")
         val helper = RetrofitHelper.service
-
-        try {
             val response1 = helper.createCustomer(customer)
+            if (!response1.isSuccessful){
+                throw Exception(response1.errorBody()?.string())
+            }
             Log.i("eoorradasdesadasd","${response1.errorBody()?.string()} ------------ ")
             val response=response1.body()!!
             Log.e("reasdasdsdsdsdsdsa213212eq", "${response} ------------ ")
             val cart = createDumpDraft(response.customer!!)
             val fav = createDumpDraft(response.customer!!)
             var data = Gson().fromJson(Gson().toJson(cart), RDraftOrderRequest::class.java)
-
             val cartDraft = helper.createDraftOrder(data)
             data = Gson().fromJson(Gson().toJson(fav), RDraftOrderRequest::class.java)
             val favDraft = helper.createDraftOrder(data)
             Log.i("eeeeeeeeeeeeeeeee" ,  "${cartDraft.errorBody()?.string()}")
-
             val cartmeta = createDummyMetafield("cart_id", cartDraft.body()!!.draft_order!!.id.toString())
-
             Log.i("55555555555555555draftfav" , Gson().toJson(cartmeta))
             val favmeta = createDummyMetafield("fav_id", favDraft.body()!!.draft_order!!.id.toString())
             Log.i("55555555555555555draftfav" , "${favmeta}")
@@ -113,10 +111,6 @@ class RemoteDataSourceImp : IRemoteDataSource {
             Log.i("resopne from raeteunseadsa" , "email = ${customer.customer?.email},id=${response.customer?.id},name = ${response.customer?.first_name}, cart = ${a.body()!!.metafield.id},fav= ${b.body()!!.metafield.id}")
              metadata=b.body()!!.metafield
              currentUser.value=CurrentUser(id = response.customer!!.id!!, cart = a.body()!!.metafield.value!!.toLong(),fav=b.body()!!.metafield.value!!.toLong(),name = response.customer!!.first_name!!,lname = response.customer!!.last_name!!,email = response.customer!!.email!!)
-            Log.i("mostfa gaal user","${currentUser}")
-        }catch (e:Exception){
-        Log.e("vvvvvvvvvvvvvvvvvvvvvvvvvvvvv","data error is ${e}")
-        }
     }
     fun createDummyMetafield(key: String, value: String) = ReMetaData(Metafield(namespace = "namespace", key = key, value = value, value_type = "string"))
     private fun createDumpDraft(customerx: CustomerX):SearchDraftOrder{

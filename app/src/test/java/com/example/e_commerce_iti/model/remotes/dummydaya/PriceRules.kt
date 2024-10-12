@@ -1,8 +1,5 @@
 package com.example.e_commerce_iti.model.remotes.dummydaya
 
-import com.example.e_commerce_iti.model.pojos.price_rules.PrerequisiteSubtotalRange
-import com.example.e_commerce_iti.model.pojos.price_rules.PrerequisiteToEntitlementPurchase
-import com.example.e_commerce_iti.model.pojos.price_rules.PrerequisiteToEntitlementQuantityRatio
 import com.example.e_commerce_iti.model.pojos.price_rules.PriceRule
 
 val list = listOf(
