@@ -5,7 +5,6 @@ import com.example.e_commerce_iti.model.pojos.BrandData
 import com.example.e_commerce_iti.model.pojos.CustomCollection
 import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.pojos.Product
-import com.example.e_commerce_iti.model.pojos.currenyex.ConversionRates
 import com.example.e_commerce_iti.model.pojos.currenyex.CurrencyExc
 import com.example.e_commerce_iti.model.pojos.customer.Customer
 import com.example.e_commerce_iti.model.pojos.customer.CustomerX
@@ -26,15 +25,13 @@ import com.example.e_commerce_iti.model.remotes.dummydaya.list
 import com.example.e_commerce_iti.model.remotes.dummydaya.products
 import com.example.e_commerce_iti.model.remotes.dummydaya.dummyOrders
 import com.example.e_commerce_iti.model.remotes.dummydaya.product1
-import com.example.e_commerce_iti.model.remotes.dummydaya.products
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 
-class FackRemoteReposiatory : IReposiatory {
+class FakeReposiatory : IReposiatory {
     var chosed_currency="EGP"
     override suspend fun getDiscountCode(code: String): Flow<DiscountCodeX> {
         return flowOf(dummyDiscountCodes.find { it.code == code }?:throw Exception("Not Found"))
@@ -151,7 +148,7 @@ class FackRemoteReposiatory : IReposiatory {
         return flowOf(product)
     }
 
-    override fun getAllProduct(): Flow<AllProduct> {
+    override fun getAllProduct(): Flow<AllProduct> {   //omar
         return flow{ emit(AllProduct(products)) }
     }
 
