@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -211,7 +212,7 @@ fun CouponCarousel(viewModel: CouponViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (couponsState) {
@@ -223,7 +224,7 @@ fun CouponCarousel(viewModel: CouponViewModel) {
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .wrapContentSize()
                         .height(200.dp)
                 ) { page ->
                     Box(
@@ -252,7 +253,7 @@ fun CouponCarousel(viewModel: CouponViewModel) {
 
                 Row(
                     Modifier
-                        .height(50.dp)
+                        .height(15.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
