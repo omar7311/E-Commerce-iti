@@ -205,44 +205,73 @@ class RemoteDataSourceImp : IRemoteDataSource {
     }
 
     override suspend fun compeleteDraftOrder(draftOrder: DraftOrder): Flow<Boolean> {
-        Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder} ------------ ")
-        draftOrder.line_items= draftOrder.line_items.filter { it.product_id !=null }
-        draftOrder.invoice_sent_at= currentUser.value?.email
-       // val cart=updateCart(draftOrder).first()
-      //  Log.e("eeeeeeeeeeeeeeeeeeeeeeeee444444","update cart  -> ${cart}")
-        draftOrder.email=  currentUser.value?.email
-        try {
-            RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
-        }catch (e:Exception){
-            Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update cart  -> ${e.message}")
-        }
-       val f= RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
-        Log.e("adasdsdsd33333",f.string())
+        Log.e("DraftOrder", "$draftOrder ------------ ")
+
+        // Filter out line items with null product_id
+        draftOrder.line_items = draftOrder.line_items.filter { it.product_id != null }
+
+        // Set email and invoice information
+        draftOrder.invoice_sent_at = currentUser.value?.email
+        draftOrder.email = currentUser.value?.email
+
+        Log.e("CurrentUserEmail", "Current user email: ${currentUser.value?.email}")
+
+        // Update cart
+        val cart = updateCart(draftOrder).first()
+        Log.e("UpdateCart", "Updated cart -> $cart")
+
+        draftOrder.email = currentUser.value?.email
+
+        // Try to send invoice
         try {
             RetrofitHelper.service.sendInvoice(draftOrder.id!!)
-        }catch (e:Exception){
-            Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update cart  -> ${e.message}")
+        } catch (e: Exception) {
+            Log.e("SendInvoiceError", "Error sending invoice -> ${e.message}")
         }
-        val data = create_draftorder(f)
-        Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","create draft  -> ${data.errorBody()}")
-        metadata?.value=data.body()!!.draft_order!!.id.toString()
-            val tmp=RetrofitHelper.service.updateCustomerMetafield(currentUser.value!!.id, metadata!!.id!!,UReposeMeta(metadata!!))
-             Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update meta draft  -> ${tmp.errorBody()}")
-        Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update meta draft  -> ${tmp.body()}")
+
+        // Complete draft order
+        val response = RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
+        Log.e("CompleteDraftOrder", response.string())
+
+        // Try to send invoice again
         try {
             RetrofitHelper.service.sendInvoice(draftOrder.id!!)
-        }catch (e:Exception){
-            Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update cart  -> ${e.message}")
+        } catch (e: Exception) {
+            Log.e("SendInvoiceError", "Error sending invoice -> ${e.message}")
         }
-              metadata=tmp.body()!!.metafield
-              Log.e("dasdsasdsadsadsad","$metadata")
-            currentUser.value?.cart = metadata!!.value!!.toLong()
 
-            Log.i("ddddddddddddddddddddddddd","${metadata}")
-            return flowOf(true
-            )
+        // Create draft order
+        val data = create_draftorder(response)
+        Log.e("CreateDraftOrder", "Create draft response -> ${data.errorBody()}")
 
+        // Update metadata with draft order ID
+        metadata?.value = data.body()!!.draft_order!!.id.toString()
+        val updateMetaResponse = RetrofitHelper.service.updateCustomerMetafield(
+            currentUser.value!!.id,
+            metadata!!.id!!,
+            UReposeMeta(metadata!!)
+        )
+
+        Log.e("UpdateMetafieldError", "Update meta response error -> ${updateMetaResponse.errorBody()}")
+        Log.e("UpdateMetafieldSuccess", "Update meta response body -> ${updateMetaResponse.body()}")
+
+        // Try to send invoice again
+        try {
+            RetrofitHelper.service.sendInvoice(draftOrder.id!!)
+        } catch (e: Exception) {
+            Log.e("SendInvoiceError", "Error sending invoice -> ${e.message}")
+        }
+
+        // Update current user metadata
+        metadata = updateMetaResponse.body()!!.metafield
+        Log.e("UpdatedMetadata", "$metadata")
+        currentUser.value?.cart = metadata!!.value!!.toLong()
+
+        Log.i("FinalMetadata", "${metadata}")
+
+        return flowOf(true)
     }
+
 
     private suspend fun create_draftorder(f: ResponseBody): Response<SearchDraftOrder> {
         Log.e("nnnnnnnnnnnnnnnnnnnnnnnnnnn", f.string())
