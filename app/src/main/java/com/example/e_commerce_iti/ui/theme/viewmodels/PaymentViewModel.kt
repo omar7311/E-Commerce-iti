@@ -77,7 +77,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val expiryMonth= MutableStateFlow("")
     val expiryYear= MutableStateFlow<String>("")
   suspend fun submitOrder() {
-       var message = ""
+       var message =""
          if(shippingAddress!=null){
              address.value=shippingAddress!!.address1!!
          }

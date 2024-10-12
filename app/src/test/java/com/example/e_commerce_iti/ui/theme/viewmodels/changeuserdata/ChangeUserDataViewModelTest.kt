@@ -2,7 +2,7 @@ package com.example.e_commerce_iti.ui.theme.viewmodels.changeuserdata
 
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
-import com.example.e_commerce_iti.model.viewmodels.FackRemoteReposiatory
+import com.example.e_commerce_iti.model.viewmodels.FakeReposiatory
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -18,7 +18,7 @@ class ChangeUserDataViewModelTest{
     private  lateinit var repo: IReposiatory
     @Before
     fun setUp() {
-        val mockReposiatory = FackRemoteReposiatory()
+        val mockReposiatory = FakeReposiatory()
         viewModel = ChangeUserDataViewModel(mockReposiatory)
     }
     @Test

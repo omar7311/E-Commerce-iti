@@ -249,7 +249,7 @@ fun FavouriteItem(
                     if (!draftOrder.line_items.any { it.product_id == product.id }) {
                         addToCardOrFavorite(productInfoViewModel, product, draftOrder)
                         isAddingToCards = false
-
+                       Toast.makeText(context,"the product ia adding successfully",Toast.LENGTH_LONG).show()
                     }
                 }
 
