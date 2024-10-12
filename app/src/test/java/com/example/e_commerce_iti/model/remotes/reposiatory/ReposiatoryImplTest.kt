@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.example.e_commerce_iti.model.local.IlocalDataSource
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
+import com.example.e_commerce_iti.model.pojos.AllProduct
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.customer.Addresse
 import com.example.e_commerce_iti.model.pojos.customer.Customer
@@ -27,12 +28,16 @@ import com.example.e_commerce_iti.model.remotes.dummydaya.product6
 import com.example.e_commerce_iti.model.remotes.dummydaya.product7
 import com.example.e_commerce_iti.model.remotes.dummydaya.product8
 import com.example.e_commerce_iti.model.remotes.dummydaya.product9
+import com.example.e_commerce_iti.model.remotes.dummydaya.products
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.MatcherAssert
+import org.hamcrest.core.IsEqual
 import org.junit.Assert
 
 
@@ -46,7 +51,7 @@ class ReposiatoryImplTest {
 
     lateinit var      remoteDataSource : IRemoteDataSource
     lateinit var  localDataSource : IlocalDataSource
-    lateinit var  reposiatory: IReposiatory
+    lateinit var  reposiatory: ReposiatoryImpl
 
 
     @Before
@@ -295,9 +300,30 @@ class ReposiatoryImplTest {
     /**
      * Test case 3: omar
      */
+@Test
+fun getAllProduct_assertEquality()= runTest {
+        reposiatory.getAllProduct().collectLatest {
+            Assert.assertEquals(it,AllProduct(products))
+        }
+    }
+    @Test
+    fun getAllProduct_assertNotEquality()= runTest {
+        reposiatory.getAllProduct().collectLatest {
+            Assert.assertNotEquals(it,AllProduct(listOf<Product>()))
+        }
+    }
+@Test
+fun getProductById_LongValue_assertEquality()= runTest{
+    reposiatory.getProductByID(1).collectLatest {
+        Assert.assertEquals(it, product1)
 
-
-
-
+    }
+}
+    @Test
+    fun getProductById_LongValue_assertNotEquality()= runTest{
+        reposiatory.getProductByID(2).collectLatest {
+            Assert.assertNotEquals(it, product1)
+        }
+    }
     //*****************8
 }

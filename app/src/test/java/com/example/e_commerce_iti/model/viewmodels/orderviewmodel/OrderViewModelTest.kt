@@ -1,14 +1,11 @@
 package com.example.e_commerce_iti.model.viewmodels.orderviewmodel
 
 import com.example.e_commerce_iti.model.apistates.UiState
-import com.example.e_commerce_iti.model.pojos.Order
 import com.example.e_commerce_iti.model.remotes.dummydaya.order2
 import com.example.e_commerce_iti.model.remotes.dummydaya.order3
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
-import com.example.e_commerce_iti.model.viewmodels.FackRemoteReposiatory
-import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
+import com.example.e_commerce_iti.model.viewmodels.FakeReposiatory
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
-import com.ibm.icu.impl.Assert.fail
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -25,7 +22,7 @@ class OrderViewModelTest {
 
     @Before
     fun setUp() {
-        repo = FackRemoteReposiatory()
+        repo = FakeReposiatory()
         orderViewModel = OrdersViewModel(repo)
     }
 
