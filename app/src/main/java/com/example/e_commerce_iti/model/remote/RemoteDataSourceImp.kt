@@ -144,13 +144,16 @@ class RemoteDataSourceImp : IRemoteDataSource {
         val ucustomer = Gson().fromJson(customer, UpdateCustomer::class.java)
         val req = RetrofitHelper.service.updateCustomer(id, ucustomer)
         withContext(Dispatchers.Main) {
+            val  e= currentUser.value
             currentUser.value = CurrentUser(
                 id = ucustomer.customer!!.id!!,
                 name = ucustomer.customer!!.first_name!!,
                 lname = ucustomer.customer!!.last_name!!,
                 email = ucustomer.customer!!.email!!,
                 address = (req.body()?.customer?.addresses?.get(0)?.address1
-                    ?: currentUser.value!!.address)
+                    ?: currentUser.value!!.address),
+                cart = e!!.cart,
+                fav = e.fav
             )
 
         }

@@ -55,7 +55,6 @@ fun ProductDetails(currencyViewModel: CurrencyViewModel, productInfoViewModel: P
                     it, Random.nextInt(1, 6))
             }
             SizeAndColors(product.options[1].values,product.options[0].values)
-            SizeAndColors(product.options[1].values,product.options[0].values)
             ProductDescription(description)
             if (!FirebaseAuth.getInstance().currentUser?.isAnonymous!!) {
                 Actions(context,product, productInfoViewModel)
