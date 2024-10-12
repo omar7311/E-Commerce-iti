@@ -153,9 +153,10 @@ class RemoteDataSourceImp : IRemoteDataSource {
 
     override suspend fun updateCart(cart: DraftOrder): Flow<DraftOrder> {
         val data = RetrofitHelper.service.updateCartDraftOrder(cart.id!!, SearchDraftOrder(cart))
-
         println(cart)
-           println(data.errorBody()?.string())
+        Log.e("12312321312313213", "${data} ------------ ")
+        Log.e("12312321312313213", "${data.errorBody()?.string()} ------------ ")
+        println(data.errorBody()?.string())
         return flow { emit(data.body()!!.draft_order!!) }
     }
 
@@ -193,8 +194,8 @@ class RemoteDataSourceImp : IRemoteDataSource {
         Log.e("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "${draftOrder} ------------ ")
         draftOrder.line_items= draftOrder.line_items.filter { it.product_id !=null }
         draftOrder.invoice_sent_at= currentUser!!.email
-        val cart=updateCart(draftOrder).first()
-        Log.e("eeeeeeeeeeeeeeeeeeeeeeeee444444","update cart  -> ${cart}")
+       // val cart=updateCart(draftOrder).first()
+      //  Log.e("eeeeeeeeeeeeeeeeeeeeeeeee444444","update cart  -> ${cart}")
         draftOrder.email= currentUser?.email
         try {
             RetrofitHelper.service.sendInvoice(draftOrder.id!!,)
@@ -202,6 +203,7 @@ class RemoteDataSourceImp : IRemoteDataSource {
             Log.e("eeeeeeeeeeeeeeeeeeeeeeeee","update cart  -> ${e.message}")
         }
        val f= RetrofitHelper.service.completeDraftOrder(draftOrder.id!!)
+        Log.e("adasdsdsd33333",f.string())
         try {
             RetrofitHelper.service.sendInvoice(draftOrder.id!!)
         }catch (e:Exception){

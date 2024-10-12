@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.math.round
 
 class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val currency= MutableStateFlow<Pair<String,Float>>(Pair("USD",1.0F))
@@ -144,21 +145,29 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
             }
         }
     }
-
+    fun calculateDiscountAmount(orderSubtotal: Double, discountValue: Double, isPercentage: Boolean): Double {
+        return if (isPercentage) {
+            orderSubtotal * (discountValue / 100)  // Calculate percentage
+        } else {
+            discountValue  // Use the fixed amount directly
+        }
+    }
     fun apply_discount(priceRule: PriceRule) {
         val cart = (cart.value as UiState.Success<DraftOrder>).data
-
+        _cart.value = UiState.Loading
         viewModelScope.launch {
             try {
+                val discountAmount = calculateDiscountAmount(cart.subtotal_price!!.toDouble(), priceRule.value.toDouble(), priceRule.value_type == "percentage")
+
                 if (priceRule.value_type == "fixed_amount") {
-                 totalamount.value-=priceRule.value.toDouble().roundToTwoDecimalPlaces()
+                    totalamount.value-=priceRule.value.toDouble().roundToTwoDecimalPlaces()
                 } else {
                     val t=(100.0+priceRule.value.toDouble())/100.0
                     discount.value=(totalamount.value* (1.0-t))
                     totalamount.value = (totalamount.value*(t)).roundToTwoDecimalPlaces()
                 }
                 cart.applied_discount = AppliedDiscount(
-                    amount = priceRule.value,
+                    amount = round(discountAmount).toString(),  // Make sure discountAmount is valid and properly converted
                     description = "Discount Code ${(_discountCode.value as UiState.Success<DiscountCodeX>).data.code}",
                     title = priceRule.title,
                     value = priceRule.value,
