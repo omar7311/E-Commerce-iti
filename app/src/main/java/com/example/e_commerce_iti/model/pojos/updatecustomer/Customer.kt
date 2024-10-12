@@ -1,7 +1,7 @@
 package com.example.e_commerce_iti.model.pojos.updatecustomer
 
 data class UCustomer(
-    var currency: String?,
+
     var id: Long?,
     var addresses: List<UAddresse?>?,
     var email: String?,
