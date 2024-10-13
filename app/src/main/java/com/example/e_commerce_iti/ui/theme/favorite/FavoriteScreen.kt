@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -29,6 +30,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -229,22 +232,18 @@ fun FavouriteItem(
                         contentDescription = null
                     )
                 }
-                Button(onClick = {
-                    showDialog.value = true
-                }, colors = ButtonDefaults.buttonColors(Color.Red)) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Delete", color = Color.White, fontSize = 18.sp)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
-
-
             }
 
+        }
+        IconButton(modifier = Modifier.size(65.dp).align(Alignment.TopEnd).padding(16.dp),
+            onClick = {
+                showDialog.value = true
+            }, colors = IconButtonDefaults.iconButtonColors(Color.White)) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                tint = Color.Red,
+                contentDescription = null,
+            )
         }
     }
 

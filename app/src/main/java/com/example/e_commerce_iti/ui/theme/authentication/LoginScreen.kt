@@ -71,15 +71,6 @@ fun LoginScreen(
     val firebaseAuth = FirebaseAuth.getInstance()
     val currentUser = firebaseAuth.currentUser
 
-/*    if (currentUser != null) {
-        LaunchedEffect(Unit) {
-            controller.navigate(Screens.Home.route) {
-                popUpTo(Screens.Login.route) {
-                    inclusive = true
-                } // Remove the login screen from back stack
-            }
-        }
-    }*/
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -187,21 +178,24 @@ fun LoginScreen(
         )
 
         Button(
-
-            onClick  = {
+            onClick = {
                 if (emailRegex.matches(email) && passwordRegex.matches(password)) {
                     CoroutineScope(Dispatchers.IO).launch {
                         isLoading = true
                         FirebaseAuthManager.login(email, password) { success, error ->
-
-                                isLoading = false
-
+                            isLoading = false
                             if (success) {
-                                controller.navigate(Screens.Home.route)
-//                                if(currentUser?.isEmailVerified == true)
-//
-//                                else Toast.makeText(context,"Verify Your Mail",Toast.LENGTH_LONG).show()
+                                // Fetch current user after successful login
+                                val user = FirebaseAuth.getInstance().currentUser
+                                if (user != null && user.isEmailVerified) {
+                                    // Navigate to Home if email is verified
+                                    controller.navigate(Screens.Home.route)
+                                } else {
+                                    // Show a Toast if the email is not verified
+                                    Toast.makeText(context, "Verify Your Mail", Toast.LENGTH_LONG).show()
+                                }
                             } else {
+                                // Handle login error
                                 errorMessage = error
                             }
                         }
@@ -274,7 +268,7 @@ fun LoginScreen(
                     .padding(20.dp),
             ) {
                 Text("New user? ", color = royalBlue, fontSize = 20.sp)
-                Text("Register", color = ingredientColor1, fontSize = 20.sp)
+                Text("Register", color = royalBlue, fontSize = 20.sp)
                 Text(" Now", color = royalBlue, fontSize = 20.sp)
             }
 
