@@ -1,4 +1,5 @@
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -43,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -77,7 +79,8 @@ import java.time.LocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavController) {
-    if (currentUser.value != null) {
+    if (currentUser.observeAsState().value!=null){
+        Log.e("ddddddddddddddaaaaa3333333","discount is ${paymentViewModel.discount.collectAsState().value}")
         var cop by rememberSaveable { mutableStateOf("") }
         LaunchedEffect(Unit) {
             paymentViewModel.getCart(currentUser.value!!.cart)
@@ -197,6 +200,7 @@ fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel:
         ,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        Log.e("ddddddddddddddddd","${amount.collectAsState().value}")
         Text(
             text = "$label:",
             textAlign = TextAlign.Center,
@@ -283,6 +287,7 @@ fun DiscountCodeSection(
                 Toast.makeText(LocalContext.current, "Invalid Coupon", Toast.LENGTH_SHORT).show()
             }
         } else {
+            Spacer(Modifier.height(10.dp))
             CircularProgressIndicator()
         }
     }
