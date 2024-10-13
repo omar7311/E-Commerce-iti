@@ -46,6 +46,7 @@ import androidx.compose.material.OutlinedTextField
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -71,6 +72,15 @@ fun LoginScreen(
     val firebaseAuth = FirebaseAuth.getInstance()
     val currentUser = firebaseAuth.currentUser
 
+    /*    if (currentUser != null) {
+            LaunchedEffect(Unit) {
+                controller.navigate(Screens.Home.route) {
+                    popUpTo(Screens.Login.route) {
+                        inclusive = true
+                    } // Remove the login screen from back stack
+                }
+            }
+        }*/
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -189,7 +199,9 @@ fun LoginScreen(
                                 val user = FirebaseAuth.getInstance().currentUser
                                 if (user != null && user.isEmailVerified) {
                                     // Navigate to Home if email is verified
-                                    controller.navigate(Screens.Home.route)
+                                    controller.navigate(Screens.Home.route)  {
+                                        popUpTo(Screens.Login.route){ inclusive = true }
+                                    }
                                 } else {
                                     // Show a Toast if the email is not verified
                                     Toast.makeText(context, "Verify Your Mail", Toast.LENGTH_LONG).show()
@@ -219,69 +231,69 @@ fun LoginScreen(
             }
         }
 
-            var isLoading by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
-          //
+    //
 
-        Button(
+    Button(
 
-            onClick  = {
-                FirebaseAuthManager.loginAnonymously { success, error ->
-                    if (success) {
-                        controller.navigate(Screens.Home.route) {
-                            popUpTo(controller.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    } else {
-                        Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+        onClick = {
+            FirebaseAuthManager.loginAnonymously { success, error ->
+                if (success) {
+                    controller.navigate(Screens.Home.route) {
+                        popUpTo(controller.graph.startDestinationId) { inclusive = true }
+                        launchSingleTop = true
                     }
+                } else {
+                    Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                 }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = ingredientColor1, // Custom green color
-                contentColor = Color.White // Text color
-            )
-        ) {
-            if (isLoading) {
-                LoadingIndicator()
-            } else {
-                Text("Go Guest", fontSize = 18.sp)
             }
-
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = ingredientColor1, // Custom green color
+            contentColor = Color.White // Text color
+        )
+    ) {
+        if (isLoading) {
+            LoadingIndicator()
+        } else {
+            Text("Go Guest", fontSize = 18.sp)
         }
 
-        // You can add more components here, if needed
+    }
+
+    // You can add more components here, if needed
 
 
-        Row(
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(), // Make the row fill the available width
+        horizontalArrangement = Arrangement.Center // Center the button horizontally
+    ) {
+        TextButton(
+            onClick = { controller.navigate(Screens.Signup.route) },
             modifier = Modifier
-                .fillMaxWidth(), // Make the row fill the available width
-            horizontalArrangement = Arrangement.Center // Center the button horizontally
+                .align(Alignment.CenterVertically)
+                .padding(20.dp),
         ) {
-            TextButton(
-                onClick = { controller.navigate(Screens.Signup.route) },
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(20.dp),
-            ) {
-                Text("New user? ", color = royalBlue, fontSize = 20.sp)
-                Text("Register", color = royalBlue, fontSize = 20.sp)
-                Text(" Now", color = royalBlue, fontSize = 20.sp)
-            }
-
+            Text("New user? ", color = royalBlue, fontSize = 20.sp)
+            Text("Register", color = ingredientColor1, fontSize = 20.sp)
+            Text(" Now", color = royalBlue, fontSize = 20.sp)
         }
 
+    }
 
 
-        AnimatedVisibility(visible = errorMessage != null) {
-            errorMessage?.let {
-                Text(text = it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
-            }
+
+    AnimatedVisibility(visible = errorMessage != null) {
+        errorMessage?.let {
+            Text(text = it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
         }
     }
+}
 }
 
 
@@ -292,11 +304,12 @@ fun signInWithGoogle(
     val signInIntent = googleSignInClient.signInIntent
     launcher.launch(signInIntent)
 }
+
 @Composable
 fun LoginAnimation(
     modifier: Modifier = Modifier
 ) {
-    val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loginperson))
+    val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.ecommerceprofile))
 
     if (lottieComposition != null) {
         LottieAnimation(

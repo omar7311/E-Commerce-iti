@@ -33,6 +33,7 @@ val coralColor = Color(0xFF6C3483) // Coral
 val transparentBrush = Brush.horizontalGradient(
     colors = listOf(Color(0xFFFFFFFF), Color.Transparent) // White to transparent
 )
+
 val pastelBrush = Brush.verticalGradient(
     colors = listOf(Color(0xFFE3F2FD), Color(0xFFBBDEFB)) // Light Blue to Lighter Blue
 )

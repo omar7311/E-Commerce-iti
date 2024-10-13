@@ -5,13 +5,17 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -59,6 +63,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -78,11 +83,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -91,6 +99,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -112,6 +121,7 @@ import com.example.e_commerce_iti.LoadingIndicator
 import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.earthyBrush
+import com.example.e_commerce_iti.gradientBrush
 import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
@@ -122,6 +132,7 @@ import com.example.e_commerce_iti.pastelBrush
 import com.example.e_commerce_iti.transparentBrush
 import com.example.e_commerce_iti.ui.theme.ShimmerEffect
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
+import com.example.e_commerce_iti.whiteBrush
 import kotlinx.coroutines.delay
 
 /**
@@ -141,8 +152,9 @@ fun HomeScreen(
 ) {
 
     Scaffold(
-        modifier = Modifier.background(transparentBrush),
-        topBar = { CustomTopBar("Home", controller) },
+containerColor = Color.White,
+        modifier = Modifier.background(whiteBrush),
+        topBar = { CustomTopBar("Home", controller)},
         bottomBar = {
             CustomButtonBar(
                 controller,
@@ -170,6 +182,7 @@ fun HomeContent(
 ) {
     Column(
         modifier = modifier
+            .background(whiteBrush)
             .verticalScroll(rememberScrollState()) // Make the column scrollable
             .fillMaxSize()
             .padding(5.dp)
@@ -178,9 +191,25 @@ fun HomeContent(
         /**
          *  here we put all content of home Screen
          */
-        CustomText("Coupons", transparentBrush, padding = PaddingValues(5.dp))
+        CustomText2(
+            "Coupons",
+            transparentBrush,
+            Color.Black,
+            fontSize = 25.sp,
+            style = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
         CouponCarousel(couponViewModel)
-        CustomText("Brands", transparentBrush, padding = PaddingValues(5.dp))
+        CustomText2(
+            "Brands",
+            transparentBrush,
+            Color.Black,
+            fontSize = 25.sp,
+            style = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
         FetchingBrandData(homeViewModel, controller)
     }
 }
@@ -219,13 +248,14 @@ fun CouponCarousel(viewModel: CouponViewModel) {
             is UiState.Loading -> {
                 ShimmerEffect()
             }
+
             is UiState.Success -> {
                 val coupons = (couponsState as UiState.Success).data
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier
-                        .wrapContentSize()
-                        .height(200.dp)
+                        .wrapContentWidth()
+                        .height(150.dp)
                 ) { page ->
                     Box(
                         modifier = Modifier
@@ -236,7 +266,10 @@ fun CouponCarousel(viewModel: CouponViewModel) {
                             .pointerInput(Unit) {
                                 detectTapGestures(
                                     onLongPress = {
-                                        copyToClipboard(context, coupons[page].discount_codes[0].code)
+                                        copyToClipboard(
+                                            context,
+                                            coupons[page].discount_codes[0].code
+                                        )
                                     }
                                 )
                             },
@@ -253,12 +286,13 @@ fun CouponCarousel(viewModel: CouponViewModel) {
 
                 Row(
                     Modifier
-                        .height(15.dp)
+                        .height(12.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     repeat(couponImages.size) { iteration ->
-                        val color = if (pagerState.currentPage == iteration) ingredientColor1 else Color.LightGray
+                        val color =
+                            if (pagerState.currentPage == iteration) ingredientColor1 else Color.LightGray
                         Box(
                             modifier = Modifier
                                 .padding(2.dp)
@@ -269,12 +303,15 @@ fun CouponCarousel(viewModel: CouponViewModel) {
                     }
                 }
             }
+
             is UiState.Error -> {
                 Text("Error loading coupons")
             }
+
             is UiState.Failure -> {
                 Text("Failed to load coupons")
             }
+
             UiState.Non -> {
                 // Handle initial state if needed
             }
@@ -303,8 +340,8 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
         }
 
         is BrandsApiState.Success -> {
-                        val brands = (brandsState as BrandsApiState.Success).brands
-                        BrandListItems(brands, controller, PaddingValues(5.dp))
+            val brands = (brandsState as BrandsApiState.Success).brands
+            BrandListItems(brands, controller, PaddingValues(vertical = 5.dp))
         }
 
         is BrandsApiState.Failure -> {
@@ -315,7 +352,7 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
         }
 
         else -> {
-                    }
+        }
     }
 }
 
@@ -324,36 +361,59 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
 fun CustomTopBar(customTitle: String, controller: NavController) {
     TopAppBar(
         modifier = Modifier
-            .padding(horizontal = 15.dp, vertical = 10.dp)
+            .padding(horizontal = 15.dp,  vertical = 6.dp)
+            .wrapContentHeight()
             .clip(RoundedCornerShape(35.dp))
-            .fillMaxWidth()
             .shadow(8.dp, RoundedCornerShape(20.dp))
-            .background(
-                brush = earthyBrush
-            ),
+            .background(brush = gradientBrush),
         title = {
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth() // Make the title box take full width
-                    .padding(
-                        horizontal = 30.dp,
-                    ), // Ensure title is centered by leaving space for icons
-                contentAlignment = Alignment.Center // Center align the text
+                    .fillMaxWidth()
+                   // .height(50.dp)
+                    .padding(horizontal = 30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(modifier = Modifier.wrapContentWidth(),
+              /*  // App name at the top
+                CustomText2("Snap Shop",
+                    transparentBrush,
+                    navyBlue,/*    Text(
                     text = customTitle,
-                    fontSize = 22.sp,
+                    fontSize = 18.sp,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
+                )*/
+                    fontSize = 22.sp,
+                    style = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif,
+                    modifier = Modifier.padding(4.dp)
+                )*/
+                // App name at the top
+                CustomText2(customTitle,
+                    transparentBrush,
+                    navyBlue,
+                    fontSize = 22.sp,
+                    style = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif,
+                    modifier = Modifier.padding(4.dp)
                 )
+                // Screen title below the app name
+
             }
         },
         navigationIcon = {
             // Search icon on the left
             IconButton(
-                onClick = { controller.navigate(Screens.Search.route) },
+                onClick = {
+                    controller.navigate(Screens.Search.route) {
+                        popUpTo(controller.graph.findStartDestination().id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                },
                 modifier = Modifier.padding(start = 10.dp)
             ) {
                 Icon(
@@ -365,8 +425,14 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
         },
         actions = {
             // Favorite icon on the right
-
-            IconButton(onClick = { controller.navigate(Screens.Favorite.route) }) {
+            IconButton(onClick = {
+                controller.navigate(Screens.Favorite.route) {
+                    popUpTo(controller.graph.findStartDestination().id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            }) {
                 Icon(
                     modifier = Modifier.padding(end = 12.dp),
                     imageVector = Icons.Default.FavoriteBorder,
@@ -374,13 +440,13 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                     contentDescription = "Favorite"
                 )
             }
-
-                  },
+        },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color.Transparent // Transparent to let gradient shine
-        ),
+        )
     )
 }
+
 
 @Composable
 fun CustomButtonBar(controller: NavController, context: Context) {
@@ -393,14 +459,22 @@ fun CustomButtonBar(controller: NavController, context: Context) {
     }
 
     NavigationBar(
-        modifier = Modifier.background(brush = earthyBrush)
+        containerColor = Color.White,
+        modifier = Modifier
+            .background(brush = whiteBrush)
+            .height(50.dp)
     ) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home") },
             selected = currentRoute.value == Screens.Home.route,
             onClick = {
-                controller.navigate(Screens.Home.route)
+                controller.navigate(Screens.Home.route) {
+                    popUpTo(controller.graph.findStartDestination().id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
             }
         )
 
@@ -415,7 +489,12 @@ fun CustomButtonBar(controller: NavController, context: Context) {
             label = { Text("Category") },
             selected = currentRoute.value == Screens.Category.route,
             onClick = {
-                controller.navigate(Screens.Category.route)
+                controller.navigate(Screens.Category.route) {
+                    popUpTo(controller.graph.findStartDestination().id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
             }
         )
 
@@ -424,10 +503,15 @@ fun CustomButtonBar(controller: NavController, context: Context) {
             label = { Text("Cart") },
             selected = currentRoute.value == Screens.Cart.route,
             onClick = {
-              /*  if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank())
-                else
-                    Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show()*/
-                controller.navigate(Screens.Cart.route)
+                /*  if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank())
+                  else
+                      Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show()*/
+                controller.navigate(Screens.Cart.route) {
+                    popUpTo(controller.graph.findStartDestination().id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
 
             }
         )
@@ -437,7 +521,12 @@ fun CustomButtonBar(controller: NavController, context: Context) {
             label = { Text("Profile") },
             selected = currentRoute.value == Screens.Profile.route,
             onClick = {
-                controller.navigate(Screens.Profile.route)
+                controller.navigate(Screens.Profile.route) {
+                    popUpTo(controller.graph.findStartDestination().id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
             }
         )
     }
@@ -452,11 +541,13 @@ fun BrandListItems(
     LazyHorizontalGrid(
         rows = GridCells.Fixed(2),
         modifier = Modifier
-            .padding(paddingValues)
-            .height(470.dp) // Set a fixed height
-            .fillMaxWidth(),
+           .padding(paddingValues)
+            .height(380.dp) // Set a fixed height
+            .fillMaxWidth()
+            .wrapContentHeight(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        // contentPadding = PaddingValues(5.dp)
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        contentPadding = PaddingValues(0.dp) // Set content padding to 0
     ) {
         itemsIndexed(brands) { _, brand ->
             BrandItem(brand, controller) // Render each brand item
@@ -477,27 +568,34 @@ fun BrandItem(brand: BrandData, controller: NavController) {
         visible = visible,
         enter = fadeIn(animationSpec = tween(durationMillis = 250)) + // Reduced duration
                 scaleIn(initialScale = 0.9f, animationSpec = tween(durationMillis = 250)) +
-                slideInVertically(initialOffsetY = { -it }, animationSpec = tween(durationMillis = 250)),
+                slideInVertically(
+                    initialOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 250)
+                ),
         exit = fadeOut(animationSpec = tween(durationMillis = 200)) + // Reduced duration
                 scaleOut(targetScale = 0.8f, animationSpec = tween(durationMillis = 200)) +
-                slideOutVertically(targetOffsetY = { it }, animationSpec = tween(durationMillis = 200))
+                slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 200)
+                )
     ) {
         Card(
             modifier = Modifier
-                .padding(10.dp)
-                .fillMaxSize()
+                .padding(8.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
                 .clickable { // Navigate to product screen with brand id
                     controller.navigate(Screens.ProductSc.createRoute(brand.title))
                 },
-            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp), // Set elevation
+            elevation = CardDefaults.cardElevation(defaultElevation = 16.dp), // Set elevation
             shape = RoundedCornerShape(10.dp), // Rounded corners
         ) {
             Column(
                 modifier = Modifier
                     .background(Color.White)
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(8.dp)
+                    .padding(horizontal = 8.dp)
                     .clip(RoundedCornerShape(10.dp)),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -505,9 +603,17 @@ fun BrandItem(brand: BrandData, controller: NavController) {
                 brand.imageSrc?.let {
                     CustomImage(it)
                 }
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 // Text section
-                CustomText(brand.title, pastelBrush, textColor = navyBlue, fontSize = 18.sp)
+                //CustomText(brand.title, pastelBrush, textColor = navyBlue, fontSize = 18.sp)
+                CustomText2(brand.title,
+                    pastelBrush,
+                    navyBlue,
+                    fontSize = 14.sp,
+                    style = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif,
+                    modifier = Modifier.padding(4.dp)
+                )
             }
         }
     }
@@ -525,6 +631,7 @@ fun CustomImage(url: String) {
         contentDescription = null,
         modifier = Modifier
             .size(140.dp)
+            .height(115.dp)
             .clip(RoundedCornerShape(10.dp))
             .padding(10.dp),
         contentScale = ContentScale.Fit
@@ -539,8 +646,8 @@ fun CustomText(
     textColor: Color = Color.Black,
     fontSize: TextUnit = 20.sp,
     padding: PaddingValues = PaddingValues(),
-    modifier: Modifier= Modifier,
-    style: FontWeight=FontWeight.Normal
+    modifier: Modifier = Modifier,
+    style: FontWeight = FontWeight.Normal
 ) {
     Text(
         text = textToUse,
@@ -551,12 +658,36 @@ fun CustomText(
             .padding(padding)
             .clip(RoundedCornerShape(15.dp))
             .background(backGroundColor)
-            .padding(8.dp), // Inner padding
+            .padding(horizontal = 8.dp), // Inner padding
         maxLines = 1, // Limit to one line
         overflow = TextOverflow.Ellipsis
     )
 }
 
+@Composable
+fun CustomText2(
+    textToUse: String,
+    backGroundColor: Brush,
+    textColor: Color = Color.Black,
+    fontSize: TextUnit = 20.sp,
+    modifier: Modifier = Modifier,
+    style: FontWeight = FontWeight.Bold,
+    fontFamily: FontFamily? = null // New parameter for font family
+) {
+    Text(
+        text = textToUse,
+        color = textColor,
+        fontSize = fontSize,
+        fontWeight = style,
+        fontFamily = fontFamily, // Use the font family parameter
+        modifier = modifier
+            .clip(RoundedCornerShape(15.dp))
+            .background(backGroundColor)
+            .padding(4.dp), // Inner padding
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+}
 
 
 @Composable
