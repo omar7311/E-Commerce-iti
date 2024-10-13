@@ -82,7 +82,7 @@ import java.time.LocalDate
 @Composable
 fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavController) {
     if (currentUser.observeAsState().value!=null){
-        Log.e("ddddddddddddddaaaaa3333333","discount is ${paymentViewModel.discount.collectAsState().value}")
+
         var cop by rememberSaveable { mutableStateOf("") }
         val place by remember { mutableStateOf(shippingAddress ?:ShippingAddress())}
         LaunchedEffect(Unit) {
@@ -206,7 +206,7 @@ fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel:
         ,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Log.e("ddddddddddddddddd","${amount.collectAsState().value}")
+
         Text(
             text = "$label:",
             textAlign = TextAlign.Center,

@@ -172,7 +172,6 @@ fun SaveAddressButton(
                 city = "$selectedCity $selectedGovernorate"
                 country = "Egypt"
             }
-            Log.d("shippingAddress", shippingAddress.toString())
             navController.navigateUp()
         },
         modifier = Modifier

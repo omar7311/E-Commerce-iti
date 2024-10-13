@@ -91,8 +91,7 @@ class ReposiatoryImpl(val remote: IRemoteDataSource, val local: IlocalDataSource
 
     override suspend fun getTempProductById(ProductId:Long): Product {
         val product = remote.getTempProductById(ProductId)
-        Log.i("ProductsFetched", "FetchProductsDetailsReposiatory: $product")
-
+        
         return remote.getTempProductById(ProductId)
     }
 

@@ -301,12 +301,10 @@ fun SignupScreen(
                                 falg=false
                                 try {
                                     GlobalScope.launch(Dispatchers.IO) {
-                                        Log.i("dasdsddsdsad", "adsdasdasd321443")
-                                           RemoteDataSourceImp().createCustomer(createCustomer(email, fullName, fullName, phoneNumber))
+                                     RemoteDataSourceImp().createCustomer(createCustomer(email, fullName, fullName, phoneNumber))
                                         isLoading = true
                                     }
                                 }catch (e:Exception){
-
                                 }
                             }
                             // Start a new coroutine for the delay

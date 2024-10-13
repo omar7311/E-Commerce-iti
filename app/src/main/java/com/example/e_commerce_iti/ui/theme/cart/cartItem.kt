@@ -76,8 +76,7 @@ fun CartItem(
     totalAmount: CartViewModel
 ) {
     val context = LocalContext.current
-    Log.i("CartItem", "$image $name $price $quantity")
-    val showDialog = rememberSaveable { mutableStateOf(false) }
+        val showDialog = rememberSaveable { mutableStateOf(false) }
     // Show confirmation dialog for item deletion
     if (showDialog.value) {
         MyAlertDialog(order = lineItems, e, showDialog)
