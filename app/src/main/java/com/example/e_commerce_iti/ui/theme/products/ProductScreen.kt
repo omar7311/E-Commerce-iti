@@ -92,6 +92,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.Currency
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.example.e_commerce_iti.whiteBrush
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -325,13 +327,15 @@ fun ProductItem(
                         )
                     }
 
+                    // show the buttom only when it is not guest
+                    if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
 
-
-                    FavoriteButton(
-                        product = product,
-                        productInfoViewModel = productInfoViewModel,
-                        context = context
-                    )
+                        FavoriteButton(
+                            product = product,
+                            productInfoViewModel = productInfoViewModel,
+                            context = context
+                        )
+                    }
                 }
             }
         }
