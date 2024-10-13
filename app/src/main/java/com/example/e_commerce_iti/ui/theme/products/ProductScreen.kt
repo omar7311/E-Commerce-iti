@@ -92,6 +92,8 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.Currency
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.example.e_commerce_iti.whiteBrush
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -200,8 +202,7 @@ fun FetchingProductsByVendor(
         is ProductsApiState.Success -> {
             val products = (productsState as ProductsApiState.Success).products
             // Display the products
-            Log.i("Products", "Products: $products")
-
+            
             val filteredProducts = products.filter { product ->
                 val productPrice = product.variants[0].price.toFloatOrNull() ?: 0f
                 productPrice <= maxPrice  // Filter products with price <= slider value
@@ -325,11 +326,16 @@ fun ProductItem(
                             padding = PaddingValues(10.dp)
                         )
                     }
-                    FavoriteButton(
-                        product = product,
-                        productInfoViewModel = productInfoViewModel,
-                        context = context
-                    )
+
+                    // show the buttom only when it is not guest
+                    if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
+
+                        FavoriteButton(
+                            product = product,
+                            productInfoViewModel = productInfoViewModel,
+                            context = context
+                        )
+                    }
                 }
             }
         }

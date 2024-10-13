@@ -158,8 +158,7 @@ fun CategoryScreen(
     // Fetch products when collectionId changes
   /*  LaunchedEffect(collectionId) {
         if (collectionId != 0L&&isNetworkAvailable)
-            Log.d("Tag", "CategoryScreen: $collectionId")
-            homeViewModel.getProductsByCustomCollection(collectionId)
+                        homeViewModel.getProductsByCustomCollection(collectionId)
         }*/
     }
 
@@ -195,8 +194,7 @@ fun FetchCustomCollections(
 
         is CustomCollectionStates.Failure -> {
             val error = (customCollections as CustomCollectionStates.Failure).msg
-            Log.e("Categories", "Failed to load custom collections: $error")
-        }
+                    }
     }
 }
 
@@ -239,8 +237,7 @@ fun FetchProductsByCustomCollection(
 
         is ProductsApiState.Failure -> {
             val error = (customProducts as ProductsApiState.Failure).msg
-            Log.e("Categories", "Failed to load custom collections: $error")
-        }
+                    }
     }
 }
 

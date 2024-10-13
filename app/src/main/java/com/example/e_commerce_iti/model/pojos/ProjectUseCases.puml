@@ -1,0 +1,70 @@
+@startuml
+left to right direction
+actor "User" as user
+
+rectangle "Snap Store" {
+  usecase "Sign Up" as UC1
+  usecase "Login" as UC2
+  usecase "View Home Page" as UC3
+  usecase "Browse Brands" as UC4
+  usecase "View Coupons" as UC5
+  usecase "Browse Categories" as UC6
+  usecase "Filter Products" as UC7
+  usecase "View Product Details" as UC8
+  usecase "Add to Favorites" as UC9
+  usecase "Add to Cart" as UC10
+  usecase "Search Products" as UC16
+  usecase "Manage Cart" as UC11
+  usecase "Delete from Cart" as UC23
+  usecase "Checkout" as UC12
+  usecase "Apply Coupon" as UC13
+  usecase "Choose Shipping Address" as UC14
+  usecase "Select Payment Method" as UC15
+  usecase "Manage Favorites" as UC17
+  usecase "Add to Cart from Favorites" as UC24
+  usecase "Delete from Favorites" as UC25
+  usecase "View Profile" as UC18
+  usecase "View Orders" as UC19
+  usecase "Change Settings" as UC20
+  usecase "Contact Support" as UC21
+  usecase "View About Section" as UC22
+
+  UC1 ..> UC2 : leads to
+  UC2 ..> UC3 : leads to
+  UC3 ..> UC4 : includes
+  UC3 ..> UC5 : includes
+  UC3 ..> UC6 : includes
+  UC6 ..> UC7 : extends
+  UC6 ..> UC8 : leads to
+  UC8 ..> UC9 : extends
+  UC8 ..> UC10 : extends
+  UC3 ..> UC16 : includes
+  UC10 ..> UC11 : leads to
+  UC11 ..> UC23 : extends
+  UC11 ..> UC12 : leads to
+  UC12 ..> UC13 : extends
+  UC12 ..> UC14 : includes
+  UC12 ..> UC15 : includes
+  UC3 ..> UC17 : includes
+  UC17 ..> UC24 : extends
+  UC17 ..> UC25 : extends
+  UC3 ..> UC18 : includes
+  UC18 ..> UC19 : extends
+  UC18 ..> UC20 : extends
+  UC20 ..> UC21 : includes
+  UC20 ..> UC22 : includes
+}
+
+user --> UC1
+user --> UC2
+user --> UC3
+user --> UC6
+user --> UC8
+user --> UC11
+user --> UC12
+user --> UC16
+user --> UC17
+user --> UC18
+user --> UC20
+
+@enduml
