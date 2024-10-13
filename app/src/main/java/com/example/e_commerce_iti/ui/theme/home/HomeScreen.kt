@@ -392,8 +392,8 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                 )*/
                 // App name at the top
                 CustomText2(customTitle,
-                    transparentBrush,
-                    navyBlue,
+                    gradientBrush,
+                    Color.White,
                     fontSize = 22.sp,
                     style = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,

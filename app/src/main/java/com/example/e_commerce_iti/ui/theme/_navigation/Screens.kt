@@ -148,7 +148,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
     val productInfoViewModelFac = ProductInfoViewModelFac(repository)
     val changeUserDataFactory = ChangeUserDataViewModelFactory(repository)
 
-    NavHost(navController = navController, startDestination = Screens.Home.route) {
+    NavHost(navController = navController, startDestination = Screens.Splash.route) {
 
         composable(route = Screens.Splash.route) {  // splash screen
             SplashScreen(navController)
