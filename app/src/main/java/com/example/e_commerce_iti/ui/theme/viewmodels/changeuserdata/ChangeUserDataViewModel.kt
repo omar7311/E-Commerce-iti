@@ -61,8 +61,7 @@ class ChangeUserDataViewModel(val repository: IReposiatory):ViewModel() {
             ), phone = phone)
 
             val gson= Gson().toJson(UpdateCustomer(uCustomer))
-            Log.e("555555555555555555555555555555555",gson)
-            val data=repository.updateCustomer(customer.id!!,gson).first()
+                        val data=repository.updateCustomer(customer.id!!,gson).first()
             _userStateData.value=UiState.Success(data.customer!!)
         }
     }

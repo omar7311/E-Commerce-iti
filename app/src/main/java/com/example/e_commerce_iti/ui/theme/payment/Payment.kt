@@ -1,4 +1,5 @@
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -43,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -63,7 +65,9 @@ import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.gradientBrush
 import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.UiState
+import com.example.e_commerce_iti.model.pojos.draftorder.ShippingAddress
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme._navigation.shippingAddress
 import com.example.e_commerce_iti.ui.theme.cart.roundToTwoDecimalPlaces
 import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -77,13 +81,14 @@ import java.time.LocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavController) {
-    if (currentUser.value != null) {
+    if (currentUser.observeAsState().value!=null){
+
         var cop by rememberSaveable { mutableStateOf("") }
+        val place by remember { mutableStateOf(shippingAddress ?:ShippingAddress())}
         LaunchedEffect(Unit) {
             paymentViewModel.getCart(currentUser.value!!.cart)
             paymentViewModel.getusercurrency()
         }
-        var flag = remember { mutableStateOf(false) }
         val cartState = paymentViewModel.cart.collectAsState().value
         Column(Modifier.fillMaxSize()) {
             // Header
@@ -121,9 +126,9 @@ fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavControll
                             .verticalScroll(rememberScrollState())
                             .padding(16.dp)
                     ) {
-                        PaymentContent(paymentViewModel, navController, cop) { cop = it }
+                        PaymentContent( palce = place,paymentViewModel, navController, cop) { cop = it }
                         Spacer(modifier = Modifier.height(16.dp))
-                        CreditCardForm(paymentViewModel, flag, navController)
+                        CreditCardForm(paymentViewModel, place = place, navController)
                     }
                 }
 
@@ -142,6 +147,8 @@ fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavControll
 
 @Composable
 fun PaymentContent(
+    palce:ShippingAddress
+,
     paymentViewModel: PaymentViewModel,
     navController: NavController,
     cop: String,
@@ -165,6 +172,8 @@ fun PaymentContent(
     )
     Spacer(modifier = Modifier.height(16.dp))
     ToggleableTextFieldDemo(navController)
+    Spacer(modifier = Modifier.height(16.dp))
+    Text("address: ${palce.country} , ${palce.city} , ${palce.address1}")
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = "Total Amount",
@@ -197,6 +206,7 @@ fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel:
         ,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
         Text(
             text = "$label:",
             textAlign = TextAlign.Center,
@@ -283,13 +293,14 @@ fun DiscountCodeSection(
                 Toast.makeText(LocalContext.current, "Invalid Coupon", Toast.LENGTH_SHORT).show()
             }
         } else {
+            Spacer(Modifier.height(10.dp))
             CircularProgressIndicator()
         }
     }
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolean>,navController: NavController) {
+fun CreditCardForm(paymentViewModel: PaymentViewModel, place: ShippingAddress,navController: NavController) {
     var selectedPaymentMethod by remember { mutableStateOf("") }
     var showCreditCardFields by remember { mutableStateOf(false) }
     var showPayOnReceiveFields by remember { mutableStateOf(false) }
@@ -489,7 +500,7 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolea
                     isLoading=true
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            paymentViewModel.submitOrder()
+                            paymentViewModel.submitOrder(place)
                             withContext(Dispatchers.Main) {
                                 showSuccessDialog = true
                                 withContext(Dispatchers.Main) {

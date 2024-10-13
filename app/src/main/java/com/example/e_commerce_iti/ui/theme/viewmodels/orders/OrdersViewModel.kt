@@ -32,8 +32,7 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getOrdersByCustomerId(customerId)
                 .collect { orders ->
-                    Log.d("ViewMOdelOrders", "Orders: $orders")
-                    _ordersFlowState.value = UiState.Success(orders)
+                                        _ordersFlowState.value = UiState.Success(orders)
 
                 }
         }
@@ -56,8 +55,7 @@ class OrdersViewModel(val repository: IReposiatory) : ViewModel() {
     suspend fun getTempProductById(productId:Long):Product{
         var product :Product?= null
           product =  repository.getTempProductById(productId)
-            Log.i("ProductsFetched", "Fetched ViewModel: $product")
-       return product
+                   return product
     }
 }
 

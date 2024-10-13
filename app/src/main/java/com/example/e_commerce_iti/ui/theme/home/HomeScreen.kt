@@ -303,10 +303,8 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
         }
 
         is BrandsApiState.Success -> {
-            Log.i("Brands", "Successfully loaded brands data.")
-            val brands = (brandsState as BrandsApiState.Success).brands
-            Log.i("Brands", "Brands: $brands")
-            BrandListItems(brands, controller, PaddingValues(5.dp))
+                        val brands = (brandsState as BrandsApiState.Success).brands
+                        BrandListItems(brands, controller, PaddingValues(5.dp))
         }
 
         is BrandsApiState.Failure -> {
@@ -317,8 +315,7 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
         }
 
         else -> {
-            Log.w("Brands", "Unexpected state: $brandsState")
-        }
+                    }
     }
 }
 

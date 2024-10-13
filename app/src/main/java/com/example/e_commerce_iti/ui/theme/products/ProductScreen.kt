@@ -200,8 +200,7 @@ fun FetchingProductsByVendor(
         is ProductsApiState.Success -> {
             val products = (productsState as ProductsApiState.Success).products
             // Display the products
-            Log.i("Products", "Products: $products")
-
+            
             val filteredProducts = products.filter { product ->
                 val productPrice = product.variants[0].price.toFloatOrNull() ?: 0f
                 productPrice <= maxPrice  // Filter products with price <= slider value
