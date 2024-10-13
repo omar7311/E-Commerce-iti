@@ -42,6 +42,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     private var totalamount= MutableStateFlow<Double>(0.0)
     val total: StateFlow<Double> = totalamount
     var tax= MutableStateFlow<Double>(0.0)
+    var appliedDiscount:AppliedDiscount?=null
     val paymentMethod= MutableStateFlow("")
     val discount= MutableStateFlow<Double>(0.0)
     val price= MutableStateFlow<Double>(0.0)
@@ -55,9 +56,10 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
         }
     }
     fun getCart(id:Long) {
+        _cart.value = UiState.Loading
         viewModelScope.launch {
             try {
-             _cart.value = UiState.Loading
+                Log.e("sdsadasdasd223e","eeeeeeeeeeeeeee ${_cart.value}")
              _cart.value = UiState.Success(repository.getCart(id).first())
              val ct=(_cart.value   as UiState.Success<DraftOrder>).data
              ct.line_items.forEach {
@@ -67,8 +69,10 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                      }
                  }
              }
-             discount.value= ct.applied_discount?.value?.toDouble() ?: 0.0
+                Log.e("dddddddddddeeee","asdasdas     ${totalamount.value}")
              totalamount.value=ct.total_price?.toDouble() ?:0.0
+              totalamount.value-=discount.value
+                Log.e("dddddddddssssssddeeee","asdasdas     ${totalamount.value}")
               }catch (e:Exception){
                 totalamount.value=(_cart.value as UiState.Success<DraftOrder>).data.total_price?.toDouble() ?:0.0
                 _cart.value=UiState.Error(e.message.toString())
@@ -114,6 +118,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                e.invoice_sent_at  = (currentUser.value!!.email)
                e.billing_address = BillingAddress(address.value, city = shippingAddress!!.address1)
                e.shipping_address = shippingAddress
+                e.applied_discount=appliedDiscount
                repository.compeleteDraftOrder(e)
                shippingAddress = null
                _oderstate.value = UiState.Success("payment Sucessfully")
@@ -171,12 +176,13 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                     discount.value=(totalamount.value* (1.0-t))
                     totalamount.value = (totalamount.value*(t)).roundToTwoDecimalPlaces()
                 }
-                cart.applied_discount = AppliedDiscount(
+               appliedDiscount = AppliedDiscount(
                     amount = round(discountAmount),  // Make sure discountAmount is valid and properly converted
                     description = id,
-                    value = abs(discountAmount),
+                    value = abs(priceRule.value.toDouble()),
                     value_type = priceRule.value_type
                 )
+                cart.applied_discount=appliedDiscount
                 Log.e("adsadas3334","${cart.applied_discount}")
                 Log.e("create odere eriirdssad","${cart} ")
                 Log.e("create odere discount","${priceRule} ")
