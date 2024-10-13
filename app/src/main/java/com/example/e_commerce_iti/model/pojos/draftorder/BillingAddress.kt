@@ -6,8 +6,6 @@ data class BillingAddress(
     var city: String?=null,
     var company: Any?=null,
     var country: String?=null,
-    var country_code: Any?=null,
-    var default: Boolean?=null,
     var first_name: Any?=null,
     var id: Int?=null,
     var last_name: Any?=null,
@@ -15,5 +13,4 @@ data class BillingAddress(
     var phone: String?=null,
     var province: String?=null,
     var province_code: Any?=null,
-    var zip: String?=null
 )

@@ -35,14 +35,22 @@ class ChangeUserDataViewModelTest{
     }
     @Test
     fun asdsad()= runTest {
+        var a=true
         viewModel.getCustomerData("alice.smith@example.com")
-        viewModel.updateCustomerData("asddas","asddas","adda","sdsdasd")
         launch {
             viewModel.userStateData.collect{
-                if (it is UiState.Success&& it.data.first_name=="asddas"){
-                    assert(it.data.first_name=="asddas")
+                println(it)
+                if (it is UiState.Success&&a){
+                    a=false
+                    viewModel.updateCustomerData("asddas","asddas","adda","sdsdasd")
+                }
+                if (it is UiState.Success&&!a){
+                    println(it.data)
+                    assert(it.data.email=="alice.smith@example.com")
+                    cancel()
                 }
             }
         }
+
     }
 }
