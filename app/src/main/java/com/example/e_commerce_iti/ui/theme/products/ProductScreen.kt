@@ -325,9 +325,6 @@ fun ProductItem(
                             padding = PaddingValues(10.dp)
                         )
                     }
-
-
-
                     FavoriteButton(
                         product = product,
                         productInfoViewModel = productInfoViewModel,
