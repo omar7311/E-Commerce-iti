@@ -31,7 +31,6 @@ suspend fun  getCurrent(email: String?,cartRepository:IReposiatory){
                  fav= cartRepository.getCart(i.value!!.toLong()).first().id
             }
         }
-        Log.i("metdddddddddddddddddddddddddadata", currentUser.value.toString())
         withContext(Dispatchers.Main) {
             currentUser.value = CurrentUser(
                 name = user.first_name!!,
@@ -43,7 +42,7 @@ suspend fun  getCurrent(email: String?,cartRepository:IReposiatory){
                 address = "medaerde"
             )
         }
-            Log.i("metdddddddddddddddddddddddddadata", currentUser.value.toString())
+
 
     }
 }

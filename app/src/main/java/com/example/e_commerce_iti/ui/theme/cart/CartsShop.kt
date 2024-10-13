@@ -67,8 +67,7 @@ import kotlinx.coroutines.flow.SharedFlow
 @Composable
 fun Carts(navController: NavController,modifier: Modifier = Modifier, viewModel: CartViewModel) {
     LaunchedEffect(Unit) {
-        Log.i("CartScreen", "LaunchedEffect called ${currentUser.value!!.cart}")
-        viewModel.getCartDraftOrder(currentUser.value!!.cart)
+                viewModel.getCartDraftOrder(currentUser.value!!.cart)
         viewModel.getCurrency()
     }
     if (viewModel.navigateto.collectAsState().value) {
@@ -76,8 +75,7 @@ fun Carts(navController: NavController,modifier: Modifier = Modifier, viewModel:
         viewModel.endnav()
     }
 
-    Log.i("CartScreen", "Screen Rebuild")
-
+    
     val currency = viewModel.currentCurrency.collectAsState()
     val productState = viewModel.product.collectAsState()
     Column(

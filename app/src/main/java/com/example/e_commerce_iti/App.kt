@@ -13,6 +13,7 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -31,20 +32,21 @@ class App : Application() {
 
         // Define the auth state listener
         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            Log.i("ffffffffeeqqqqqqq","${firebaseAuth.currentUser?.email} ")
-
             if (firebaseAuth.currentUser != null&&!firebaseAuth.currentUser!!.isAnonymous) {
                         CoroutineScope(Dispatchers.IO).launch{
                             try {
                                 getCurrent(firebaseAuth.currentUser!!.email!!, repository)
-                                Log.i("created","${currentUser.value}")
                             }catch (e:Exception){
-                                Log.i("created","$e")
+                                try {
+                                    val d=  RemoteDataSourceImp().getCustomer(firebaseAuth.currentUser!!.email!!)
+                                    val id=d.first().id
+                                    RemoteDataSourceImp().createNewDraft(id!!)
+                                }catch (ex:Exception){
+                                }
                             }
                         }
                     }else{
-                        Log.i("c332132321reated","null")
-                         currentUser.value=null
+                                                 currentUser.value=null
                     }
         }
 
