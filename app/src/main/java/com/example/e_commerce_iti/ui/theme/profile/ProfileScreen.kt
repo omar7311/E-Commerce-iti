@@ -169,12 +169,10 @@ fun LogoutButton(controller: NavController) {
     ) {
         Button(
             onClick = {
-                controller.navigate(Screens.Login.route) {
-                    popUpTo(controller.graph.startDestinationId) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
+                controller.navigate(Screens.Login.route){
+                    popUpTo(Screens.Profile.route) { inclusive = true }
                 }
+
                 Firebase.auth.signOut()
                 currentUser.value = null
             },
