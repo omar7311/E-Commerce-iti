@@ -65,7 +65,9 @@ import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.gradientBrush
 import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.UiState
+import com.example.e_commerce_iti.model.pojos.draftorder.ShippingAddress
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme._navigation.shippingAddress
 import com.example.e_commerce_iti.ui.theme.cart.roundToTwoDecimalPlaces
 import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -82,11 +84,11 @@ fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavControll
     if (currentUser.observeAsState().value!=null){
         Log.e("ddddddddddddddaaaaa3333333","discount is ${paymentViewModel.discount.collectAsState().value}")
         var cop by rememberSaveable { mutableStateOf("") }
+        val place by remember { mutableStateOf(shippingAddress ?:ShippingAddress())}
         LaunchedEffect(Unit) {
             paymentViewModel.getCart(currentUser.value!!.cart)
             paymentViewModel.getusercurrency()
         }
-        var flag = remember { mutableStateOf(false) }
         val cartState = paymentViewModel.cart.collectAsState().value
         Column(Modifier.fillMaxSize()) {
             // Header
@@ -124,9 +126,9 @@ fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavControll
                             .verticalScroll(rememberScrollState())
                             .padding(16.dp)
                     ) {
-                        PaymentContent(paymentViewModel, navController, cop) { cop = it }
+                        PaymentContent( palce = place,paymentViewModel, navController, cop) { cop = it }
                         Spacer(modifier = Modifier.height(16.dp))
-                        CreditCardForm(paymentViewModel, flag, navController)
+                        CreditCardForm(paymentViewModel, place = place, navController)
                     }
                 }
 
@@ -145,6 +147,8 @@ fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavControll
 
 @Composable
 fun PaymentContent(
+    palce:ShippingAddress
+,
     paymentViewModel: PaymentViewModel,
     navController: NavController,
     cop: String,
@@ -168,6 +172,8 @@ fun PaymentContent(
     )
     Spacer(modifier = Modifier.height(16.dp))
     ToggleableTextFieldDemo(navController)
+    Spacer(modifier = Modifier.height(16.dp))
+    Text("address: ${palce.country} , ${palce.city} , ${palce.address1}")
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = "Total Amount",
@@ -294,7 +300,7 @@ fun DiscountCodeSection(
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolean>,navController: NavController) {
+fun CreditCardForm(paymentViewModel: PaymentViewModel, place: ShippingAddress,navController: NavController) {
     var selectedPaymentMethod by remember { mutableStateOf("") }
     var showCreditCardFields by remember { mutableStateOf(false) }
     var showPayOnReceiveFields by remember { mutableStateOf(false) }
@@ -494,7 +500,7 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolea
                     isLoading=true
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            paymentViewModel.submitOrder()
+                            paymentViewModel.submitOrder(place)
                             withContext(Dispatchers.Main) {
                                 showSuccessDialog = true
                                 withContext(Dispatchers.Main) {

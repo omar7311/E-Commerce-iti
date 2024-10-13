@@ -83,11 +83,10 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
     val cardNumber= MutableStateFlow("")
     val expiryMonth= MutableStateFlow("")
     val expiryYear= MutableStateFlow<String>("")
-  suspend fun submitOrder() {
-      Log.e("dsinadadadasdadad","${discount.value}")
+  suspend fun submitOrder(place:ShippingAddress) {
                 var message = ""
-         if(shippingAddress!=null){
-             address.value=shippingAddress!!.address1!!
+         if(place.address1!=""){
+             address.value=place.address1!!
          }
            if (address.value.isBlank() || address.value == "N/A") {
                throw Exception("Address is required")
