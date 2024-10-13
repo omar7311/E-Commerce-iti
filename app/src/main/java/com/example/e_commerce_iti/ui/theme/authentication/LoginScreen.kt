@@ -109,7 +109,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(10.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -121,10 +121,10 @@ fun LoginScreen(
             modifier = Modifier
                 .wrapContentSize()
                 .clip(RoundedCornerShape(12.dp))
-                .size(200.dp)
+                .size(250.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
-            LoginAnimation(modifier = Modifier.size(200.dp))
+            LoginAnimation(modifier = Modifier.size(250.dp))
         }
 
         CustomText(
@@ -188,46 +188,48 @@ fun LoginScreen(
         )
 
         Button(
-
             onClick = {
                 if (emailRegex.matches(email) && passwordRegex.matches(password)) {
                     CoroutineScope(Dispatchers.IO).launch {
                         isLoading = true
                         FirebaseAuthManager.login(email, password) { success, error ->
-
                             isLoading = false
-
                             if (success) {
-                                controller.navigate(Screens.Home.route)  {
-                                    popUpTo(Screens.Login.route){ inclusive = true }
+                                // Fetch current user after successful login
+                                val user = FirebaseAuth.getInstance().currentUser
+                                if (user != null && user.isEmailVerified) {
+                                    // Navigate to Home if email is verified
+                                    controller.navigate(Screens.Home.route)  {
+                                        popUpTo(Screens.Login.route){ inclusive = true }
+                                    }
+                                } else {
+                                    // Show a Toast if the email is not verified
+                                    Toast.makeText(context, "Verify Your Mail", Toast.LENGTH_LONG).show()
                                 }
-
-//                                if(currentUser?.isEmailVerified == true)
-//
-//                                else Toast.makeText(context,"Verify Your Mail",Toast.LENGTH_LONG).show()
-                        } else {
-                        errorMessage = error
+                            } else {
+                                // Handle login error
+                                errorMessage = error
+                            }
+                        }
                     }
-                    }
+                } else {
+                    errorMessage = "Please enter a valid email and password"
                 }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ingredientColor1, // Custom green color
+                contentColor = Color.White // Text color
+            )
+        ) {
+            if (isLoading) {
+                LoadingIndicator()
             } else {
-            errorMessage = "Please enter a valid email and password"
+                Text("Log In", fontSize = 18.sp)
+            }
         }
-    },
-    modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp),
-    colors = ButtonDefaults.buttonColors(
-        containerColor = ingredientColor1, // Custom green color
-        contentColor = Color.White // Text color
-    )
-    ) {
-        if (isLoading) {
-            LoadingIndicator()
-        } else {
-            Text("Log In", fontSize = 18.sp)
-        }
-    }
 
     var isLoading by remember { mutableStateOf(false) }
 
