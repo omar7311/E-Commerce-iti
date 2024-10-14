@@ -53,6 +53,7 @@ import androidx.navigation.NavController
 import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.lightSeaGreen
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
 import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
@@ -135,7 +136,7 @@ fun FavoriteScreen(
                                     }
                                 }
                             } else {
-                                Column(modifier = Modifier.fillMaxWidth()) {
+                                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                                     MyLottiAni(R.raw.animation_no_data)
                                 }
                             }
@@ -148,7 +149,7 @@ fun FavoriteScreen(
                 }
             }else{
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = lightSeaGreen)
                 }
             }
 

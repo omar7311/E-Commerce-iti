@@ -160,7 +160,7 @@ fun HomeContent(
             .background(whiteBrush)
             .verticalScroll(rememberScrollState()) // Make the column scrollable
             .fillMaxSize()
-            .padding(5.dp)
+
 
     ) {
         /**
@@ -340,7 +340,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
     TopAppBar(
         modifier = Modifier
             .padding(horizontal = 15.dp,  vertical = 6.dp)
-            .wrapContentHeight()
+            .height(50.dp)
             .clip(RoundedCornerShape(35.dp))
             .shadow(8.dp, RoundedCornerShape(20.dp))
             .background(brush = gradientBrush),
@@ -348,7 +348,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                   // .height(50.dp)
+                    .height(50.dp)
                     .padding(horizontal = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -375,7 +375,7 @@ fun CustomTopBar(customTitle: String, controller: NavController) {
                     fontSize = 22.sp,
                     style = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(top=5.dp)
                 )
                 // Screen title below the app name
 
@@ -440,7 +440,7 @@ fun CustomButtonBar(controller: NavController, context: Context) {
         containerColor = Color.White,
         modifier = Modifier
             .background(brush = whiteBrush)
-            .height(50.dp)
+            .height(60.dp)
     ) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
