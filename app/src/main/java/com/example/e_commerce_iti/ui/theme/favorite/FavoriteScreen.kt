@@ -100,9 +100,6 @@ fun FavoriteScreen(
             if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
 
                 if (currentUser.observeAsState().value!=null){
-
-
-
                 LaunchedEffect(Unit) {
                     currentUser.value!!.fav.let { cartViewModel.getCartDraftOrder(it) }
                 }
