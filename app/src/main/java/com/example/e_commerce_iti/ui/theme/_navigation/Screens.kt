@@ -148,7 +148,7 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
     val productInfoViewModelFac = ProductInfoViewModelFac(repository)
     val changeUserDataFactory = ChangeUserDataViewModelFactory(repository)
 
-    NavHost(navController = navController, startDestination = Screens.Home.route) {
+    NavHost(navController = navController, startDestination = Screens.Splash.route) {
 
         composable(route = Screens.Splash.route) {  // splash screen
             SplashScreen(navController)
@@ -295,7 +295,8 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
 
         composable(route = Screens.Orders.route) {
             val orderViewModel: OrdersViewModel = viewModel(factory = ordersFactory)
-            OrdersScreen(context, orderViewModel, navController, networkObserver)
+            val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
+            OrdersScreen(context, orderViewModel, navController, networkObserver,currencyViewModel)
         }
 
         composable(
@@ -306,12 +307,15 @@ fun Navigation(networkObserver: NetworkObserver, context: Activity) {
             val gson = Gson()
             val order = gson.fromJson(orderJson, Order::class.java)
             val orderViewModel: OrdersViewModel = viewModel(factory = ordersFactory)
+            val currencyViewModel: CurrencyViewModel = viewModel(factory = curreneyFactory)
+
             OrderDetailsScreen(
                 context,
                 order = order,
                 orderViewModel,
                 controller = navController,
-                networkObserver
+                networkObserver,
+                currencyViewModel
             )
         }
     }

@@ -86,6 +86,7 @@ fun FavoriteScreen(
 ) {
     val product by cartViewModel.product.collectAsState()
     Scaffold(
+        containerColor = Color.White,
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
         bottomBar = {
             CustomButtonBar(

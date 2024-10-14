@@ -56,6 +56,8 @@ import com.example.e_commerce_iti.model.pojos.Address
 import com.example.e_commerce_iti.model.pojos.Customer
 import com.example.e_commerce_iti.model.pojos.LineItem
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.ui.theme.products.getCurrencyAndPrice
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
 import kotlinx.coroutines.flow.first
 
@@ -66,7 +68,8 @@ fun OrderDetailsScreen(
     order: Order,
     orderViewModel: OrdersViewModel,
     controller: NavHostController,
-    networkObserver: NetworkObserver
+    networkObserver: NetworkObserver,
+    currencyViewModel: CurrencyViewModel
 ) {
 
     Scaffold(
@@ -80,7 +83,8 @@ fun OrderDetailsScreen(
                ScreenContent(
                 order,
                 orderViewModel,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                   currencyViewModel ,
             )
         } else {
             NetworkErrorContent() // when no connection
@@ -91,7 +95,7 @@ fun OrderDetailsScreen(
 
 
 @Composable
-fun ScreenContent(order: Order, orderViewModel: OrdersViewModel, modifier: Modifier = Modifier) {
+fun ScreenContent(order: Order, orderViewModel: OrdersViewModel, modifier: Modifier = Modifier,currencyViewModel: CurrencyViewModel) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
@@ -105,7 +109,7 @@ fun ScreenContent(order: Order, orderViewModel: OrdersViewModel, modifier: Modif
         }
 
         item { Spacer(modifier = Modifier.height(16.dp)) }
-        item { OrderSummary(order) }
+        item { OrderSummary(order, currencyViewModel ) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { CustomerInfo(order.customer, order.shippingAddress) }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -138,7 +142,7 @@ fun OrderHeader(order: Order) {
 
 
 @Composable
-fun OrderSummary(order: Order) {
+fun OrderSummary(order: Order,currencyViewModel: CurrencyViewModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -146,15 +150,22 @@ fun OrderSummary(order: Order) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Order Summary", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(8.dp))
-            InfoItem("Subtotal", "${order.currentSubtotalPrice} ${order.currency}")
+            val orderSubTotal = getCurrencyAndPrice(order.currentSubtotalPrice,currencyViewModel)
+            InfoItem("Subtotal", "$orderSubTotal")
             /*InfoItem(
                 "Shipping",
                 "${order.totalShippingPriceSet.shopMoney.amount} ${order.currency}"
             )*/
-            InfoItem("Tax", "${order.currentTotalTax} ${order.currency}")
-            InfoItem("Discounts", "-${order.totalDiscounts} ${order.currency}")
+            val orderTax = getCurrencyAndPrice(order.currentTotalTax,currencyViewModel)
+
+            InfoItem("Tax", "$orderTax")
+            val orderShipping = getCurrencyAndPrice(order.totalShippingPriceSet.shopMoney.amount,currencyViewModel)
+
+            InfoItem("Shipping Fee", "-$orderShipping")
             Divider(modifier = Modifier.padding(vertical = 8.dp))
-            InfoItem("Total", "${order.currentTotalPrice} ${order.currency}", FontWeight.Bold)
+            val orderTotalPrice = getCurrencyAndPrice(order.currentTotalPrice,currencyViewModel)
+
+            InfoItem("Total", "$orderTotalPrice", FontWeight.Bold)
         }
     }
 }
@@ -172,10 +183,10 @@ fun CustomerInfo(customer: Customer, address: Address) {
                Text(customer.email)
                Text(customer.phone ?: "No phone provided")*/
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Shipping Address", fontWeight = FontWeight.Bold)
-            Text(address.address1 ?: "N/A", fontWeight = FontWeight.Bold)
+            Text("Shipping Address", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text(address.address1.replace("+", " ") ?: "N/A", fontWeight = FontWeight.Bold)
             Text(
-                "${address.city}, ${address.country} ",
+                "${address.city.replace("+", " ")}, ${address.country.replace("+", " ")} ",
                 fontWeight = FontWeight.Bold
             )
         }

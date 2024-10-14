@@ -1,5 +1,6 @@
 package com.example.e_commerce_iti.ui.theme.orders
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.animation.animateContentSize
@@ -62,6 +63,8 @@ import com.example.e_commerce_iti.ui.theme.cart.MyLottiAni
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
 import com.example.e_commerce_iti.ui.theme.home.CustomTopBar
 import com.example.e_commerce_iti.ui.theme.home.MyLottieAnimation
+import com.example.e_commerce_iti.ui.theme.products.getCurrencyAndPrice
+import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.CurrencyViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.orders.OrdersViewModel
 import com.google.gson.Gson
 
@@ -71,7 +74,8 @@ fun OrdersScreen(
     context: Context,
     orderViewModel: OrdersViewModel,
     controller: NavController,
-    networkObserver: NetworkObserver
+    networkObserver: NetworkObserver,
+    currencyViewModel: CurrencyViewModel
 ) {
     Scaffold(
         topBar = { CustomTopBar("Orders", controller) },
@@ -85,7 +89,7 @@ fun OrdersScreen(
                 .padding(innerPadding)
         ) {
             if (isConnected) {
-                OrdersContent(orderViewModel, controller)
+                OrdersContent(orderViewModel, controller,currencyViewModel)
             } else {
                 NetworkErrorContent()
             }
@@ -94,7 +98,7 @@ fun OrdersScreen(
 }
 
 @Composable
-fun OrdersContent(orderViewModel: OrdersViewModel, controller: NavController) {
+fun OrdersContent(orderViewModel: OrdersViewModel, controller: NavController,currencyViewModel: CurrencyViewModel) {
 
     val customerId = currentUser.value?.id
     Column(modifier = Modifier.fillMaxSize()) {
@@ -107,7 +111,7 @@ fun OrdersContent(orderViewModel: OrdersViewModel, controller: NavController) {
                 .align(Alignment.CenterHorizontally)
         )
         if (customerId != null) {
-            FetchOrdersByCustomerId(customerId, orderViewModel, controller, orderViewModel)
+            FetchOrdersByCustomerId(customerId, orderViewModel, controller, orderViewModel,currencyViewModel)
         }
     }
 }
@@ -116,12 +120,14 @@ fun OrdersContent(orderViewModel: OrdersViewModel, controller: NavController) {
 7491636658353
 */
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun FetchOrdersByCustomerId(
     customerId: Long,
     orderViewModel: OrdersViewModel,
     controller: NavController,
-    orderViewModel1: OrdersViewModel
+    orderViewModel1: OrdersViewModel,
+    currencyViewModel: CurrencyViewModel,
 ) {
     LaunchedEffect(Unit) {
         orderViewModel.getOrdersByCustomerId(customerId)
@@ -134,7 +140,7 @@ fun FetchOrdersByCustomerId(
             is UiState.Success -> {
                 if((ordersState as UiState.Success<List<Order>>).data.isNotEmpty()){
                     val orders = (ordersState as UiState.Success<List<Order>>).data
-                                        OrdersList(orders, controller, orderViewModel)
+                                        OrdersList(orders, controller, orderViewModel,currencyViewModel)
                 }else{
                     Column(modifier = Modifier.fillMaxWidth()) {
                         MyLottiAni(R.raw.animation_no_data)
@@ -155,7 +161,7 @@ fun FetchOrdersByCustomerId(
 }
 
 @Composable
-fun OrdersList(orders: List<Order>, controller: NavController, orderViewModel: OrdersViewModel) {
+fun OrdersList(orders: List<Order>, controller: NavController, orderViewModel: OrdersViewModel,currencyViewModel: CurrencyViewModel) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
         contentPadding = PaddingValues(16.dp),
@@ -167,7 +173,7 @@ fun OrdersList(orders: List<Order>, controller: NavController, orderViewModel: O
                     products =
                         FetchProductsDetails(orderViewModel, order)  // Fetch products from details
                                 }*/
-            OrderItem(order, controller, orderViewModel)
+            OrderItem(order, controller, orderViewModel, currencyViewModel )
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -239,7 +245,7 @@ fun OrderItem(
     order: Order,
     controller: NavController,
     orderViewModel: OrdersViewModel,
-   // products: List<Product>
+    currencyViewModel: CurrencyViewModel
 ) {
     val gson = Gson()
     val orderJson = gson.toJson(order)
@@ -275,7 +281,8 @@ fun OrderItem(
             ) {
                 OrderInfoRow("Order ID", order.id.toString())
                 OrderInfoRow("Date", order.createdAt.substringBefore('T'))  // for date  built in
-                OrderInfoRow("Total", "${order.currentTotalPrice} ${order.currency}")
+                val orderTotal = getCurrencyAndPrice(order.currentTotalPrice,currencyViewModel)
+                OrderInfoRow("Total", "$orderTotal")
                 // OrderStatusChip(order.orderStatus ?: "Order Status UnDefined Yet")
             }
         }
