@@ -48,6 +48,7 @@ import com.example.e_commerce_iti.R
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.darkSlateGray
 import com.example.e_commerce_iti.lavender
+import com.example.e_commerce_iti.lightSeaGreen
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.ui.theme.ECommerceITITheme
@@ -149,7 +150,7 @@ fun ProfileScreen(controller: NavController) {
         }
             else{
             Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = lightSeaGreen)
             }
         }
         }

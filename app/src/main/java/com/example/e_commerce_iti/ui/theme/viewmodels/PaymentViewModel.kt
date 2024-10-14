@@ -51,7 +51,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
             try {
                 currency.value = repository.getChoosedCurrency().first()
             } catch (e: Exception) {
-                 currency.value=Pair("USD",1.0F)
+                currency.value=Pair("USD",1.0F)
             }
         }
     }
@@ -59,65 +59,74 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
         _cart.value = UiState.Loading
         viewModelScope.launch {
             try {
-                             _cart.value = UiState.Success(repository.getCart(id).first())
-             val ct=(_cart.value   as UiState.Success<DraftOrder>).data
-             ct.line_items.forEach {
-                 if (it.title!="Dummy") {
-                     it.tax_lines?.forEach {
-                         tax.value += it.price?.toDouble() ?: 0.0
-                     }
-                 }
-             }
-                             totalamount.value=ct.total_price?.toDouble() ?:0.0
-              totalamount.value-=discount.value
-                              }catch (e:Exception){
+                _cart.value = UiState.Success(repository.getCart(id).first())
+                val ct=(_cart.value   as UiState.Success<DraftOrder>).data
+                ct.line_items.forEach {
+                    if (it.title!="Dummy") {
+                        it.tax_lines?.forEach {
+                            tax.value += it.price?.toDouble() ?: 0.0
+                        }
+                    }
+                }
+                totalamount.value=ct.total_price?.toDouble() ?:0.0
+                totalamount.value-=discount.value
+            }catch (e:Exception){
                 totalamount.value=(_cart.value as UiState.Success<DraftOrder>).data.total_price?.toDouble() ?:0.0
                 _cart.value=UiState.Error(e.message.toString())
-              }
+            }
         }
     }
     val cvv= MutableStateFlow<String>("")
     val cardNumber= MutableStateFlow("")
     val expiryMonth= MutableStateFlow("")
     val expiryYear= MutableStateFlow<String>("")
-  suspend fun submitOrder(place:ShippingAddress) {
-                var message = ""
-         if(place.address1!=""){
-             address.value=place.address1!!
-         }
-           if (address.value.isBlank() || address.value == "N/A") {
-               throw Exception("Address is required")
-           }
-           if (paymentMethod.value.isBlank()) {
-               throw Exception("Payment Method is required")
-           }
-                       if (paymentMethod.value == "paid" && (isValidCreditCard(
-                   CreditCard(
-                       cardNumber.value.toString(),
-                       expiryMonth.value.toInt(), expiryYear.value.toInt(), cvv.value)
-               )|| !isExpiryDateValid(expiryMonth.value,expiryYear.value))
-           ) {
-               message += "Wrong Card Info"
-           }
-      if (totalamount.value>1000&&paymentMethod.value!="paid"){
-          message+="this total amount cannot pay in delivery"
-      }
-           if (message.isNotBlank()) {
-               throw Exception(message)
-           }
-                      if (shippingAddress == null) {
-               throw Exception("Shipping Address is required")
-           }
-               val e = (_cart.value as UiState.Success<DraftOrder>).data
-               e.invoice_sent_at  = (currentUser.value!!.email)
-               e.billing_address = BillingAddress(address.value, city = shippingAddress!!.address1)
-               e.shipping_address = shippingAddress
-                e.applied_discount=appliedDiscount
-               repository.compeleteDraftOrder(e)
-               shippingAddress = null
-               _oderstate.value = UiState.Success("payment Sucessfully")
-
+    suspend fun submitOrder(place:ShippingAddress) {
+        var message = ""
+        if(place.address1!=""){
+            address.value=place.address1!!
         }
+        if (address.value.isBlank() || address.value == "N/A") {
+            throw Exception("Address is required")
+        }
+        if (paymentMethod.value.isBlank()) {
+            throw Exception("Payment Method is required")
+        }
+        if (paymentMethod.value == "paid" &&cardNumber.value.length<16){
+            throw Exception("card number error")
+        }
+        if (paymentMethod.value == "paid" &&cvv.value.length<3){
+            throw Exception("cvv number error")
+        }
+        if (paymentMethod.value == "paid" && !isExpiryDateValid(expiryMonth.value,expiryYear.value)){
+            throw Exception("card date expierd")
+            }
+            if (paymentMethod.value == "paid" && (isValidCreditCard(
+                CreditCard(
+                    cardNumber.value.toString(),
+                    expiryMonth.value.toInt(), expiryYear.value.toInt(), cvv.value)
+            ))
+        ) {
+            message += "Wrong Card Info"
+        }
+        if (totalamount.value>1000&&paymentMethod.value!="paid"){
+            message+="this total amount cannot pay in delivery"
+        }
+        if (message.isNotBlank()) {
+            throw Exception(message)
+        }
+        if (shippingAddress == null) {
+            throw Exception("Shipping Address is required")
+        }
+        val e = (_cart.value as UiState.Success<DraftOrder>).data
+        e.invoice_sent_at  = (currentUser.value!!.email)
+        e.billing_address = BillingAddress(address.value, city = shippingAddress!!.address1)
+        e.shipping_address = shippingAddress
+        e.applied_discount=appliedDiscount
+        repository.compeleteDraftOrder(e)
+        shippingAddress = null
+        _oderstate.value = UiState.Success("payment Sucessfully")
+
+    }
     fun get_discount_details(id:String){
         viewModelScope.launch {
             try {
@@ -126,8 +135,8 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                 get_price_rules((_discountCode.value as UiState.Success<DiscountCodeX>).data.price_rule_id,id)
 
             }catch (e:Exception){
-                
-                                totalamount.value=(_cart.value as UiState.Success<DraftOrder>).data.total_price?.toDouble() ?:0.0
+
+                totalamount.value=(_cart.value as UiState.Success<DraftOrder>).data.total_price?.toDouble() ?:0.0
                 _discountCode.value=UiState.Error(e.message.toString())
             }
         }
@@ -139,7 +148,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                 _priceRules.value = UiState.Success(repository.getPrice_rules(discountCodeX).first())
                 apply_discount((_priceRules.value as UiState.Success<PriceRule>).data,id)
             }catch (e:Exception){
-                
+
                 totalamount.value=(_cart.value as UiState.Success<DraftOrder>).data.total_price?.toDouble() ?:0.0
                 _priceRules.value=UiState.Error(e.message.toString())
             }
@@ -167,7 +176,7 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                     discount.value=(totalamount.value* (1.0-t))
                     totalamount.value = (totalamount.value*(t)).roundToTwoDecimalPlaces()
                 }
-               appliedDiscount = AppliedDiscount(
+                appliedDiscount = AppliedDiscount(
                     amount = round(discountAmount),  // Make sure discountAmount is valid and properly converted
                     description = id,
                     value = abs(priceRule.value.toDouble()),
@@ -175,8 +184,8 @@ class PaymentViewModel(val repository: IReposiatory): ViewModel() {
                 )
                 cart.applied_discount=appliedDiscount
                 _cart.value = UiState.Success(cart)
-                            } catch (e: Exception) {
-                                _priceRules.value = UiState.Error(e.message.toString())
+            } catch (e: Exception) {
+                _priceRules.value = UiState.Error(e.message.toString())
                 totalamount.value=(_cart.value as UiState.Success<DraftOrder>).data.total_price?.toDouble() ?:0.0
                 (_cart.value as UiState.Success<DraftOrder>).data.applied_discount=null
             }
@@ -267,6 +276,5 @@ data class CreditCard(
     val expiryYear: Int,
     val cvv: String
 )
-
 
 

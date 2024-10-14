@@ -108,6 +108,7 @@ fun ProductScreen(
 ) {
 
     Scaffold(
+        containerColor = Color.White,
         topBar = { CustomTopBar("Products", controller) },  // Update title to "Cart"
         bottomBar = {
             CustomButtonBar(
