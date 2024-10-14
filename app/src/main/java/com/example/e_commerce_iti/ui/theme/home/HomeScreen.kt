@@ -17,6 +17,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme.colors
@@ -78,10 +80,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -117,6 +121,7 @@ import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
+import com.example.e_commerce_iti.monochromeBrush
 import com.example.e_commerce_iti.navyBlue
 import com.example.e_commerce_iti.pastelBrush
 import com.example.e_commerce_iti.transparentBrush
@@ -543,20 +548,24 @@ fun CustomText(
     fontSize: TextUnit = 20.sp,
     padding: PaddingValues = PaddingValues(),
     modifier: Modifier= Modifier,
-    style: FontWeight=FontWeight.Normal
+    style: FontWeight=FontWeight.Normal,
+    isSelected: Boolean = false
 ) {
     Text(
         text = textToUse,
         color = textColor,
         fontSize = fontSize,
         fontWeight = style,
-        modifier = modifier
-            .padding(padding)
-            .clip(RoundedCornerShape(15.dp))
-            .background(backGroundColor)
-            .padding(8.dp), // Inner padding
+        modifier =
+            modifier
+                .padding(padding)
+                .clip(RoundedCornerShape(15.dp))
+                .background(if(isSelected){
+                    earthyBrush} else{backGroundColor})
+                .padding(8.dp)
+, // Inner padding
         maxLines = 1, // Limit to one line
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
     )
 }
 

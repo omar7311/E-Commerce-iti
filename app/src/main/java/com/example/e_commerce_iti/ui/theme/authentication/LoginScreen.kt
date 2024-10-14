@@ -187,7 +187,7 @@ fun LoginScreen(
                             if (success) {
                                 // Fetch current user after successful login
                                 val user = FirebaseAuth.getInstance().currentUser
-                                if (user != null && user.isEmailVerified) {
+                                if (user != null /*&& user.isEmailVerified*/) {
                                     // Navigate to Home if email is verified
                                     controller.navigate(Screens.Home.route)
                                 } else {
