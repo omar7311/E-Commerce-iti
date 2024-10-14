@@ -130,7 +130,7 @@ fun FavoriteScreen(
                                             controller,
                                             cartViewModel,
                                             product,
-                                            index+1
+                                            index
                                         )
                                     }
                                 }
@@ -178,7 +178,7 @@ fun FavouriteItem(
     val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
     val showDialog = rememberSaveable { mutableStateOf(false) }
     if (showDialog.value) {
-        MyAlertDialog(draftOrder?.line_items?.get(index)!!, { lineItem ->
+        MyAlertDialog(draftOrder?.line_items?.get(index+1)!!, { lineItem ->
             cartViewModel.updateCart(product, lineItem)
         }, showDialog)
     }
@@ -255,7 +255,9 @@ fun FavouriteItem(
                     val draftOrder = (draftOrderState as UiState.Success).data
                     // Check if product is already in cart or add new product to cart
                     if (!draftOrder.line_items.any { it.product_id == product.id }) {
-                        addToCardOrFavorite(productInfoViewModel, product, draftOrder)
+                        addToCardOrFavorite(productInfoViewModel, product, draftOrder,
+                            mutableStateOf(0)
+                        )
                         isAddingToCards = false
                        Toast.makeText(context,"the product ia adding successfully",Toast.LENGTH_LONG).show()
                     }

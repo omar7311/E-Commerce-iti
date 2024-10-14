@@ -63,11 +63,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.R
+import com.example.e_commerce_iti.coralColor
+import com.example.e_commerce_iti.crimson
+import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.firebrick
+import com.example.e_commerce_iti.gradientBrush
+import com.example.e_commerce_iti.indigo
+import com.example.e_commerce_iti.ingredientColor1
+import com.example.e_commerce_iti.limeGreen
 import com.example.e_commerce_iti.model.apistates.ProductsApiState
 import com.example.e_commerce_iti.model.apistates.UiState
 import com.example.e_commerce_iti.model.pojos.Product
+import com.example.e_commerce_iti.model.pojos.draftorder.DraftOrder
+import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
 import com.example.e_commerce_iti.navyBlue
+import com.example.e_commerce_iti.paleGoldenrod
 import com.example.e_commerce_iti.pastelBrush
+import com.example.e_commerce_iti.tomato
+import com.example.e_commerce_iti.turquoise
 import com.example.e_commerce_iti.ui.theme.ShimmerLoadingGrid
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
@@ -79,8 +92,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.Currency
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.example.e_commerce_iti.whiteBrush
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -189,7 +201,8 @@ fun FetchingProductsByVendor(
         is ProductsApiState.Success -> {
             val products = (productsState as ProductsApiState.Success).products
             // Display the products
-            
+            Log.i("Products", "Products: $products")
+
             val filteredProducts = products.filter { product ->
                 val productPrice = product.variants[0].price.toFloatOrNull() ?: 0f
                 productPrice <= maxPrice  // Filter products with price <= slider value
@@ -313,10 +326,7 @@ fun ProductItem(
                             padding = PaddingValues(10.dp)
                         )
                     }
-
-                    // show the buttom only when it is not guest
-                    if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
-
+                    if (!FirebaseAuth.getInstance().currentUser?.isAnonymous!!) {
                         FavoriteButton(
                             product = product,
                             productInfoViewModel = productInfoViewModel,

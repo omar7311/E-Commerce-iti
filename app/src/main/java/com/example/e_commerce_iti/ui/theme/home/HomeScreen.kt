@@ -5,22 +5,19 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +43,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme.colors
@@ -83,14 +81,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -99,7 +96,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -121,18 +117,17 @@ import com.example.e_commerce_iti.LoadingIndicator
 import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.earthyBrush
-import com.example.e_commerce_iti.gradientBrush
 import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.local.LocalDataSourceImp
 import com.example.e_commerce_iti.model.remote.RemoteDataSourceImp
 import com.example.e_commerce_iti.model.reposiatory.IReposiatory
 import com.example.e_commerce_iti.model.reposiatory.ReposiatoryImpl
+import com.example.e_commerce_iti.monochromeBrush
 import com.example.e_commerce_iti.navyBlue
 import com.example.e_commerce_iti.pastelBrush
 import com.example.e_commerce_iti.transparentBrush
 import com.example.e_commerce_iti.ui.theme.ShimmerEffect
 import com.example.e_commerce_iti.ui.theme.viewmodels.cartviewmodel.CartViewModel
-import com.example.e_commerce_iti.whiteBrush
 import kotlinx.coroutines.delay
 
 /**
@@ -340,8 +335,10 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
         }
 
         is BrandsApiState.Success -> {
+            Log.i("Brands", "Successfully loaded brands data.")
             val brands = (brandsState as BrandsApiState.Success).brands
-            BrandListItems(brands, controller, PaddingValues(vertical = 5.dp))
+            Log.i("Brands", "Brands: $brands")
+            BrandListItems(brands, controller, PaddingValues(5.dp))
         }
 
         is BrandsApiState.Failure -> {
@@ -352,6 +349,7 @@ fun FetchingBrandData(homeViewModel: HomeViewModel, controller: NavController) {
         }
 
         else -> {
+            Log.w("Brands", "Unexpected state: $brandsState")
         }
     }
 }
@@ -646,21 +644,25 @@ fun CustomText(
     textColor: Color = Color.Black,
     fontSize: TextUnit = 20.sp,
     padding: PaddingValues = PaddingValues(),
-    modifier: Modifier = Modifier,
-    style: FontWeight = FontWeight.Normal
+    modifier: Modifier= Modifier,
+    style: FontWeight=FontWeight.Normal,
+    isSelected: Boolean = false
 ) {
     Text(
         text = textToUse,
         color = textColor,
         fontSize = fontSize,
         fontWeight = style,
-        modifier = modifier
-            .padding(padding)
-            .clip(RoundedCornerShape(15.dp))
-            .background(backGroundColor)
-            .padding(horizontal = 8.dp), // Inner padding
+        modifier =
+            modifier
+                .padding(padding)
+                .clip(RoundedCornerShape(15.dp))
+                .background(if(isSelected){
+                    earthyBrush} else{backGroundColor})
+                .padding(8.dp)
+, // Inner padding
         maxLines = 1, // Limit to one line
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
     )
 }
 
