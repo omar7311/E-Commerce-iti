@@ -11,7 +11,7 @@
 *Technologies Used
   1- Programming Language: Kotlin
   2- Architecture: MVVM (Model-View-ViewModel)
-  3- Minimum SDK Version: 26 
+  3- Minimum SDK Version: 24
   4- Target SDK Version: 34 (Android 14)
   5- UI Components: Jetpack Compose
   6- Network Library: Retrofit 
