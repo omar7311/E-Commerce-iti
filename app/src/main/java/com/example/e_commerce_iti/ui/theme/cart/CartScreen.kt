@@ -12,9 +12,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.lightSeaGreen
 import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme.guest.GuestScreen
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
@@ -32,6 +34,7 @@ fun CartScreen(
     netWorkObserver: NetworkObserver
 ) {
     Scaffold(
+        containerColor = Color.White,
         topBar = { CustomTopBar("Cart", controller) },  // Update title to "Cart"
         bottomBar = {
             CustomButtonBar(
@@ -49,7 +52,7 @@ fun CartScreen(
                  Carts(controller, Modifier.padding(innerPadding), viewModel = cartViewModel)
                }else{
                    Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
-                       CircularProgressIndicator()
+                       CircularProgressIndicator(color = lightSeaGreen)
                    }
                }
            } else {
