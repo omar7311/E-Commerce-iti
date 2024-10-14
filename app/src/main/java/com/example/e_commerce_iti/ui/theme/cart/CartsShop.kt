@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -122,7 +123,7 @@ fun Carts(navController: NavController,modifier: Modifier = Modifier, viewModel:
                     CheckoutButton(viewModel)
                 } else {
                     // Handle empty product list
-                    Column(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                         MyLottiAni(R.raw.animation_no_data)
                     }
                 }
@@ -145,13 +146,13 @@ fun Carts(navController: NavController,modifier: Modifier = Modifier, viewModel:
 }
 
 @Composable
-fun MyLottiAni(id: Int) {
+fun MyLottiAni(id: Int,modifier: Modifier=Modifier) {
     // Load the Lottie animation from the assets folder
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(id))
 
     // Lottie animation control
     LottieAnimation(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.size(350.dp),
         composition = composition,
         iterations = LottieConstants.IterateForever // This will loop the animation
     )

@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.NetworkErrorContent
 import com.example.e_commerce_iti.currentUser
+import com.example.e_commerce_iti.lightSeaGreen
 import com.example.e_commerce_iti.network.NetworkObserver
 import com.example.e_commerce_iti.ui.theme.guest.GuestScreen
 import com.example.e_commerce_iti.ui.theme.home.CustomButtonBar
@@ -51,7 +52,7 @@ fun CartScreen(
                  Carts(controller, Modifier.padding(innerPadding), viewModel = cartViewModel)
                }else{
                    Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
-                       CircularProgressIndicator()
+                       CircularProgressIndicator(color = lightSeaGreen)
                    }
                }
            } else {

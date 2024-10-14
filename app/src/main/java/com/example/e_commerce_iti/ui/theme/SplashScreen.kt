@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.*
@@ -44,20 +46,16 @@ fun SplashScreen(navController: NavController) {
             popUpTo(Screens.Splash.route){ inclusive = true }
         }
     }
-    Column(
+    Box(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.splash_logo),
+            painter = painterResource(id = R.drawable.logo),
             contentDescription = "Splash Screen Image",
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
+            modifier = Modifier.fillMaxWidth().height(400.dp)
+                .align(Alignment.Center).padding(bottom = 128.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        MyLottiAni(R.raw.ecommerce1)
+        MyLottiAni(R.raw.ecommerce1,Modifier.align(Alignment.BottomCenter))
     }
 }
 /**
