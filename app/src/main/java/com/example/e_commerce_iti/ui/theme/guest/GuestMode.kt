@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.e_commerce_iti.gradientBrush
 import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
@@ -51,7 +52,12 @@ fun GuestScreen(controller: NavController?) {
 
                 onClick = {
                     // Navigate to login screen
-                    controller?.navigate(Screens.Login.route)
+                    controller?.navigate(Screens.Login.route){
+                        popUpTo(controller.graph.findStartDestination().id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true  // when user press multiple time on it
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -69,7 +75,11 @@ fun GuestScreen(controller: NavController?) {
             TextButton(
                 onClick = {
 
-                    controller?.navigate(Screens.Signup.route)
+                    controller?.navigate(Screens.Signup.route){
+                        popUpTo(controller.graph.startDestinationId){
+                            inclusive = true
+                        }
+                    }
                 }
             ) {
                 Text("Don't have an account? Sign Up", fontSize = 14.sp)

@@ -49,7 +49,7 @@ class CurrencyViewModel(private val repository: IReposiatory) : ViewModel() {
     }
     var job: Job?=null
     fun getCustomerData(email:String){
-        job?.cancel()
+                job?.cancel()
        // userStateData.value=UiState.Loading
         job=viewModelScope.launch(Dispatchers.IO) {
             val customer= repository.getCustomer(email).first()
@@ -60,13 +60,12 @@ class CurrencyViewModel(private val repository: IReposiatory) : ViewModel() {
         val customer=(userStateData.value as UiState.Success<CustomerX>).data
         userStateData.value=UiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
-            val uCustomer= UCustomer(currency = currency,id = customer.id,email = customer.email,first_name = customer.first_name, last_name =customer.last_name, addresses = listOf(
+            val uCustomer= UCustomer(id = customer.id,email = customer.email,first_name = customer.first_name, last_name =customer.last_name, addresses = listOf(
                 UAddresse(address1 = customer.addresses?.get(0)?.address1)
             ), phone = customer.phone)
             val gson= Gson().toJson(UpdateCustomer(uCustomer))
-            Log.e("555555555555555555555555555555555",gson)
-            val data=repository.updateCustomer(customer.id!!,gson).first()
-            Log.e("555555555555555555555555555555555",data.customer.toString())
+                        val data=repository.updateCustomer(customer.id!!,gson).first()
+
             _userStateData.value=UiState.Success(data.customer!!)
         }
     }

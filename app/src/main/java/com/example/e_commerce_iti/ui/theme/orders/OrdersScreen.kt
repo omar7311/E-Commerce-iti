@@ -96,7 +96,7 @@ fun OrdersScreen(
 @Composable
 fun OrdersContent(orderViewModel: OrdersViewModel, controller: NavController) {
 
-    val customerId = currentUser?.id
+    val customerId = currentUser.value?.id
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "Orders History",
@@ -134,8 +134,7 @@ fun FetchOrdersByCustomerId(
             is UiState.Success -> {
                 if((ordersState as UiState.Success<List<Order>>).data.isNotEmpty()){
                     val orders = (ordersState as UiState.Success<List<Order>>).data
-                    Log.d("Orrrrrrders", "Orders: $orders")
-                    OrdersList(orders, controller, orderViewModel)
+                                        OrdersList(orders, controller, orderViewModel)
                 }else{
                     Column(modifier = Modifier.fillMaxWidth()) {
                         MyLottiAni(R.raw.animation_no_data)
@@ -167,8 +166,7 @@ fun OrdersList(orders: List<Order>, controller: NavController, orderViewModel: O
           /*  if (order.lineItems[index] != null) {
                     products =
                         FetchProductsDetails(orderViewModel, order)  // Fetch products from details
-                    Log.d("OrderProducts", "Products for Order: $products")
-            }*/
+                                }*/
             OrderItem(order, controller, orderViewModel)
             Spacer(modifier = Modifier.height(16.dp))
         }

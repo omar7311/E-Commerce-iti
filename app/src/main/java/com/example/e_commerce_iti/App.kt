@@ -13,6 +13,7 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -26,25 +27,26 @@ class App : Application() {
         val auth = Firebase.auth
         val repository: IReposiatory = ReposiatoryImpl(
             RemoteDataSourceImp(),
-            LocalDataSourceImp(this.getSharedPreferences(LocalDataSourceImp.currentCurrency, Context.MODE_PRIVATE))
+            LocalDataSourceImp(this.getSharedPreferences(LocalDataSourceImp.EMAIL_CURRENCY_PREFIX, Context.MODE_PRIVATE))
         )
 
         // Define the auth state listener
         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            Log.i("ffffffffeeqqqqqqq","${firebaseAuth.currentUser?.email} ")
-
             if (firebaseAuth.currentUser != null&&!firebaseAuth.currentUser!!.isAnonymous) {
                         CoroutineScope(Dispatchers.IO).launch{
                             try {
                                 getCurrent(firebaseAuth.currentUser!!.email!!, repository)
-                                Log.i("created","$currentUser")
                             }catch (e:Exception){
-                                Log.i("created","$e")
+                                try {
+                                    val d=  RemoteDataSourceImp().getCustomer(firebaseAuth.currentUser!!.email!!)
+                                    val id=d.first().id
+                                    RemoteDataSourceImp().createNewDraft(id!!)
+                                }catch (ex:Exception){
+                                }
                             }
-
                         }
                     }else{
-                        deleteCurrentUser()
+                                                 currentUser.value=null
                     }
         }
 

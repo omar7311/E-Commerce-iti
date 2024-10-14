@@ -1,6 +1,7 @@
 package com.example.e_commerce_iti.ui.theme.product_details
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,21 +40,18 @@ fun Actions(
     context: Context,
     product: Product,
     productInfoViewModel: ProductInfoViewModel,
+    size: MutableState<Int>
 ) {
     val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
 
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+    Row(horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically, modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
-    ) {
+            .height(50.dp)) {
         Button(
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFF76c7c0), Color.White),
             onClick = {
-                currentUser?.fav?.let {
+                currentUser.value?.fav?.let {
                     productInfoViewModel.getDraftOrder(it)
                 } ?: run {
                     // Handle null cart case
@@ -71,7 +70,7 @@ fun Actions(
             shape = RoundedCornerShape(16.dp),
             colors =ButtonDefaults.buttonColors(Color(0xFF76c7c0), Color.White),
             onClick = {
-                currentUser?.cart?.let {
+                currentUser.value?.cart?.let {
                     productInfoViewModel.getDraftOrder(it)
                 } ?: run {
                     // Handle null cart case
@@ -94,7 +93,7 @@ fun Actions(
                 val draftOrder = (draftOrderState as UiState.Success).data
                 // Check if product is already in cart or add new product to cart
                 if (!draftOrder.line_items.any { it.product_id == product.id }) {
-                    addToCardOrFavorite(productInfoViewModel, product, draftOrder)
+                    addToCardOrFavorite(productInfoViewModel, product, draftOrder,size)
                         Toast.makeText(
                             context,
                             "the product is adding successfully",
@@ -119,13 +118,14 @@ fun Actions(
 fun addToCardOrFavorite(
     productInfoViewModel: ProductInfoViewModel,
     product: Product,
-    draftOrder: DraftOrder
+    draftOrder: DraftOrder,
+    size:MutableState<Int>
 ) {
     val lineItem = LineItems(
         title = product.title,
-        price = product.variants[0].price,
+        price = product.variants[size.value].price,
         quantity = 1,
-        variant_id = product.variants[0].id,
+        variant_id = product.variants[size.value].id,
         product_id = product.id
     )
 

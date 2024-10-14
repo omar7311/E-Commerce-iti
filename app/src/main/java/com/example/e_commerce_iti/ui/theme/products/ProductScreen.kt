@@ -92,6 +92,7 @@ import com.example.e_commerce_iti.ui.theme.viewmodels.currencyviewmodel.Currency
 import com.example.e_commerce_iti.ui.theme.viewmodels.home_viewmodel.HomeViewModel
 import com.example.e_commerce_iti.ui.theme.viewmodels.productInfo_viewModel.ProductInfoViewModel
 import com.example.e_commerce_iti.whiteBrush
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -325,14 +326,13 @@ fun ProductItem(
                             padding = PaddingValues(10.dp)
                         )
                     }
-
-
-
-                    FavoriteButton(
-                        product = product,
-                        productInfoViewModel = productInfoViewModel,
-                        context = context
-                    )
+                    if (!FirebaseAuth.getInstance().currentUser?.isAnonymous!!) {
+                        FavoriteButton(
+                            product = product,
+                            productInfoViewModel = productInfoViewModel,
+                            context = context
+                        )
+                    }
                 }
             }
         }

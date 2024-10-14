@@ -77,12 +77,11 @@ fun OrderDetailsScreen(
         if (isConnected.value) {
 
 
-            //Log.i("Productsssss", "OrderDetailsScreen:$products")
-            ScreenContent(
+               ScreenContent(
                 order,
                 orderViewModel,
                 modifier = Modifier.padding(innerPadding)
-            ) // ScreenContent
+            )
         } else {
             NetworkErrorContent() // when no connection
 
@@ -102,16 +101,14 @@ fun ScreenContent(order: Order, orderViewModel: OrdersViewModel, modifier: Modif
         item {
             val products =
                 FetchProductsDetails(orderViewModel, order)  // to fetch products from details
-            Log.i("holakolaholakola", "ScreenContent: $products")
-            OrderItemsRow(products, orderViewModel)
+                        OrderItemsRow(products, orderViewModel)
         }
 
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { OrderSummary(order) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { CustomerInfo(order.customer, order.shippingAddress) }
-        Log.d("custome and address", "CustomerInfo: ${order.customer} ${order.shippingAddress}")
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
         // item { OrderStatus(order) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item { LineItemsList(order.lineItems) }
@@ -273,13 +270,11 @@ fun InfoItem(label: String, value: String, fontWeight: FontWeight = FontWeight.B
 @Composable
 fun FetchProductsDetails(orderViewModel: OrdersViewModel, order: Order): List<Product> {
     val productsIds = getLineItemsProductsIds(order)  // get line item products frist
-    Log.i("ProductIds", "FetchProductsDetails: $productsIds")
-    val ActualProducts = getActualProductsFromApi(
+        val ActualProducts = getActualProductsFromApi(
         productsIds.toMutableList(),
         orderViewModel
     ) // then get Actuall products
-    Log.i("ProductsFetchedFetchProductsDetailsFunction", "FetchProductsDetails: $ActualProducts")
-    return ActualProducts
+        return ActualProducts
 }
 
 @Composable
@@ -298,8 +293,7 @@ fun OrderItemsRow(
     ) {
         items(products) { actualProduct ->
             OrderItems(actualProduct)
-            Log.i("Productsssss", "OrderItemsRow: $actualProduct")
-        }
+                    }
     }
 }
 
@@ -338,17 +332,13 @@ fun OrderItems(
 fun getLineItemsProductsIds(order: Order): List<Long> {
     return order.lineItems.mapNotNull { item ->
         item.productId.takeIf { it != 0L }?.also { productId ->
-            Log.d("ProductID", "Added product ID: $productId")
-        } ?: run {
-            Log.e("ProductID", "Product ID is null or 0 for item: $item")
-            null
+                    } ?: run {
+                        null
         }
     }.also { productIds ->
         if (productIds.isEmpty()) {
-            Log.e("LineItems", "No valid product IDs found in line items")
-        } else {
-            Log.d("LineItems", "Found ${productIds.size} valid product IDs")
-        }
+                    } else {
+                    }
     }
 }
 
@@ -371,15 +361,12 @@ fun getActualProductsFromApi(
                     val product = orderViewModel.getTempProductById(productId)
                     actualProducts.add(product)  // Add product to the state list
                 } catch (e: Exception) {
-                    Log.e("Product Error", "Failed to fetch product $productId: ${e.message}")
-                }
+                                    }
             } else {
-                Log.e("Invalid Product ID", "Product ID is invalid: $productId")
-            }
+                            }
         }
         isLoading = false
-        Log.i("ProductsFetched", "Fetched Products: $actualProducts")
-    }
+            }
 
     // Return the actual products list (this will trigger recomposition when updated)
     return actualProducts.toList()

@@ -14,7 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,7 +40,7 @@ import kotlin.random.Random
 
 @Composable
 fun ProductDetails(currencyViewModel: CurrencyViewModel, productInfoViewModel: ProductInfoViewModel, product: Product, controller: NavController, context:Context) {
-
+ var size = remember { mutableStateOf(0) }
     Scaffold(
         topBar = { CustomTopBar("Product Details", controller) },  // Update title to "Cart"
         bottomBar = { CustomButtonBar(controller,context) },     // Keep the navigation controller for buttons
@@ -54,10 +57,10 @@ fun ProductDetails(currencyViewModel: CurrencyViewModel, productInfoViewModel: P
                 ProductInfo(product.title.replace("+"," "),
                     it, Random.nextInt(1, 6))
             }
-            SizeAndColors(product.options[1].values,product.options[0].values)
+            SizeAndColors(product.options[1].values.toMutableList(),product.options[0].values.toMutableList(),size)
             ProductDescription(description)
             if (!FirebaseAuth.getInstance().currentUser?.isAnonymous!!) {
-                Actions(context,product, productInfoViewModel)
+                Actions(context,product, productInfoViewModel,size)
             }
         }
     }

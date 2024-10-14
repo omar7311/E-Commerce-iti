@@ -56,13 +56,12 @@ class ChangeUserDataViewModel(val repository: IReposiatory):ViewModel() {
         val customer=(userStateData.value as UiState.Success<CustomerX>).data
         userStateData.value=UiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
-            val uCustomer=UCustomer(currency = customer.currency,id = customer.id,email = customer.email,first_name = fname, last_name = lname, addresses = listOf(
+            val uCustomer=UCustomer(id = customer.id,email = customer.email,first_name = fname, last_name = lname, addresses = listOf(
                 UAddresse(address1 = address)
             ), phone = phone)
 
             val gson= Gson().toJson(UpdateCustomer(uCustomer))
-            Log.e("555555555555555555555555555555555",gson)
-            val data=repository.updateCustomer(customer.id!!,gson).first()
+                        val data=repository.updateCustomer(customer.id!!,gson).first()
             _userStateData.value=UiState.Success(data.customer!!)
         }
     }

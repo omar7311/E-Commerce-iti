@@ -1,4 +1,5 @@
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -43,24 +44,30 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.e_commerce_iti.currentUser
 import com.example.e_commerce_iti.gradientBrush
 import com.example.e_commerce_iti.ingredientColor1
 import com.example.e_commerce_iti.model.apistates.UiState
+import com.example.e_commerce_iti.model.pojos.draftorder.ShippingAddress
 import com.example.e_commerce_iti.ui.theme._navigation.Screens
+import com.example.e_commerce_iti.ui.theme._navigation.shippingAddress
 import com.example.e_commerce_iti.ui.theme.cart.roundToTwoDecimalPlaces
 import com.example.e_commerce_iti.ui.theme.viewmodels.PaymentViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -74,65 +81,74 @@ import java.time.LocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentScreen(paymentViewModel: PaymentViewModel, navController: NavController) {
-    var cop by remember { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        paymentViewModel.getCart(currentUser!!.cart)
-        paymentViewModel.getusercurrency()
-    }
+    if (currentUser.observeAsState().value!=null){
 
-    var flag = remember { mutableStateOf(false) }
-    val cartState = paymentViewModel.cart.collectAsState().value
-
-    Column(Modifier.fillMaxSize()) {
-        // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                modifier = Modifier.fillMaxHeight(),
-                onClick = { navController.navigateUp() }
-            ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Payment",
-                style = MaterialTheme.typography.headlineMedium
-            )
+        var cop by rememberSaveable { mutableStateOf("") }
+        val place by remember { mutableStateOf(shippingAddress ?:ShippingAddress())}
+        LaunchedEffect(Unit) {
+            paymentViewModel.getCart(currentUser.value!!.cart)
+            paymentViewModel.getusercurrency()
         }
-
-        when (cartState) {
-            is UiState.Loading -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-            is UiState.Success -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp)
+        val cartState = paymentViewModel.cart.collectAsState().value
+        Column(Modifier.fillMaxSize()) {
+            // Header
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    modifier = Modifier.fillMaxHeight(),
+                    onClick = { navController.navigateUp() }
                 ) {
-                    PaymentContent(paymentViewModel, navController, cop) { cop = it }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    CreditCardForm(paymentViewModel, flag,navController)
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Payment",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            }
+
+            when (cartState) {
+                is UiState.Loading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is UiState.Success -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp)
+                    ) {
+                        PaymentContent( palce = place,paymentViewModel, navController, cop) { cop = it }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CreditCardForm(paymentViewModel, place = place, navController)
+                    }
+                }
+
+                else -> {
+                    // Handle error state if needed
+                    Text("Error loading cart data")
                 }
             }
-            else -> {
-                // Handle error state if needed
-                Text("Error loading cart data")
-            }
+        }
+    }else{
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
     }
 }
 
 @Composable
 fun PaymentContent(
+    palce:ShippingAddress
+,
     paymentViewModel: PaymentViewModel,
     navController: NavController,
     cop: String,
@@ -156,6 +172,8 @@ fun PaymentContent(
     )
     Spacer(modifier = Modifier.height(16.dp))
     ToggleableTextFieldDemo(navController)
+    Spacer(modifier = Modifier.height(16.dp))
+    Text("address: ${palce.country} , ${palce.city} , ${palce.address1}")
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = "Total Amount",
@@ -188,6 +206,7 @@ fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel:
         ,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
         Text(
             text = "$label:",
             textAlign = TextAlign.Center,
@@ -198,7 +217,7 @@ fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel:
             )
         )
         Text(
-            text = "${(amount.value * paymentViewModel.currency.collectAsState().value.second).roundToTwoDecimalPlaces()} ${paymentViewModel.currency.collectAsState().value.first}",
+            text = "${(amount.collectAsState().value * paymentViewModel.currency.collectAsState().value.second).roundToTwoDecimalPlaces()} ${paymentViewModel.currency.collectAsState().value.first}",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold,
@@ -211,7 +230,7 @@ fun DisplayAmountRow(label: String, amount: StateFlow<Double>, paymentViewModel:
 
     Spacer(modifier = Modifier.height(12.dp))
 }
-
+var e=false
 @Composable
 fun DiscountCodeSection(
     paymentViewModel: PaymentViewModel,
@@ -219,6 +238,7 @@ fun DiscountCodeSection(
     cop: String,
     onCopChange: (String) -> Unit
 ) {
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -229,6 +249,7 @@ fun DiscountCodeSection(
                 .padding(5.dp)
                 .weight(1f),
             value = cop,
+              enabled =  paymentViewModel.priceRules.collectAsState().value !is UiState.Success ,
             onValueChange = onCopChange,
             label = { Text("Coupon") },
             shape = RoundedCornerShape(16.dp), // This makes the TextField rounded
@@ -253,6 +274,7 @@ fun DiscountCodeSection(
                 ),
                 onClick = {
                     if (cop.isNotBlank()) {
+                        e=true
                         paymentViewModel.get_discount_details(cop)
                     } else {
                         Toast.makeText(
@@ -266,14 +288,19 @@ fun DiscountCodeSection(
             ) {
                 Text(text = "Apply")
             }
+            if (paymentViewModel.discountCode.collectAsState().value is UiState.Error&&e) {
+                e=false
+                Toast.makeText(LocalContext.current, "Invalid Coupon", Toast.LENGTH_SHORT).show()
+            }
         } else {
+            Spacer(Modifier.height(10.dp))
             CircularProgressIndicator()
         }
     }
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolean>,navController: NavController) {
+fun CreditCardForm(paymentViewModel: PaymentViewModel, place: ShippingAddress,navController: NavController) {
     var selectedPaymentMethod by remember { mutableStateOf("") }
     var showCreditCardFields by remember { mutableStateOf(false) }
     var showPayOnReceiveFields by remember { mutableStateOf(false) }
@@ -473,7 +500,7 @@ fun CreditCardForm(paymentViewModel: PaymentViewModel, flag: MutableState<Boolea
                     isLoading=true
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            paymentViewModel.submitOrder()
+                            paymentViewModel.submitOrder(place)
                             withContext(Dispatchers.Main) {
                                 showSuccessDialog = true
                                 withContext(Dispatchers.Main) {

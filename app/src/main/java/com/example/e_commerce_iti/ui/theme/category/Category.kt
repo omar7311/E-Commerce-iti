@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -97,6 +98,7 @@ fun CategoryScreen(
     // Observe network state
     val isNetworkAvailable by networkObserver.isConnected.collectAsState(initial = false)
     Scaffold(
+        containerColor = Color.White,
         topBar = { CustomTopBar("Category", controller) },
         bottomBar = { CustomButtonBar(controller,context) },
     ) { innerPadding ->
@@ -158,8 +160,7 @@ fun CategoryScreen(
     // Fetch products when collectionId changes
   /*  LaunchedEffect(collectionId) {
         if (collectionId != 0L&&isNetworkAvailable)
-            Log.d("Tag", "CategoryScreen: $collectionId")
-            homeViewModel.getProductsByCustomCollection(collectionId)
+                        homeViewModel.getProductsByCustomCollection(collectionId)
         }*/
     }
 
@@ -195,8 +196,7 @@ fun FetchCustomCollections(
 
         is CustomCollectionStates.Failure -> {
             val error = (customCollections as CustomCollectionStates.Failure).msg
-            Log.e("Categories", "Failed to load custom collections: $error")
-        }
+                    }
     }
 }
 
@@ -239,8 +239,7 @@ fun FetchProductsByCustomCollection(
 
         is ProductsApiState.Failure -> {
             val error = (customProducts as ProductsApiState.Failure).msg
-            Log.e("Categories", "Failed to load custom collections: $error")
-        }
+                    }
     }
 }
 

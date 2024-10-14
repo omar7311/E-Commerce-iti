@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -27,13 +28,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -79,8 +84,6 @@ fun FavoriteScreen(
     context: Context,
     networkObserver: NetworkObserver
 ) {
-
-
     val product by cartViewModel.product.collectAsState()
     Scaffold(
         topBar = { CustomTopBar("Favorite", controller) },  // Update title to "Cart"
@@ -94,9 +97,11 @@ fun FavoriteScreen(
 
         val isConnected = networkObserver.isConnected.collectAsState()
         if (isConnected.value) {
-            if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {  // when guest
+            if (Firebase.auth.currentUser != null && !Firebase.auth.currentUser!!.email.isNullOrBlank()) {
+
+                if (currentUser.observeAsState().value!=null){
                 LaunchedEffect(Unit) {
-                    currentUser?.fav?.let { cartViewModel.getCartDraftOrder(it) }
+                    currentUser.value!!.fav.let { cartViewModel.getCartDraftOrder(it) }
                 }
                 // Use padding for the content
                 Box(
@@ -140,11 +145,17 @@ fun FavoriteScreen(
                         UiState.Non -> {}
                     }
                 }
-            } else {
-                GuestScreen(controller)
+            }else{
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    CircularProgressIndicator()
+                }
             }
 
-        } else {
+        }else {
+                GuestScreen(controller)
+            }
+        }
+            else {
             NetworkErrorContent()
         }
     }
@@ -166,7 +177,7 @@ fun FavouriteItem(
     val draftOrderState by productInfoViewModel.draftOrderState.collectAsState()
     val showDialog = rememberSaveable { mutableStateOf(false) }
     if (showDialog.value) {
-        MyAlertDialog(draftOrder?.line_items?.get(index)!!, { lineItem ->
+        MyAlertDialog(draftOrder?.line_items?.get(index+1)!!, { lineItem ->
             cartViewModel.updateCart(product, lineItem)
         }, showDialog)
     }
@@ -206,7 +217,7 @@ fun FavouriteItem(
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(Color(0xFF76c7c0)),
                     onClick = {
-                        currentUser?.cart?.let {
+                        currentUser.value!!.cart.let {
                             isAddingToCards = true
                             productInfoViewModel.getDraftOrder(it)
                         } ?: run {
@@ -221,22 +232,18 @@ fun FavouriteItem(
                         contentDescription = null
                     )
                 }
-                Button(onClick = {
-                    showDialog.value = true
-                }, colors = ButtonDefaults.buttonColors(Color.Red)) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Delete", color = Color.White, fontSize = 18.sp)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
-
-
             }
 
+        }
+        IconButton(modifier = Modifier.size(65.dp).align(Alignment.TopEnd).padding(16.dp),
+            onClick = {
+                showDialog.value = true
+            }, colors = IconButtonDefaults.iconButtonColors(Color.White)) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                tint = Color.Red,
+                contentDescription = null,
+            )
         }
     }
 
@@ -247,9 +254,11 @@ fun FavouriteItem(
                     val draftOrder = (draftOrderState as UiState.Success).data
                     // Check if product is already in cart or add new product to cart
                     if (!draftOrder.line_items.any { it.product_id == product.id }) {
-                        addToCardOrFavorite(productInfoViewModel, product, draftOrder)
+                        addToCardOrFavorite(productInfoViewModel, product, draftOrder,
+                            mutableStateOf(0)
+                        )
                         isAddingToCards = false
-
+                       Toast.makeText(context,"the product ia adding successfully",Toast.LENGTH_LONG).show()
                     }
                 }
 
