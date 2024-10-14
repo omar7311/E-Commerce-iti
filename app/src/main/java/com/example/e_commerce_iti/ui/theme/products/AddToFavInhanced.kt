@@ -58,11 +58,9 @@ fun FavoriteButton(
     IconButton( colors = IconButtonDefaults.iconButtonColors(ingredientColor1, Color.White),
         modifier = Modifier.size(35.dp),
         onClick = {
-                currentUser.value!!.fav.let { favId ->
+                currentUser.value?.fav.let { favId ->
                     isAddingToFavorites = true
-                    productInfoViewModel.getDraftOrder(favId)
-                } ?: run {
-                    Toast.makeText(context, "User not logged in or no favorite list available", Toast.LENGTH_LONG).show()
+                    favId?.let { productInfoViewModel.getDraftOrder(it) }
                 }
 
         }
@@ -81,7 +79,9 @@ fun FavoriteButton(
                 is UiState.Success -> {
                     val draftOrder = (draftOrderState as UiState.Success<DraftOrder>).data
                     if (!draftOrder.line_items.any { it.product_id == product.id }) {
-                        addToCardOrFavorite(productInfoViewModel, product, draftOrder)
+                        addToCardOrFavorite(productInfoViewModel, product, draftOrder,
+                            mutableStateOf(0)
+                        )
                         Toast.makeText(context, "The product is added to favorites", Toast.LENGTH_LONG).show()
                         isInFavorites = true
                     } else {
