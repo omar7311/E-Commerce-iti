@@ -220,9 +220,6 @@ fun FavouriteItem(
                         currentUser.value!!.cart.let {
                             isAddingToCards = true
                             productInfoViewModel.getDraftOrder(it)
-                        } ?: run {
-                            // Handle null cart case
-                            println("User not logged in or cart is null")
                         }
                     }) {
                     Text(text = "Add to cart", color = Color.White, fontSize = 16.sp)
