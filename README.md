@@ -46,6 +46,15 @@ The app provides a seamless shopping experience, allowing users to browse produc
 - Can access profile and settings
 - Can contact support
 
+## Screenshoots 
+
+<img src="https://github.com/user-attachments/assets/43873295-9597-4e80-9268-8ed42f5f7f83">
+<img src="https://github.com/user-attachments/assets/11bf23d1-d7f0-4b3b-84fc-1e7137fdb420">
+<img src="https://github.com/user-attachments/assets/a350e6b6-6018-4c53-94c6-beb12f55ee50">
+<img src="https://github.com/user-attachments/assets/defbc52d-ea9f-448f-b49a-a62fd092d0d9">
+<img src="https://github.com/user-attachments/assets/1de4aefb-42e4-4e18-b354-8090399e6527">
+<img src="https://github.com/user-attachments/assets/bd7a2a0e-1ae7-4f0f-9784-0840011089c6">
+
 ## Setup and Installation
 
 1. Clone the repository:
