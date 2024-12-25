@@ -55,6 +55,10 @@ The app provides a seamless shopping experience, allowing users to browse produc
 <img src="https://github.com/user-attachments/assets/1de4aefb-42e4-4e18-b354-8090399e6527">
 <img src="https://github.com/user-attachments/assets/bd7a2a0e-1ae7-4f0f-9784-0840011089c6">
 
+## Demo Link
+
+press [here](https://drive.google.com/file/d/1KGuFZ2qvLw1rSYC42ZkPwXxTgxm0WNjK/view?usp=drive_link) to watch app demo.
+
 ## Setup and Installation
 
 1. Clone the repository:
